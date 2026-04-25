@@ -33,6 +33,7 @@ import { CollegeComparison } from "./pages/CollegeComparison";
 // ── Auth pages
 import { LoginPage } from "./pages/auth/LoginPage";
 import { SignupPage } from "./pages/auth/SignupPage";
+import { ResetPasswordPage } from "./pages/auth/ResetPasswordPage";
 
 // ── Dashboard
 import { UserDashboard } from "./pages/dashboard/UserDashboard";
@@ -153,6 +154,7 @@ function App() {
             {/* ── Auth routes ───────────────────────────────────────────── */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
 
             {/* ── Protected routes ──────────────────────────────────────── */}
             <Route

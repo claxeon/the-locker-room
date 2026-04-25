@@ -702,6 +702,7 @@ interface ProfileTabProps {
     sport: string | null
     gender: string | null
     graduation_year: number | null
+    avatar_url: string | null
   }
   onSignOut: () => void
 }
@@ -718,6 +719,19 @@ function ProfileTab({ userId, userEmail, initialProfile, onSignOut }: ProfileTab
   const [saveMsg, setSaveMsg] = useState<string | null>(null)
   const [saveError, setSaveError] = useState<string | null>(null)
 
+  // Avatar state
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(initialProfile.avatar_url)
+  const [avatarFile, setAvatarFile] = useState<File | null>(null)
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(initialProfile.avatar_url)
+  const [uploadingAvatar, setUploadingAvatar] = useState(false)
+  const [avatarError, setAvatarError] = useState<string | null>(null)
+  const avatarInputRef = React.useRef<HTMLInputElement>(null)
+
+  // Password reset state
+  const [sendingReset, setSendingReset] = useState(false)
+  const [resetMsg, setResetMsg] = useState<string | null>(null)
+  const [resetError, setResetError] = useState<string | null>(null)
+
   // Fetch school name from school_id
   useEffect(() => {
     if (!initialProfile.school_id) return
@@ -733,6 +747,76 @@ function ProfileTab({ userId, userEmail, initialProfile, onSignOut }: ProfileTab
     }
     fetchSchool()
   }, [initialProfile.school_id])
+
+  // Handle avatar file selection — generate a preview
+  function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setAvatarFile(file)
+    setAvatarError(null)
+    const reader = new FileReader()
+    reader.onload = (ev) => {
+      setAvatarPreview(ev.target?.result as string)
+    }
+    reader.readAsDataURL(file)
+  }
+
+  // Upload avatar to Supabase Storage and update profile
+  async function handleAvatarUpload() {
+    if (!avatarFile) return
+    setUploadingAvatar(true)
+    setAvatarError(null)
+
+    try {
+      const ext = avatarFile.name.split('.').pop() ?? 'jpg'
+      const filePath = `${userId}/avatar.${ext}`
+
+      // Attempt upload — gracefully handle if storage bucket doesn't exist
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, avatarFile, { upsert: true })
+
+      if (uploadError) {
+        // If bucket not found or storage error, skip gracefully
+        if (
+          uploadError.message.toLowerCase().includes('bucket') ||
+          uploadError.message.toLowerCase().includes('not found') ||
+          uploadError.message.toLowerCase().includes('storage')
+        ) {
+          setAvatarError('Avatar storage is not available yet. Profile info will still save.')
+          setUploadingAvatar(false)
+          return
+        }
+        throw new Error(uploadError.message)
+      }
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath)
+
+      const publicUrl = urlData.publicUrl
+
+      // Update profile with avatar_url
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('id', userId)
+
+      if (profileError) throw new Error(profileError.message)
+
+      setAvatarUrl(publicUrl)
+      setAvatarFile(null)
+      setSaveMsg('Avatar updated!')
+      setTimeout(() => setSaveMsg(null), 2500)
+    } catch (err: unknown) {
+      setAvatarError(
+        err instanceof Error ? err.message : 'Failed to upload avatar.'
+      )
+    } finally {
+      setUploadingAvatar(false)
+    }
+  }
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault()
@@ -755,19 +839,143 @@ function ProfileTab({ userId, userEmail, initialProfile, onSignOut }: ProfileTab
       setSaveError(error.message)
     } else {
       setSaveMsg('Saved!')
-      setTimeout(() => setSaveMsg(null), 2000)
+      setTimeout(() => setSaveMsg(null), 2500)
     }
   }
+
+  async function handleSendPasswordReset() {
+    if (!userEmail) return
+    setSendingReset(true)
+    setResetError(null)
+    setResetMsg(null)
+
+    const { error } = await supabase.auth.resetPasswordForEmail(userEmail, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    })
+
+    setSendingReset(false)
+    if (error) {
+      setResetError(error.message)
+    } else {
+      setResetMsg('Password reset email sent! Check your inbox.')
+      setTimeout(() => setResetMsg(null), 5000)
+    }
+  }
+
+  // Derived avatar initial for placeholder
+  const avatarInitial =
+    formData.full_name?.charAt(0)?.toUpperCase() ??
+    userEmail?.charAt(0)?.toUpperCase() ??
+    '?'
 
   const genderOptions = ["Men's", "Women's", "Mixed", "Co-ed"]
 
   return (
     <div className="space-y-6">
-      <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
-        <h3 className="text-white font-semibold text-base mb-5 flex items-center gap-2">
-          <Edit2 size={18} className="text-yellow-500" />
+
+      {/* ── Avatar Upload ─────────────────────────────────────────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6"
+      >
+        <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-4">
+          Profile Photo
+        </p>
+
+        <div className="flex items-center gap-5">
+          {/* Avatar preview */}
+          <div className="shrink-0">
+            {avatarPreview ? (
+              <img
+                src={avatarPreview}
+                alt="Avatar preview"
+                className="w-20 h-20 rounded-full object-cover border-2 border-yellow-500/40"
+              />
+            ) : (
+              <div className="w-20 h-20 rounded-full bg-yellow-500/20 border-2 border-yellow-500/40 flex items-center justify-center">
+                <span className="text-yellow-400 font-bold text-2xl">{avatarInitial}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Upload controls */}
+          <div className="flex-1 space-y-3">
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => avatarInputRef.current?.click()}
+                className="flex items-center gap-2 border border-zinc-600 text-zinc-300 hover:border-yellow-500/60 hover:text-yellow-400 px-4 py-2 rounded-xl text-xs font-medium transition-colors"
+              >
+                <Upload size={13} />
+                Choose Photo
+              </button>
+              {avatarFile && (
+                <button
+                  type="button"
+                  onClick={handleAvatarUpload}
+                  disabled={uploadingAvatar}
+                  className="flex items-center gap-2 bg-yellow-500 hover:bg-yellow-400 disabled:bg-yellow-500/40 text-black font-bold px-4 py-2 rounded-xl text-xs transition-colors"
+                >
+                  {uploadingAvatar ? (
+                    <>
+                      <div className="w-3 h-3 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                      Uploading…
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle size={13} />
+                      Save Photo
+                    </>
+                  )}
+                </button>
+              )}
+              {avatarFile && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAvatarFile(null)
+                    setAvatarPreview(avatarUrl)
+                    setAvatarError(null)
+                    if (avatarInputRef.current) avatarInputRef.current.value = ''
+                  }}
+                  className="text-zinc-500 hover:text-zinc-300 text-xs px-2 py-2 transition-colors"
+                >
+                  Cancel
+                </button>
+              )}
+            </div>
+            <input
+              ref={avatarInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleAvatarChange}
+              className="hidden"
+            />
+            <p className="text-zinc-500 text-xs">
+              JPG, PNG, or GIF · Max 5 MB
+            </p>
+            {avatarError && (
+              <p className="text-red-400 text-xs flex items-center gap-1.5">
+                <AlertCircle size={12} />
+                {avatarError}
+              </p>
+            )}
+          </div>
+        </div>
+      </motion.div>
+
+      {/* ── Profile Edit Form ─────────────────────────────────────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.05 }}
+        className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6"
+      >
+        <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-5 flex items-center gap-2">
+          <Edit2 size={13} className="text-yellow-500" />
           Edit Profile
-        </h3>
+        </p>
 
         <form onSubmit={handleSave} className="space-y-4">
           {/* Full Name */}
@@ -780,7 +988,7 @@ function ProfileTab({ userId, userEmail, initialProfile, onSignOut }: ProfileTab
               value={formData.full_name}
               onChange={(e) => setFormData((p) => ({ ...p, full_name: e.target.value }))}
               placeholder="Your full name"
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white text-sm placeholder:text-zinc-500 focus:outline-none focus:border-yellow-500 transition-colors"
+              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-yellow-500/50 transition-colors"
             />
           </div>
 
@@ -793,7 +1001,7 @@ function ProfileTab({ userId, userEmail, initialProfile, onSignOut }: ProfileTab
               type="email"
               value={userEmail ?? ''}
               readOnly
-              className="w-full bg-zinc-800/50 border border-zinc-700/50 rounded-lg px-4 py-2.5 text-zinc-400 text-sm cursor-not-allowed"
+              className="w-full bg-zinc-800/50 border border-zinc-700/50 rounded-xl px-4 py-3 text-zinc-400 text-sm cursor-not-allowed"
             />
           </div>
 
@@ -806,7 +1014,7 @@ function ProfileTab({ userId, userEmail, initialProfile, onSignOut }: ProfileTab
               type="text"
               value={schoolName ?? (initialProfile.school_id ? 'Loading…' : 'Not set')}
               readOnly
-              className="w-full bg-zinc-800/50 border border-zinc-700/50 rounded-lg px-4 py-2.5 text-zinc-400 text-sm cursor-not-allowed"
+              className="w-full bg-zinc-800/50 border border-zinc-700/50 rounded-xl px-4 py-3 text-zinc-400 text-sm cursor-not-allowed"
             />
             <p className="text-zinc-500 text-xs mt-1">
               Contact support to update your school affiliation.
@@ -823,7 +1031,7 @@ function ProfileTab({ userId, userEmail, initialProfile, onSignOut }: ProfileTab
               value={formData.sport}
               onChange={(e) => setFormData((p) => ({ ...p, sport: e.target.value }))}
               placeholder="e.g. Basketball, Soccer, Swimming"
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white text-sm placeholder:text-zinc-500 focus:outline-none focus:border-yellow-500 transition-colors"
+              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-yellow-500/50 transition-colors"
             />
           </div>
 
@@ -835,7 +1043,7 @@ function ProfileTab({ userId, userEmail, initialProfile, onSignOut }: ProfileTab
             <select
               value={formData.gender}
               onChange={(e) => setFormData((p) => ({ ...p, gender: e.target.value }))}
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-yellow-500 transition-colors"
+              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-yellow-500/50 transition-colors"
             >
               <option value="">Select division</option>
               {genderOptions.map((opt) => (
@@ -859,7 +1067,7 @@ function ProfileTab({ userId, userEmail, initialProfile, onSignOut }: ProfileTab
               onChange={(e) =>
                 setFormData((p) => ({ ...p, graduation_year: parseInt(e.target.value, 10) }))
               }
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-yellow-500 transition-colors"
+              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-yellow-500/50 transition-colors"
             />
           </div>
 
@@ -876,7 +1084,7 @@ function ProfileTab({ userId, userEmail, initialProfile, onSignOut }: ProfileTab
             <button
               type="submit"
               disabled={saving}
-              className="bg-yellow-500 text-black font-bold px-6 py-2.5 rounded-lg hover:bg-yellow-400 transition-colors text-sm disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
+              className="bg-yellow-500 text-black font-bold px-6 py-2.5 rounded-xl hover:bg-yellow-400 transition-colors text-sm disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {saving ? (
                 <>
@@ -904,19 +1112,85 @@ function ProfileTab({ userId, userEmail, initialProfile, onSignOut }: ProfileTab
             </AnimatePresence>
           </div>
         </form>
-      </div>
+      </motion.div>
 
-      {/* Sign Out */}
-      <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
-        <h3 className="text-white font-semibold text-sm mb-3">Account Actions</h3>
+      {/* ── Change Password ───────────────────────────────────────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6"
+      >
+        <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-4">
+          Security
+        </p>
+        <p className="text-zinc-300 text-sm mb-4">
+          To change your password, we'll send a reset link to{' '}
+          <span className="text-yellow-500">{userEmail}</span>.
+        </p>
+
+        <div className="flex flex-wrap items-center gap-4">
+          <button
+            type="button"
+            onClick={handleSendPasswordReset}
+            disabled={sendingReset || !userEmail}
+            className="flex items-center gap-2 border border-zinc-600 text-zinc-300 hover:border-yellow-500/60 hover:text-yellow-400 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {sendingReset ? (
+              <>
+                <div className="w-4 h-4 border-2 border-zinc-400 border-t-transparent rounded-full animate-spin" />
+                Sending…
+              </>
+            ) : (
+              'Send Password Reset Email'
+            )}
+          </button>
+
+          <AnimatePresence>
+            {resetMsg && (
+              <motion.span
+                initial={{ opacity: 0, x: -8 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0 }}
+                className="flex items-center gap-1.5 text-green-400 text-sm font-medium"
+              >
+                <CheckCircle size={16} />
+                {resetMsg}
+              </motion.span>
+            )}
+            {resetError && (
+              <motion.span
+                initial={{ opacity: 0, x: -8 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0 }}
+                className="flex items-center gap-1.5 text-red-400 text-sm"
+              >
+                <AlertCircle size={14} />
+                {resetError}
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </div>
+      </motion.div>
+
+      {/* ── Sign Out ──────────────────────────────────────────────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15 }}
+        className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6"
+      >
+        <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-4">
+          Account Actions
+        </p>
         <button
           onClick={onSignOut}
-          className="flex items-center gap-2 border border-zinc-600 text-zinc-300 hover:border-red-500/60 hover:text-red-400 px-4 py-2 rounded-lg text-sm transition-colors"
+          className="flex items-center gap-2 border border-zinc-600 text-zinc-300 hover:border-red-500/60 hover:text-red-400 px-4 py-2.5 rounded-xl text-sm transition-colors"
         >
           <LogOut size={16} />
           Sign Out
         </button>
-      </div>
+      </motion.div>
     </div>
   )
 }
@@ -1084,6 +1358,7 @@ export function UserDashboard() {
                   sport: profile?.sport ?? null,
                   gender: profile?.gender ?? null,
                   graduation_year: profile?.graduation_year ?? null,
+                  avatar_url: profile?.avatar_url ?? null,
                 }}
                 onSignOut={handleSignOut}
               />
