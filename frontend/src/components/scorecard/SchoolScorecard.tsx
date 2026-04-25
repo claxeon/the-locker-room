@@ -288,8 +288,7 @@ export function SchoolScorecard({ schoolId, schoolName }: SchoolScorecardProps) 
           supabase
             .from('program_aggregates')
             .select('sport, review_count, facilities_rating, coaching_rating, balance_rating, support_rating, culture_rating, equity_rating')
-            .eq('school_id', schoolId)
-            .gt('review_count', 0),
+            .eq('school_id', schoolId),
           supabase
             .from('reviews')
             .select('*', { count: 'exact', head: true })
@@ -329,8 +328,14 @@ export function SchoolScorecard({ schoolId, schoolName }: SchoolScorecardProps) 
   }, [loading, aggregates])
 
   const hasReviews = aggregates.length > 0
+  // Determine if we have any REAL reviews or only synthetic (review_count === 0)
+  const hasRealReviews = aggregates.some((a) => a.review_count > 0)
+  // For display, weight synthetic rows equally (weight = 1 each) so we show data
+  const displayAggregates = hasRealReviews
+    ? aggregates.filter((a) => a.review_count > 0)
+    : aggregates.map((a) => ({ ...a, review_count: 1 }))
   const stats: SchoolStats | null = hasReviews
-    ? computeStats(aggregates, totalReviews)
+    ? computeStats(displayAggregates, totalReviews)
     : null
 
   const overallColor = stats ? scoreColor(stats.overall) : { text: 'text-yellow-400', fill: '#EAB308' }
@@ -351,9 +356,14 @@ export function SchoolScorecard({ schoolId, schoolName }: SchoolScorecardProps) 
         <h2 className="text-xl font-black uppercase tracking-tight text-white">
           Athlete Scorecard
         </h2>
-        {stats && (
+        {stats && hasRealReviews && (
           <span className="ml-auto text-xs font-semibold uppercase tracking-widest text-zinc-500">
             {stats.totalReviews} verified review{stats.totalReviews !== 1 ? 's' : ''}
+          </span>
+        )}
+        {stats && !hasRealReviews && (
+          <span className="ml-auto rounded-full border border-zinc-700 bg-zinc-800 px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-widest text-zinc-500">
+            Estimated
           </span>
         )}
       </div>

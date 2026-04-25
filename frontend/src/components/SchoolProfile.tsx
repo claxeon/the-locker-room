@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { ArrowLeft, MapPin, Shield, Trophy } from 'lucide-react'
 
 import { useSchoolProfile } from '../hooks/useSupabaseData'
@@ -12,6 +12,38 @@ interface SchoolProfileProps {
   onBack: () => void
 }
 
+/**
+ * Same deterministic campus image pool as SchoolCard.
+ * Keyed by school_id so the same school always shows the same photo.
+ */
+const CAMPUS_PHOTO_IDS = [
+  'photo-1562774053-701939374585',
+  'photo-1498243691581-b145c3f54a5a',
+  'photo-1541339907198-e08756dedf3f',
+  'photo-1607237138185-eedd9c632b0b',
+  'photo-1571260899304-425eee4c7efc',
+  'photo-1581362072978-14998d01fdaa',
+  'photo-1519452575417-564c1401ecc0',
+  'photo-1523050854058-8df90110c9f1',
+  'photo-1574958269340-fa927503f3dd',
+  'photo-1594608661623-aa0bd3a69d98',
+  'photo-1568667256549-094345857637',
+  'photo-1580582932707-520aed937b7b',
+  'photo-1509062522246-3755977927d7',
+  'photo-1597733336794-12d05021d510',
+  'photo-1565034946487-077786996e27',
+  'photo-1534796636912-3b95b3ab5986',
+  'photo-1477959858617-67f85cf4f1df',
+  'photo-1527576539890-dfa815648363',
+  'photo-1463947628408-f8581a2f4aca',
+  'photo-1566073771259-6a8506099945',
+]
+
+function getHeroUrl(schoolId: number): string {
+  const photoId = CAMPUS_PHOTO_IDS[schoolId % CAMPUS_PHOTO_IDS.length]
+  return `https://images.unsplash.com/${photoId}?w=1200&h=280&fit=crop&auto=format&q=70`
+}
+
 const serifItalic: React.CSSProperties = {
   fontFamily: "'Instrument Serif', Georgia, serif",
   fontStyle: 'italic',
@@ -20,6 +52,8 @@ const serifItalic: React.CSSProperties = {
 export const SchoolProfile: React.FC<SchoolProfileProps> = ({ slug, onBack }) => {
   const { data: schools, loading, error } = useSchoolProfile(slug)
   const school = schools[0] as SchoolProfileType | undefined
+  // Must be declared before any early returns (Rules of Hooks)
+  const [heroBroken, setHeroBroken] = useState(false)
 
   if (loading) {
     return (
@@ -50,28 +84,49 @@ export const SchoolProfile: React.FC<SchoolProfileProps> = ({ slug, onBack }) =>
     )
   }
 
-  return (
-    <div className="relative min-h-screen bg-black pb-24 pt-28 text-white">
-      {/* Subtle single yellow top-glow — no purple */}
-      <div
-        className="pointer-events-none absolute inset-0 -z-10"
-        style={{
-          background:
-            'radial-gradient(ellipse 60% 35% at 50% -5%, rgba(234,179,8,0.07) 0%, transparent 70%)',
-        }}
-      />
+  const heroUrl = getHeroUrl(school.school_id)
 
-      <div className="relative mx-auto flex w-full max-w-5xl flex-col gap-8 px-4">
+  return (
+    <div className="relative min-h-screen bg-black pb-24 text-white">
+
+      {/* ── Campus Hero Banner ── */}
+      {!heroBroken && (
+        <div className="relative h-52 sm:h-64 w-full overflow-hidden">
+          <img
+            src={heroUrl}
+            alt={`${school.institution_name} campus`}
+            className="h-full w-full object-cover"
+            onError={() => setHeroBroken(true)}
+          />
+          {/* Dramatic gradient: black top (for nav), transparent mid, black bottom */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/20 to-black" />
+          {/* Subtle yellow left accent */}
+          <div className="absolute left-0 top-0 h-full w-1 bg-yellow-500/40" />
+        </div>
+      )}
+
+      {/* Top glow fallback (no image) */}
+      {heroBroken && (
+        <div
+          className="pointer-events-none absolute inset-0 -z-10"
+          style={{
+            background:
+              'radial-gradient(ellipse 60% 35% at 50% -5%, rgba(234,179,8,0.07) 0%, transparent 70%)',
+          }}
+        />
+      )}
+
+      <div className={`relative mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 ${heroBroken ? 'pt-28' : 'pt-6'}`}>
         {/* Back button — editorial ghost style */}
         <button
           onClick={onBack}
-          className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-500 hover:text-white transition-colors self-start"
+          className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-400 hover:text-white transition-colors self-start"
         >
           <ArrowLeft className="h-3.5 w-3.5" /> Back to Directory
         </button>
 
-        {/* School header card */}
-        <section className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-8 backdrop-blur">
+        {/* School header card — pulled up slightly to overlap hero */}
+        <section className="rounded-xl border border-zinc-800 bg-zinc-900/80 p-8 backdrop-blur">
           <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
             <div className="space-y-4">
               <p className="text-[10px] font-semibold uppercase tracking-widest text-yellow-500">

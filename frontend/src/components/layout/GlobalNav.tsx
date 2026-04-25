@@ -60,31 +60,32 @@ export const GlobalNav: React.FC = () => {
     navigate('/')
   }
 
-  // Check if Dashboard tab is active (for the auth pill)
-  const isDashboardActive = location.pathname === '/dashboard'
-
   return (
-    <div className="fixed left-1/2 z-50 -translate-x-1/2 bottom-6 sm:bottom-auto sm:top-6 flex flex-col items-center gap-2">
-      {/* Auth action pill — Sign In or Sign Out, sits above/below the main nav */}
-      {user ? (
-        <motion.button
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          onClick={handleSignOut}
-          className={cn(
-            'hidden sm:flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold uppercase tracking-widest transition-colors',
-            'border border-zinc-800 bg-zinc-900/90 backdrop-blur-xl',
-            'text-zinc-500 hover:text-red-400 hover:border-red-500/40',
-          )}
-        >
-          Sign Out
-        </motion.button>
-      ) : (
-        <motion.div
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="hidden sm:block"
-        >
+    <>
+      {/* ── Centered tab nav — bottom on mobile, top center on desktop ── */}
+      <div className="fixed left-1/2 z-50 -translate-x-1/2 bottom-6 sm:bottom-auto sm:top-6">
+        <NavBar items={navItems} />
+      </div>
+
+      {/* ── Auth pill — independent fixed position, top-right corner ── */}
+      <motion.div
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15, duration: 0.3 }}
+        className="fixed top-5 right-5 z-50 sm:top-6 sm:right-6"
+      >
+        {user ? (
+          <button
+            onClick={handleSignOut}
+            className={cn(
+              'flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold uppercase tracking-widest transition-colors',
+              'border border-zinc-800 bg-zinc-900/90 backdrop-blur-xl',
+              'text-zinc-500 hover:text-red-400 hover:border-red-500/40',
+            )}
+          >
+            Sign Out
+          </button>
+        ) : (
           <NavLink
             to="/login"
             className={({ isActive }) =>
@@ -100,30 +101,9 @@ export const GlobalNav: React.FC = () => {
             <LogIn size={13} strokeWidth={2.5} />
             Sign In
           </NavLink>
-        </motion.div>
-      )}
-
-      {/* Main tab nav */}
-      <NavBar items={navItems} />
-
-      {/* Mobile sign in / sign out — visible below nav on small screens */}
-      {user ? (
-        <button
-          onClick={handleSignOut}
-          className="flex sm:hidden items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold uppercase tracking-widest border border-zinc-800 bg-zinc-900/90 backdrop-blur-xl text-zinc-500 hover:text-red-400 hover:border-red-500/40 transition-colors"
-        >
-          Sign Out
-        </button>
-      ) : (
-        <NavLink
-          to="/login"
-          className="flex sm:hidden items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold uppercase tracking-widest border border-zinc-800 bg-zinc-900/90 backdrop-blur-xl text-zinc-500 hover:text-yellow-400 hover:border-yellow-500/30 transition-colors"
-        >
-          <LogIn size={13} strokeWidth={2.5} />
-          Sign In
-        </NavLink>
-      )}
-    </div>
+        )}
+      </motion.div>
+    </>
   )
 }
 
