@@ -45,6 +45,10 @@ import { AdminDashboard } from "./pages/admin/AdminDashboard";
 // ── Explore Reviews
 import { ExploreReviews } from "./pages/ExploreReviews";
 
+// ── Legal pages
+import { PrivacyPage } from "./pages/PrivacyPage";
+import { TermsPage } from "./pages/TermsPage";
+
 // ── Auth context
 import { AuthProvider, useAuth } from "./hooks/useAuth";
 
@@ -156,6 +160,8 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/terms" element={<TermsPage />} />
 
             {/* ── Protected routes ──────────────────────────────────────── */}
             <Route

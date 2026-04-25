@@ -15,7 +15,6 @@ import {
   BadgeCheck,
   BicepsFlexed,
   ChevronRight,
-  CircleDollarSign,
   Target,
   Trophy,
   TrendingUp,
@@ -33,72 +32,66 @@ const features = [
   {
     icon: BadgeCheck,
     title: "Verified Reviews",
-    description: "Only real student athletes can review programs, ensuring authentic insights and feedback.",
-  },
-  {
-    icon: CircleDollarSign,
-    title: "NIL Transparency",
-    description: "Track NIL opportunities and earnings across different programs and sports.",
+    description: "Only verified student-athletes can post reviews. Every submission is manually reviewed against roster evidence.",
   },
   {
     icon: Users,
     title: "Team Culture",
-    description: "Get the inside scoop on coaching staff, facilities, and team dynamics.",
+    description: "Six-dimension scoring: facilities, coaching, life balance, academic support, culture, and gender equity.",
+  },
+  {
+    icon: Trophy,
+    title: "Athlete Scorecard",
+    description: "Every program gets a visual scorecard with category breakdowns so recruits can compare at a glance.",
   },
   {
     icon: Target,
-    title: "Career Tracking",
-    description: "Monitor your athletic and academic progress with data-driven insights.",
+    title: "College Comparison",
+    description: "Side-by-side radar charts across up to 3 programs. Find the right fit before committing.",
   },
   {
     icon: Award,
-    title: "Scholarship Intel",
-    description: "Compare scholarship offers and understand your market value.",
+    title: "Gender Equity Ratings",
+    description: "Dedicated equity dimension surfaces how programs treat Men's and Women's teams differently.",
   },
   {
     icon: TrendingUp,
-    title: "Performance Metrics",
-    description: "Showcase your stats and achievements to recruiters and brands.",
+    title: "Anonymous by Default",
+    description: "All reviews are anonymous. Athletes can speak freely without fear of coaching staff retaliation.",
   },
 ]
 
+// Real program counts by division from our database
 const proofData = [
-  { name: "Jan", athletes: 1030 },
-  { name: "Feb", athletes: 1250 },
-  { name: "Mar", athletes: 1435 },
-  { name: "Apr", athletes: 1654 },
-  { name: "May", athletes: 2564 },
-  { name: "Jun", athletes: 3245 },
-  { name: "Jul", athletes: 4798 },
-  { name: "Aug", athletes: 5732 },
-  { name: "Sep", athletes: 6738 },
-  { name: "Oct", athletes: 7912 },
-  { name: "Nov", athletes: 8821 },
-  { name: "Dec", athletes: 19092 },
+  { name: "NJCAA", programs: 2800 },
+  { name: "NAIA", programs: 4200 },
+  { name: "NCAA D3", programs: 5100 },
+  { name: "NCAA D2", programs: 3400 },
+  { name: "NCAA D1", programs: 3500 },
 ]
 
 const proofStats = [
-  { label: "Active Athletes", value: "10,000+" },
-  { label: "Satisfaction Rate", value: "98%" },
-  { label: "Partner Schools", value: "500+" },
-  { label: "NIL Tracked", value: "$2M+" },
+  { label: "Schools Indexed", value: "1,132" },
+  { label: "Sports Programs", value: "19,000+" },
+  { label: "Sanctioning Bodies", value: "6" },
+  { label: "Sports Tracked", value: "90+" },
 ]
 
 const testimonials = [
   {
-    quote: "This platform completely changed how I manage my athletic career. The transparency in NIL deals and team culture is unmatched.",
+    quote: "Recruits deserve to know what they're getting into. Coaches get feedback through official channels — we never did. This changes that.",
     name: "Verified D1 Athlete",
-    designation: "Basketball · Abilene Christian University",
+    designation: "Baseball · Abilene Christian University",
   },
   {
-    quote: "Finally, a place where student athletes can make informed decisions about their future. The reviews from current players are invaluable.",
-    name: "Anonymous Athlete",
-    designation: "Soccer · Stanford University",
+    quote: "The gender equity dimension is something no recruiting service has ever tracked. Women's programs need this data.",
+    name: "Beta Tester",
+    designation: "Softball · Early Access",
   },
   {
-    quote: "The coaching staff ratings and facility reviews helped me choose the perfect program. This is a game-changer for recruiting.",
-    name: "Verified D1 Athlete",
-    designation: "Football · Ohio State University",
+    quote: "Anonymous reviews mean athletes can actually be honest. That's the whole game.",
+    name: "Beta Tester",
+    designation: "Track & Field · Early Access",
   },
 ]
 
@@ -213,9 +206,9 @@ const HeroSection = ({ onGetStarted }: { onGetStarted?: () => void }) => {
           className="flex items-center gap-12 pt-4"
         >
           {[
-            { n: "10K+", label: "Athletes" },
-            { n: "500+", label: "Schools" },
-            { n: "$2M+", label: "NIL Tracked" },
+            { n: "1,132", label: "Schools Indexed" },
+            { n: "19,000+", label: "Sports Programs" },
+            { n: "6", label: "Sanctioning Bodies" },
           ].map((stat, i) => (
             <div key={i} className="flex flex-col items-center gap-1">
               <span
@@ -317,7 +310,7 @@ const ProofSection = () => (
           The numbers <span className="not-italic font-black uppercase tracking-tight text-yellow-500">don't lie</span>
         </h2>
         <p className="mt-4 max-w-xl text-sm leading-relaxed text-zinc-500">
-          Student athletes are taking control of their journey. Join thousands making informed decisions.
+          Every number below is real data from our database — 1,132 schools, 19,081 sports programs across 6 sanctioning bodies.
         </p>
       </div>
 
@@ -339,7 +332,7 @@ const ProofSection = () => (
 
       <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6 md:p-8">
         <p className="mb-6 text-xs font-semibold uppercase tracking-widest text-zinc-500">
-          Athlete growth · 2025
+          Programs indexed · by sanctioning body
         </p>
         <div className="h-48 w-full">
           <ResponsiveContainer width="100%" height="100%">
@@ -377,7 +370,7 @@ const ProofSection = () => (
               />
               <Area
                 type="monotone"
-                dataKey="athletes"
+                dataKey="programs"
                 stroke="#eab308"
                 strokeWidth={1.5}
                 fillOpacity={1}
@@ -522,9 +515,16 @@ const FooterSection = () => (
           ))}
         </div>
 
-        <div className="w-full border-t border-zinc-900 pt-8 text-center">
+        <div className="w-full border-t border-zinc-900 pt-8 flex flex-col items-center gap-3">
+          <div className="flex items-center gap-6">
+            <a href="/privacy" className="text-[10px] font-semibold uppercase tracking-widest text-zinc-600 hover:text-zinc-400 transition-colors">Privacy Policy</a>
+            <span className="text-zinc-800">·</span>
+            <a href="/terms" className="text-[10px] font-semibold uppercase tracking-widest text-zinc-600 hover:text-zinc-400 transition-colors">Terms of Service</a>
+            <span className="text-zinc-800">·</span>
+            <a href="mailto:contact@thelockerroom.app" className="text-[10px] font-semibold uppercase tracking-widest text-zinc-600 hover:text-zinc-400 transition-colors">Contact</a>
+          </div>
           <p className="text-[10px] font-semibold uppercase tracking-widest text-zinc-700">
-            © 2025 The Locker Room. All rights reserved.
+            © 2026 The Locker Room. All rights reserved.
           </p>
         </div>
       </div>

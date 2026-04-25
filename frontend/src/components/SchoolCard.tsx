@@ -2,10 +2,12 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { ChevronRight } from 'lucide-react'
 
-import { SportsDirectoryEntry } from '../lib/supabase'
+import { SportsDirectoryEntry, SchoolProfile } from '../lib/supabase'
+
+type SchoolCardData = SportsDirectoryEntry | SchoolProfile
 
 interface SchoolCardProps {
-  school: SportsDirectoryEntry
+  school: SchoolCardData
   onClick?: () => void
 }
 
@@ -18,6 +20,16 @@ export const SchoolCard: React.FC<SchoolCardProps> = ({ school, onClick }) => {
   const handleLogoError = (event: React.SyntheticEvent<HTMLImageElement>) => {
     event.currentTarget.src = `https://placehold.co/64x64/18181b/eab308?text=${school.institution_name.charAt(0)}`
   }
+
+  // Support both old SportsDirectoryEntry (sport/gender) and new SchoolProfile (programs array)
+  const sportLabel = 'sport' in school && school.sport
+    ? school.sport
+    : 'programs' in school && Array.isArray(school.programs)
+    ? `${school.programs.length} sport${school.programs.length !== 1 ? 's' : ''}`
+    : ''
+  const genderLabel = 'gender' in school && school.gender
+    ? school.gender
+    : null
 
   return (
     <motion.div
@@ -62,12 +74,16 @@ export const SchoolCard: React.FC<SchoolCardProps> = ({ school, onClick }) => {
 
       {/* Chips */}
       <div className="flex flex-shrink-0 flex-col items-end gap-1.5">
-        <span className="rounded-full border border-yellow-500/25 bg-yellow-500/10 px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-yellow-400">
-          {school.sport}
-        </span>
-        <span className="rounded-full border border-zinc-700/50 bg-zinc-800/60 px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-zinc-400">
-          {school.gender}
-        </span>
+        {sportLabel && (
+          <span className="rounded-full border border-yellow-500/25 bg-yellow-500/10 px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-yellow-400">
+            {sportLabel}
+          </span>
+        )}
+        {genderLabel && (
+          <span className="rounded-full border border-zinc-700/50 bg-zinc-800/60 px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-zinc-400">
+            {genderLabel}
+          </span>
+        )}
       </div>
 
       {/* Arrow */}

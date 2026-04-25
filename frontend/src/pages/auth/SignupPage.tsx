@@ -146,6 +146,7 @@ export function SignupPage() {
     if (form.password !== form.confirmPassword)
       return "Passwords do not match.";
     if (!schoolQuery.trim()) return "School name is required.";
+    if (!selectedSchoolId) return "Please select your school from the dropdown list.";
     if (!form.sport.trim()) return "Sport is required.";
     if (!form.gender) return "Please select a gender division.";
     if (!form.graduationYear) return "Graduation year is required.";
@@ -203,17 +204,25 @@ export function SignupPage() {
         }
 
         // ── 3. Insert roster_submissions row so the admin can verify later.
+        // IMPORTANT: schema columns are school_id (integer, NOT NULL) and submitted_evidence
+        const submissionInsert: Record<string, unknown> = {
+          user_id: newUser.id,
+          sport: form.sport.trim(),
+          gender: form.gender,
+          status: "pending",
+          submitted_evidence: form.rosterEvidence.trim(),
+        };
+        // school_id is NOT NULL — only include it when the user picked from autocomplete
+        if (selectedSchoolId) {
+          submissionInsert.school_id = selectedSchoolId;
+        }
+        if (form.graduationYear) {
+          submissionInsert.graduation_year = parseInt(form.graduationYear, 10);
+        }
+
         const { error: submissionError } = await supabase
           .from("roster_submissions")
-          .insert({
-            user_id: newUser.id,
-            school_name: schoolQuery.trim(),
-            sport: form.sport.trim(),
-            gender: form.gender,
-            graduation_year: parseInt(form.graduationYear, 10),
-            evidence: form.rosterEvidence.trim(),
-            status: "pending",
-          });
+          .insert(submissionInsert);
 
         if (submissionError) {
           // Non-fatal: the auth account was created. Log it and continue.

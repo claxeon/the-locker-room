@@ -40,7 +40,7 @@ export const useSchoolProfile = (slug: string) => {
 }
 
 export const useSportsDirectory = (filters?: {
-  classification_name?: string
+  sport?: string
   gender?: string
   state_cd?: string
 }, page: number = 1, pageSize: number = 20) => {
@@ -49,54 +49,75 @@ export const useSportsDirectory = (filters?: {
   const [error, setError] = useState<string | null>(null)
   const [totalCount, setTotalCount] = useState(0)
 
-  // Memoize filters to prevent unnecessary re-renders
-  const memoizedFilters = useMemo(() => filters, [
-    filters
-  ])
+  // Stable memoized filters — stringify to detect value changes
+  const filterKey = useMemo(
+    () => JSON.stringify(filters),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [filters?.sport, filters?.gender, filters?.state_cd]
+  )
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true)
         setError(null)
-        
-        // First, get the total count for pagination
-        let countQuery = supabase.from('v_school_profile').select('*', { count: 'exact', head: true })
-        
-        if (memoizedFilters?.classification_name) {
-          countQuery = countQuery.eq('classification_name', memoizedFilters.classification_name)
+
+        const sport = filters?.sport || ''
+        // gender filter is applied at sport level, not school level
+        // const gender = filters?.gender || ''
+        const state_cd = filters?.state_cd || ''
+
+        // When a sport filter is active, pre-fetch matching school_ids from sports_offered
+        let sportSchoolIds: number[] | null = null
+        if (sport) {
+          const { data: soData, error: soErr } = await supabase
+            .from('sports_offered')
+            .select('school_id')
+            .eq('sport', sport)
+          if (soErr) throw soErr
+          sportSchoolIds = (soData || []).map((r: { school_id: number }) => r.school_id)
+          // If no schools offer this sport, return empty immediately
+          if (sportSchoolIds.length === 0) {
+            setTotalCount(0)
+            setData([])
+            return
+          }
         }
-        if (memoizedFilters?.gender) {
-          countQuery = countQuery.eq('gender', memoizedFilters.gender)
+
+        // Build count query
+        let countQuery = supabase
+          .from('v_school_profile')
+          .select('*', { count: 'exact', head: true })
+
+        if (sportSchoolIds !== null) {
+          countQuery = countQuery.in('school_id', sportSchoolIds)
         }
-        if (memoizedFilters?.state_cd) {
-          countQuery = countQuery.eq('state_cd', memoizedFilters.state_cd)
+        if (state_cd) {
+          countQuery = countQuery.eq('state_cd', state_cd)
         }
+        // gender filter doesn't apply at school level (schools aren't gendered)
+        // It's a sports_offered level filter — handled via sport+gender combo below
 
         const { count, error: countError } = await countQuery
         if (countError) throw countError
         setTotalCount(count || 0)
 
-        // Now get the paginated data
+        // Build data query
         let query = supabase.from('v_school_profile').select('*')
-        
-        if (memoizedFilters?.classification_name) {
-          query = query.eq('classification_name', memoizedFilters.classification_name)
+
+        if (sportSchoolIds !== null) {
+          query = query.in('school_id', sportSchoolIds)
         }
-        if (memoizedFilters?.gender) {
-          query = query.eq('gender', memoizedFilters.gender)
-        }
-        if (memoizedFilters?.state_cd) {
-          query = query.eq('state_cd', memoizedFilters.state_cd)
+        if (state_cd) {
+          query = query.eq('state_cd', state_cd)
         }
 
-        // Add pagination
+        // Pagination
         const from = (page - 1) * pageSize
         const to = from + pageSize - 1
         query = query.range(from, to).order('institution_name')
 
         const { data, error } = await query
-
         if (error) throw error
 
         setData(data || [])
@@ -110,7 +131,8 @@ export const useSportsDirectory = (filters?: {
     }
 
     fetchData()
-  }, [memoizedFilters, page, pageSize])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterKey, page, pageSize])
 
   return { data, loading, error, totalCount }
 }
@@ -126,18 +148,20 @@ export const useAllSports = () => {
         setLoading(true)
         setError(null)
         
-        // Get all sports without pagination for the filter dropdown
         const { data, error } = await supabase
-          .from('v_sports_offered')
-          .select('sports')
-          .order('sports')
+          .from('sports_offered')
+          .select('sport')
+          .not('sport', 'ilike', '%(Coed) team%')
+          .not('sport', 'ilike', '%track combined%')
+          .not('sport', 'ilike', '%participation%')
+          .not('sport', 'ilike', 'Other sports%')
+          .order('sport')
 
         if (error) throw error
         
-        // Get unique sports with proper type safety
         if (data && Array.isArray(data)) {
           const uniqueSports = Array.from(
-            new Set(data.map(item => item.sports).filter(Boolean))
+            new Set(data.map(item => item.sport).filter(Boolean))
           ).sort()
           setData(uniqueSports)
         } else {
@@ -168,7 +192,6 @@ export const useAllStates = () => {
         setLoading(true)
         setError(null)
         
-        // Get all states without pagination for the filter dropdown
         const { data, error } = await supabase
           .from('v_school_profile')
           .select('state_cd')
@@ -176,7 +199,6 @@ export const useAllStates = () => {
 
         if (error) throw error
         
-        // Get unique states with proper type safety
         if (data && Array.isArray(data)) {
           const uniqueStates = Array.from(
             new Set(data.map(item => item.state_cd).filter(Boolean))

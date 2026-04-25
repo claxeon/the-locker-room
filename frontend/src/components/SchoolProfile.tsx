@@ -1,5 +1,6 @@
-import React from 'react'
-import { ArrowLeft, MapPin, Shield } from 'lucide-react'
+import React, { useEffect } from 'react'
+import { ArrowLeft, MapPin, PenSquare, Shield } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 import { useSchoolProfile } from '../hooks/useSupabaseData'
 import { SchoolProfile as SchoolProfileType } from '../lib/supabase'
@@ -21,6 +22,28 @@ const serifItalic: React.CSSProperties = {
 export const SchoolProfile: React.FC<SchoolProfileProps> = ({ slug, onBack }) => {
   const { data: schools, loading, error } = useSchoolProfile(slug)
   const school = schools[0] as SchoolProfileType | undefined
+
+  // Dynamic meta tags for SEO + social sharing
+  useEffect(() => {
+    if (!school) return
+    const title = `${school.institution_name} Athletics — The Locker Room`
+    document.title = title
+    const setMeta = (property: string, content: string) => {
+      let el = document.querySelector(`meta[property='${property}']`)
+      if (!el) {
+        el = document.createElement('meta')
+        el.setAttribute('property', property)
+        document.head.appendChild(el)
+      }
+      el.setAttribute('content', content)
+    }
+    setMeta('og:title', title)
+    setMeta('og:description', `Read anonymous verified reviews of ${school.institution_name} athletic programs. Facilities, coaching, culture, gender equity ratings from real student-athletes.`)
+    setMeta('og:url', `https://the-locker-room-zeta.vercel.app/school/${slug}`)
+    if (school.logo_url) setMeta('og:image', school.logo_url)
+    return () => { document.title = 'The Locker Room — Glassdoor for College Sports' }
+  }, [school, slug])
+
   if (loading) {
     return (
       <div className="relative min-h-screen bg-black py-32 flex items-center justify-center">
@@ -155,6 +178,22 @@ export const SchoolProfile: React.FC<SchoolProfileProps> = ({ slug, onBack }) =>
               </article>
             ))}
           </div>
+        </section>
+
+        {/* Write a Review CTA — primary conversion action */}
+        <section className="rounded-xl border border-yellow-500/20 bg-yellow-500/5 p-6 flex items-center justify-between gap-4">
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-yellow-500 mb-1">Verified Athletes Only</p>
+            <h2 className="text-base font-bold text-white">Played here? Rate this program.</h2>
+            <p className="text-xs text-zinc-500 mt-1">Your review is anonymous and helps other athletes make better decisions.</p>
+          </div>
+          <Link
+            to="/review"
+            className="inline-flex flex-shrink-0 items-center gap-2 rounded-xl bg-yellow-500 hover:bg-yellow-400 transition-colors px-5 py-2.5 text-xs font-black uppercase tracking-widest text-black"
+          >
+            <PenSquare className="h-3.5 w-3.5" />
+            Write a Review
+          </Link>
         </section>
 
         <ReviewsSection

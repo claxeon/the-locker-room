@@ -31,7 +31,7 @@ export const SportsDirectory: React.FC<SportsDirectoryProps> = ({ onSchoolClick 
 
   const renderError = () => (
     <div className="relative min-h-screen bg-black py-16 text-white">
-      <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 via-black to-purple-900/20" />
+      <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 via-black to-zinc-900/40" />
       <div className="relative mx-auto max-w-4xl px-6">
         <div className="border-4 border-red-500/40 bg-red-500/10 p-8 text-center">
           <h2 className="text-3xl font-black uppercase text-red-300">
@@ -52,13 +52,13 @@ export const SportsDirectory: React.FC<SportsDirectoryProps> = ({ onSchoolClick 
 
   return (
     <div className="relative min-h-screen bg-black text-white">
-      <div className="absolute inset-0 bg-gradient-to-b from-black via-black to-purple-900/40" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black via-black to-zinc-950" />
       <div className="absolute inset-0 opacity-30">
         <div
           className="h-full w-full"
           style={{
             backgroundImage:
-              'radial-gradient(circle at 20% 20%, rgba(234,179,8,0.15), transparent 45%), radial-gradient(circle at 80% 0%, rgba(168,85,247,0.2), transparent 40%)',
+              'radial-gradient(circle at 20% 20%, rgba(234,179,8,0.15), transparent 45%), radial-gradient(circle at 80% 0%, rgba(234,179,8,0.05), transparent 40%)',
           }}
         />
       </div>
@@ -140,7 +140,7 @@ export const SportsDirectory: React.FC<SportsDirectoryProps> = ({ onSchoolClick 
                 <div className="flex flex-col gap-2">
                   {schools.map((school) => (
                     <SchoolCard
-                      key={`${school.school_id}-${school.sport}-${school.gender}`}
+                      key={`${school.school_id}`}
                       school={school}
                       onClick={() => onSchoolClick?.(school.slug)}
                     />
