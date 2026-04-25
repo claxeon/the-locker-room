@@ -5,6 +5,7 @@ import { useSchoolProfile } from '../hooks/useSupabaseData'
 import { SchoolProfile as SchoolProfileType } from '../lib/supabase'
 import { Button } from './ui/button'
 import { ReviewsSection } from './reviews/ReviewsSection'
+import { SchoolScorecard } from './scorecard/SchoolScorecard'
 
 interface SchoolProfileProps {
   slug: string
@@ -98,6 +99,11 @@ export const SchoolProfile: React.FC<SchoolProfileProps> = ({ slug, onBack }) =>
             </div>
           </div>
         </section>
+
+        <SchoolScorecard
+          schoolId={school.school_id}
+          schoolName={school.institution_name}
+        />
 
         <section className="rounded-2xl border border-yellow-500/25 bg-black/70 p-8 backdrop-blur">
           <header className="mb-8 flex flex-wrap items-center justify-between gap-4">
