@@ -37,6 +37,9 @@ import { SignupPage } from "./pages/auth/SignupPage";
 // ── Dashboard
 import { UserDashboard } from "./pages/dashboard/UserDashboard";
 
+// ── Admin
+import { AdminDashboard } from "./pages/admin/AdminDashboard";
+
 // ── Auth context
 import { AuthProvider, useAuth } from "./hooks/useAuth";
 
@@ -86,6 +89,21 @@ const LandingPageWrapper: React.FC = () => {
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
+}
+
+function AdminRoute({ children }: { children: React.ReactNode }) {
+  const { user, profile, loading } = useAuth();
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="w-6 h-6 border-2 border-yellow-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+  if (!user || !profile?.is_admin) {
+    return <Navigate to="/" replace />;
+  }
+  return <>{children}</>;
 }
 
 function ProtectedRoute({ children }: ProtectedRouteProps) {
@@ -139,6 +157,16 @@ function App() {
                 <ProtectedRoute>
                   <UserDashboard />
                 </ProtectedRoute>
+              }
+            />
+
+            {/* ── Admin routes ───────────────────────────────────────────── */}
+            <Route
+              path="/admin"
+              element={
+                <AdminRoute>
+                  <AdminDashboard />
+                </AdminRoute>
               }
             />
 

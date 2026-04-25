@@ -185,7 +185,7 @@ const HeroSection = ({ onGetStarted }: { onGetStarted?: () => void }) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-5xl font-black uppercase leading-tight text-white md:text-7xl lg:text-8xl"
+          className="font-black uppercase leading-tight text-white text-[clamp(3.5rem,11vw,9rem)]"
         >
           The Locker
           <br />

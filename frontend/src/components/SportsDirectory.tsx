@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Target, Users, SpotlightIcon } from 'lucide-react'
+import { Target, Users } from 'lucide-react'
 
 import { useSportsDirectory } from '../hooks/useSupabaseData'
-import { ConnectionTest } from './ConnectionTest'
 import { Pagination } from './Pagination'
 import { SchoolCard } from './SchoolCard'
 import { SportsFilters } from './SportsFilters'
@@ -71,9 +70,6 @@ export const SportsDirectory: React.FC<SportsDirectoryProps> = ({ onSchoolClick 
           transition={{ duration: 0.6 }}
           className="mx-auto max-w-4xl text-center"
         >
-          <span className="inline-flex items-center gap-2 rounded-full border border-yellow-500/50 bg-yellow-500/15 px-4 py-2 text-xs font-bold uppercase tracking-[0.3em] text-yellow-400">
-            <SpotlightIcon className="h-4 w-4" /> Spotlight Directory
-          </span>
           <h1 className="mt-6 text-5xl font-black uppercase tracking-tight text-white md:text-6xl">
             Explore The Locker Room
           </h1>
@@ -126,8 +122,6 @@ export const SportsDirectory: React.FC<SportsDirectoryProps> = ({ onSchoolClick 
             </p>
           </div>
         </motion.section>
-
-        <ConnectionTest />
 
         <SportsFilters filters={filters} onFilterChange={setFilters} />
 

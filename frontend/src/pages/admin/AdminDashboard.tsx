@@ -11,21 +11,19 @@ import { useAuth } from '../../hooks/useAuth'
 type TabId = 'pending' | 'users' | 'reviews'
 
 type VerificationStatus = 'pending' | 'approved' | 'rejected'
-type ModerationStatus = 'pending' | 'approved' | 'removed'
+type ModerationStatus = 'pending' | 'approved' | 'rejected'
 
 interface RosterSubmission {
   id: string
   user_id: string
+  school_id: number | null
   status: 'pending' | 'approved' | 'rejected'
-  evidence_text: string
-  submitted_at: string
-  reviewed_by: string | null
-  reviewed_at: string | null
-  admin_notes: string | null
-  // joined from profiles
+  roster_url: string | null      // was: evidence_text
+  notes: string | null           // was: admin_notes
+  created_at: string             // was: submitted_at
+  // joined from profiles:
   athlete_name: string | null
-  email: string | null
-  school_name: string | null
+  school_name: string | null     // fetched separately from schools
   sport: string | null
   gender: string | null
   graduation_year: number | null
@@ -33,38 +31,40 @@ interface RosterSubmission {
 
 interface UserRow {
   id: string
-  email: string | null
   full_name: string | null
-  school_name: string | null
+  school_id: number | null       // NOT school_name — need to join
   sport: string | null
   gender: string | null
   graduation_year: number | null
   verification_status: VerificationStatus
   is_admin: boolean
   created_at: string
+  // derived after join:
+  school_name?: string | null
 }
 
 interface ReviewRow {
   id: string
   user_id: string
-  school_id: string
+  school_id: number
   sport: string | null
   gender: string | null
   is_anonymous: boolean
   review_text: string | null
+  pros: string | null
+  cons: string | null
+  facilities_rating: number | null
+  coaching_rating: number | null
+  balance_rating: number | null
+  support_rating: number | null
+  culture_rating: number | null
+  equity_rating: number | null
+  helpful_count: number
+  flagged_count: number
   moderation_status: ModerationStatus
-  moderation_notes: string | null
-  submitted_at: string
-  // ratings
-  rating_coaching: number | null
-  rating_facilities: number | null
-  rating_culture: number | null
-  rating_academic_support: number | null
-  rating_playing_time: number | null
-  rating_overall: number | null
-  // joined
-  school_name: string | null
-  reviewer_name: string | null
+  created_at: string             // NOT submitted_at
+  school_name: string | null     // joined from schools
+  reviewer_name: string | null   // joined from profiles
 }
 
 // ─────────────────────────────────────────────
@@ -133,7 +133,7 @@ const RatingDot: React.FC<{ label: string; value: number | null }> = ({
 // ─────────────────────────────────────────────
 
 const PendingVerificationsTab: React.FC<{ adminUserId: string }> = ({
-  adminUserId,
+  adminUserId: _adminUserId,
 }) => {
   const [submissions, setSubmissions] = useState<RosterSubmission[]>([])
   const [loading, setLoading] = useState(true)
@@ -151,16 +151,17 @@ const PendingVerificationsTab: React.FC<{ adminUserId: string }> = ({
           `
           id,
           user_id,
+          school_id,
+          sport,
+          gender,
+          graduation_year,
           status,
-          evidence_text,
-          submitted_at,
-          reviewed_by,
-          reviewed_at,
-          admin_notes,
+          roster_url,
+          notes,
+          created_at,
           profiles (
             full_name,
-            email,
-            school_name,
+            school_id,
             sport,
             gender,
             graduation_year
@@ -168,32 +169,68 @@ const PendingVerificationsTab: React.FC<{ adminUserId: string }> = ({
         `
         )
         .eq('status', 'pending')
-        .order('submitted_at', { ascending: true })
+        .order('created_at', { ascending: true })
 
       if (fetchError) throw fetchError
 
-      const rows: RosterSubmission[] = ((data ?? []) as Record<string, unknown>[]).map(
-        (row) => {
-          const profile =
-            (row['profiles'] as Record<string, unknown> | null) ?? {}
-          return {
-            id: row['id'] as string,
-            user_id: row['user_id'] as string,
-            status: row['status'] as RosterSubmission['status'],
-            evidence_text: (row['evidence_text'] as string) ?? '',
-            submitted_at: row['submitted_at'] as string,
-            reviewed_by: (row['reviewed_by'] as string | null) ?? null,
-            reviewed_at: (row['reviewed_at'] as string | null) ?? null,
-            admin_notes: (row['admin_notes'] as string | null) ?? null,
-            athlete_name: (profile['full_name'] as string | null) ?? null,
-            email: (profile['email'] as string | null) ?? null,
-            school_name: (profile['school_name'] as string | null) ?? null,
-            sport: (profile['sport'] as string | null) ?? null,
-            gender: (profile['gender'] as string | null) ?? null,
-            graduation_year: (profile['graduation_year'] as number | null) ?? null,
+      const rawRows = ((data ?? []) as Record<string, unknown>[])
+
+      // Collect unique school_ids for a second query
+      const schoolIds = Array.from(
+        new Set(
+          rawRows
+            .map((row) => {
+              const profile = (row['profiles'] as Record<string, unknown> | null) ?? {}
+              return (profile['school_id'] as number | null) ?? (row['school_id'] as number | null)
+            })
+            .filter((id): id is number => id !== null && id !== undefined)
+        )
+      )
+
+      // Fetch school names
+      const schoolMap: Record<number, string> = {}
+      if (schoolIds.length > 0) {
+        const { data: schoolData } = await supabase
+          .from('schools')
+          .select('school_id, institution_name')
+          .in('school_id', schoolIds)
+        if (schoolData) {
+          for (const s of schoolData as { school_id: number; institution_name: string }[]) {
+            schoolMap[s.school_id] = s.institution_name
           }
         }
-      )
+      }
+
+      const rows: RosterSubmission[] = rawRows.map((row) => {
+        const profile =
+          (row['profiles'] as Record<string, unknown> | null) ?? {}
+        const schoolId =
+          (profile['school_id'] as number | null) ??
+          (row['school_id'] as number | null)
+        return {
+          id: row['id'] as string,
+          user_id: row['user_id'] as string,
+          school_id: schoolId,
+          status: row['status'] as RosterSubmission['status'],
+          roster_url: (row['roster_url'] as string | null) ?? null,
+          notes: (row['notes'] as string | null) ?? null,
+          created_at: row['created_at'] as string,
+          athlete_name: (profile['full_name'] as string | null) ?? null,
+          school_name: schoolId !== null ? (schoolMap[schoolId] ?? null) : null,
+          sport:
+            (profile['sport'] as string | null) ??
+            (row['sport'] as string | null) ??
+            null,
+          gender:
+            (profile['gender'] as string | null) ??
+            (row['gender'] as string | null) ??
+            null,
+          graduation_year:
+            (profile['graduation_year'] as number | null) ??
+            (row['graduation_year'] as number | null) ??
+            null,
+        }
+      })
 
       setSubmissions(rows)
     } catch (err) {
@@ -211,11 +248,9 @@ const PendingVerificationsTab: React.FC<{ adminUserId: string }> = ({
     // Optimistic remove
     setSubmissions((prev) => prev.filter((s) => s.id !== sub.id))
 
-    const now = new Date().toISOString()
-
     await supabase
       .from('roster_submissions')
-      .update({ status: 'approved', reviewed_by: adminUserId, reviewed_at: now })
+      .update({ status: 'approved' })
       .eq('id', sub.id)
 
     await supabase
@@ -241,15 +276,11 @@ const PendingVerificationsTab: React.FC<{ adminUserId: string }> = ({
       return next
     })
 
-    const now = new Date().toISOString()
-
     await supabase
       .from('roster_submissions')
       .update({
         status: 'rejected',
-        admin_notes: notes.trim(),
-        reviewed_by: adminUserId,
-        reviewed_at: now,
+        notes: notes.trim(),
       })
       .eq('id', sub.id)
 
@@ -257,7 +288,6 @@ const PendingVerificationsTab: React.FC<{ adminUserId: string }> = ({
       .from('profiles')
       .update({
         verification_status: 'rejected',
-        verification_notes: notes.trim(),
       })
       .eq('id', sub.user_id)
   }
@@ -292,11 +322,10 @@ const PendingVerificationsTab: React.FC<{ adminUserId: string }> = ({
                 <p className="text-lg font-bold uppercase tracking-wide text-white">
                   {sub.athlete_name ?? 'Unknown Athlete'}
                 </p>
-                <p className="text-sm text-zinc-400">{sub.email ?? '—'}</p>
               </div>
               <div className="text-right text-xs text-zinc-500">
                 Submitted{' '}
-                {new Date(sub.submitted_at).toLocaleDateString('en-US', {
+                {new Date(sub.created_at).toLocaleDateString('en-US', {
                   month: 'short',
                   day: 'numeric',
                   year: 'numeric',
@@ -328,15 +357,48 @@ const PendingVerificationsTab: React.FC<{ adminUserId: string }> = ({
               )}
             </div>
 
-            {/* Evidence */}
+            {/* Roster URL */}
             <div className="mb-5">
               <p className="mb-1 text-xs uppercase tracking-widest text-zinc-500">
-                Submitted Evidence
+                Roster Evidence
               </p>
-              <blockquote className="rounded-lg border-l-4 border-yellow-500 bg-zinc-800/60 px-4 py-3 text-sm leading-relaxed text-zinc-200 whitespace-pre-wrap">
-                {sub.evidence_text || 'No evidence provided.'}
-              </blockquote>
+              {sub.roster_url ? (
+                <a
+                  href={sub.roster_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-yellow-500/30 bg-yellow-500/10 px-4 py-2 text-sm text-yellow-400 hover:bg-yellow-500/20 transition-colors break-all"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4 shrink-0"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                    />
+                  </svg>
+                  {sub.roster_url}
+                </a>
+              ) : (
+                <p className="text-sm text-zinc-500 italic">No roster URL provided.</p>
+              )}
             </div>
+
+            {/* Notes */}
+            {sub.notes && (
+              <div className="mb-5">
+                <p className="mb-1 text-xs uppercase tracking-widest text-zinc-500">Notes</p>
+                <p className="rounded-lg bg-zinc-800/60 px-4 py-3 text-sm leading-relaxed text-zinc-200 whitespace-pre-wrap">
+                  {sub.notes}
+                </p>
+              </div>
+            )}
 
             {/* Reject inline input */}
             {rejectingIds[sub.id] && (
@@ -422,12 +484,54 @@ const AllUsersTab: React.FC = () => {
       const { data, error: fetchError } = await supabase
         .from('profiles')
         .select(
-          'id, email, full_name, school_name, sport, gender, graduation_year, verification_status, is_admin, created_at'
+          'id, full_name, school_id, sport, gender, graduation_year, verification_status, is_admin, created_at'
         )
         .order('created_at', { ascending: false })
 
       if (fetchError) throw fetchError
-      setUsers((data as UserRow[]) ?? [])
+
+      const rawUsers = ((data ?? []) as Record<string, unknown>[])
+
+      // Collect unique school_ids for a second query
+      const schoolIds = Array.from(
+        new Set(
+          rawUsers
+            .map((u) => u['school_id'] as number | null)
+            .filter((id): id is number => id !== null && id !== undefined)
+        )
+      )
+
+      // Fetch school names
+      const schoolMap: Record<number, string> = {}
+      if (schoolIds.length > 0) {
+        const { data: schoolData } = await supabase
+          .from('schools')
+          .select('school_id, institution_name')
+          .in('school_id', schoolIds)
+        if (schoolData) {
+          for (const s of schoolData as { school_id: number; institution_name: string }[]) {
+            schoolMap[s.school_id] = s.institution_name
+          }
+        }
+      }
+
+      const mapped: UserRow[] = rawUsers.map((u) => {
+        const sid = u['school_id'] as number | null
+        return {
+          id: u['id'] as string,
+          full_name: (u['full_name'] as string | null) ?? null,
+          school_id: sid,
+          sport: (u['sport'] as string | null) ?? null,
+          gender: (u['gender'] as string | null) ?? null,
+          graduation_year: (u['graduation_year'] as number | null) ?? null,
+          verification_status: u['verification_status'] as VerificationStatus,
+          is_admin: (u['is_admin'] as boolean) ?? false,
+          created_at: u['created_at'] as string,
+          school_name: sid !== null ? (schoolMap[sid] ?? null) : null,
+        }
+      })
+
+      setUsers(mapped)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load users')
     } finally {
@@ -457,7 +561,8 @@ const AllUsersTab: React.FC = () => {
     const q = search.toLowerCase()
     return (
       (u.full_name ?? '').toLowerCase().includes(q) ||
-      (u.email ?? '').toLowerCase().includes(q)
+      (u.school_name ?? '').toLowerCase().includes(q) ||
+      (u.sport ?? '').toLowerCase().includes(q)
     )
   })
 
@@ -469,7 +574,7 @@ const AllUsersTab: React.FC = () => {
       {/* Search */}
       <input
         type="text"
-        placeholder="Search by name or email…"
+        placeholder="Search by name or school…"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         className="w-full max-w-sm rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2 text-sm text-white placeholder-zinc-500 focus:border-yellow-500 focus:outline-none focus:ring-1 focus:ring-yellow-500"
@@ -482,7 +587,7 @@ const AllUsersTab: React.FC = () => {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-zinc-800 bg-zinc-900/80">
-                {['Name', 'Email', 'School', 'Sport', 'Status', 'Joined', 'Actions'].map(
+                {['Name', 'School', 'Sport', 'Status', 'Joined', 'Actions'].map(
                   (h) => (
                     <th
                       key={h}
@@ -511,7 +616,6 @@ const AllUsersTab: React.FC = () => {
                       </span>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-zinc-300">{u.email ?? '—'}</td>
                   <td className="px-4 py-3 text-zinc-300">{u.school_name ?? '—'}</td>
                   <td className="px-4 py-3 text-zinc-300">{u.sport ?? '—'}</td>
                   <td className="px-4 py-3">
@@ -561,7 +665,6 @@ const ReviewModerationTab: React.FC<ReviewModerationTabProps> = ({
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [flaggingIds, setFlaggingIds] = useState<Record<string, boolean>>({})
-  const [flagNotes, setFlagNotes] = useState<Record<string, string>>({})
 
   const fetchReviews = useCallback(async () => {
     setLoading(true)
@@ -578,21 +681,24 @@ const ReviewModerationTab: React.FC<ReviewModerationTabProps> = ({
           gender,
           is_anonymous,
           review_text,
+          pros,
+          cons,
+          facilities_rating,
+          coaching_rating,
+          balance_rating,
+          support_rating,
+          culture_rating,
+          equity_rating,
+          helpful_count,
+          flagged_count,
           moderation_status,
-          moderation_notes,
-          submitted_at,
-          rating_coaching,
-          rating_facilities,
-          rating_culture,
-          rating_academic_support,
-          rating_playing_time,
-          rating_overall,
+          created_at,
           schools ( institution_name ),
           profiles ( full_name )
         `
         )
         .eq('moderation_status', 'pending')
-        .order('submitted_at', { ascending: true })
+        .order('created_at', { ascending: true })
 
       if (fetchError) throw fetchError
 
@@ -602,20 +708,23 @@ const ReviewModerationTab: React.FC<ReviewModerationTabProps> = ({
         return {
           id: row['id'] as string,
           user_id: row['user_id'] as string,
-          school_id: row['school_id'] as string,
+          school_id: row['school_id'] as number,
           sport: (row['sport'] as string | null) ?? null,
           gender: (row['gender'] as string | null) ?? null,
           is_anonymous: (row['is_anonymous'] as boolean) ?? false,
           review_text: (row['review_text'] as string | null) ?? null,
+          pros: (row['pros'] as string | null) ?? null,
+          cons: (row['cons'] as string | null) ?? null,
+          facilities_rating: (row['facilities_rating'] as number | null) ?? null,
+          coaching_rating: (row['coaching_rating'] as number | null) ?? null,
+          balance_rating: (row['balance_rating'] as number | null) ?? null,
+          support_rating: (row['support_rating'] as number | null) ?? null,
+          culture_rating: (row['culture_rating'] as number | null) ?? null,
+          equity_rating: (row['equity_rating'] as number | null) ?? null,
+          helpful_count: (row['helpful_count'] as number) ?? 0,
+          flagged_count: (row['flagged_count'] as number) ?? 0,
           moderation_status: row['moderation_status'] as ModerationStatus,
-          moderation_notes: (row['moderation_notes'] as string | null) ?? null,
-          submitted_at: row['submitted_at'] as string,
-          rating_coaching: (row['rating_coaching'] as number | null) ?? null,
-          rating_facilities: (row['rating_facilities'] as number | null) ?? null,
-          rating_culture: (row['rating_culture'] as number | null) ?? null,
-          rating_academic_support: (row['rating_academic_support'] as number | null) ?? null,
-          rating_playing_time: (row['rating_playing_time'] as number | null) ?? null,
-          rating_overall: (row['rating_overall'] as number | null) ?? null,
+          created_at: row['created_at'] as string,
           school_name: (school['institution_name'] as string | null) ?? null,
           reviewer_name: (profile['full_name'] as string | null) ?? null,
         }
@@ -648,11 +757,9 @@ const ReviewModerationTab: React.FC<ReviewModerationTabProps> = ({
 
   const handleFlagOpen = (id: string): void => {
     setFlaggingIds((prev) => ({ ...prev, [id]: true }))
-    setFlagNotes((prev) => ({ ...prev, [id]: '' }))
   }
 
   const handleFlagConfirm = async (reviewId: string): Promise<void> => {
-    const notes = flagNotes[reviewId] ?? ''
     setReviews((prev) => {
       const next = prev.filter((r) => r.id !== reviewId)
       onCountUpdate(next.length)
@@ -667,8 +774,7 @@ const ReviewModerationTab: React.FC<ReviewModerationTabProps> = ({
     await supabase
       .from('reviews')
       .update({
-        moderation_status: 'removed',
-        moderation_notes: notes.trim() || null,
+        moderation_status: 'rejected',
       })
       .eq('id', reviewId)
   }
@@ -706,7 +812,7 @@ const ReviewModerationTab: React.FC<ReviewModerationTabProps> = ({
                 <p className="text-xs text-zinc-400">
                   {review.is_anonymous ? 'Anonymous' : (review.reviewer_name ?? 'Unknown')}{' '}
                   ·{' '}
-                  {new Date(review.submitted_at).toLocaleDateString('en-US', {
+                  {new Date(review.created_at).toLocaleDateString('en-US', {
                     month: 'short',
                     day: 'numeric',
                     year: 'numeric',
@@ -729,12 +835,12 @@ const ReviewModerationTab: React.FC<ReviewModerationTabProps> = ({
 
             {/* Ratings row */}
             <div className="mb-4 flex flex-wrap gap-5 rounded-lg bg-zinc-800/50 px-4 py-3">
-              <RatingDot label="Coaching" value={review.rating_coaching} />
-              <RatingDot label="Facilities" value={review.rating_facilities} />
-              <RatingDot label="Culture" value={review.rating_culture} />
-              <RatingDot label="Academics" value={review.rating_academic_support} />
-              <RatingDot label="Play Time" value={review.rating_playing_time} />
-              <RatingDot label="Overall" value={review.rating_overall} />
+              <RatingDot label="Facilities" value={review.facilities_rating} />
+              <RatingDot label="Coaching" value={review.coaching_rating} />
+              <RatingDot label="Balance" value={review.balance_rating} />
+              <RatingDot label="Support" value={review.support_rating} />
+              <RatingDot label="Culture" value={review.culture_rating} />
+              <RatingDot label="Equity" value={review.equity_rating} />
             </div>
 
             {/* Review text */}
@@ -749,26 +855,33 @@ const ReviewModerationTab: React.FC<ReviewModerationTabProps> = ({
               </div>
             )}
 
-            {/* Flag notes input */}
-            {flaggingIds[review.id] && (
-              <div className="mb-4 space-y-2">
-                <label className="text-xs uppercase tracking-widest text-zinc-400">
-                  Removal Notes (optional)
-                </label>
-                <textarea
-                  className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-white placeholder-zinc-500 focus:border-yellow-500 focus:outline-none focus:ring-1 focus:ring-yellow-500"
-                  rows={2}
-                  placeholder="Reason for removal…"
-                  value={flagNotes[review.id] ?? ''}
-                  onChange={(e) =>
-                    setFlagNotes((prev) => ({
-                      ...prev,
-                      [review.id]: e.target.value,
-                    }))
-                  }
-                />
+            {/* Pros / Cons */}
+            {(review.pros || review.cons) && (
+              <div className="mb-4 grid grid-cols-2 gap-3">
+                {review.pros && (
+                  <div>
+                    <p className="mb-1 text-xs uppercase tracking-widest text-green-500">Pros</p>
+                    <p className="rounded-lg bg-zinc-800/60 px-4 py-3 text-sm leading-relaxed text-zinc-200">
+                      {review.pros}
+                    </p>
+                  </div>
+                )}
+                {review.cons && (
+                  <div>
+                    <p className="mb-1 text-xs uppercase tracking-widest text-red-400">Cons</p>
+                    <p className="rounded-lg bg-zinc-800/60 px-4 py-3 text-sm leading-relaxed text-zinc-200">
+                      {review.cons}
+                    </p>
+                  </div>
+                )}
               </div>
             )}
+
+            {/* Helpful / Flagged counts */}
+            <div className="mb-4 flex gap-4 text-xs text-zinc-500">
+              <span>👍 {review.helpful_count} helpful</span>
+              <span>🚩 {review.flagged_count} flagged</span>
+            </div>
 
             {/* Actions */}
             <div className="flex flex-wrap gap-3">
@@ -786,7 +899,7 @@ const ReviewModerationTab: React.FC<ReviewModerationTabProps> = ({
                     onClick={() => handleFlagOpen(review.id)}
                     className="rounded-lg bg-red-700/80 px-5 py-2 text-sm font-bold uppercase tracking-widest text-white transition-colors hover:bg-red-600"
                   >
-                    Flag / Remove
+                    Reject
                   </button>
                 </>
               ) : (
@@ -797,7 +910,7 @@ const ReviewModerationTab: React.FC<ReviewModerationTabProps> = ({
                     }}
                     className="rounded-lg bg-red-600 px-5 py-2 text-sm font-bold uppercase tracking-widest text-white transition-colors hover:bg-red-500"
                   >
-                    Confirm Remove
+                    Confirm Reject
                   </button>
                   <button
                     onClick={() => handleFlagCancel(review.id)}
@@ -959,51 +1072,3 @@ export const AdminDashboard: React.FC = () => {
     </div>
   )
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// FILE 2 — App.tsx additions
-// ─────────────────────────────────────────────────────────────────────────────
-//
-// STEP 1: Add this import near the top of App.tsx with your other page imports:
-//
-//   import { AdminDashboard } from './pages/admin/AdminDashboard'
-//
-//
-// STEP 2: If you don't already have a ProtectedRoute component, add this before
-//         the App function definition in App.tsx:
-//
-//   import { Navigate } from 'react-router-dom'
-//   import { useAuth } from './hooks/useAuth'
-//
-//   const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-//     const { user, loading } = useAuth()
-//     if (loading) {
-//       return (
-//         <div className="flex min-h-screen items-center justify-center bg-black">
-//           <div className="h-8 w-8 animate-spin rounded-full border-4 border-yellow-500 border-t-transparent" />
-//         </div>
-//       )
-//     }
-//     if (!user) return <Navigate to="/" replace />
-//     return <>{children}</>
-//   }
-//
-//
-// STEP 3: Inside the <Routes> block in your App function, add this route:
-//
-//   <Route
-//     path="/admin"
-//     element={
-//       <ProtectedRoute>
-//         <AdminDashboard />
-//       </ProtectedRoute>
-//     }
-//   />
-//
-//
-// NOTES:
-//   - AdminDashboard performs its own is_admin check and redirects to "/" if the
-//     authenticated user is not an admin — ProtectedRoute only blocks guests.
-//   - The existing useAuth hook at frontend/src/hooks/useAuth.ts is used as-is.
-//   - No changes are needed to useAuth.ts.
-// ─────────────────────────────────────────────────────────────────────────────

@@ -36,6 +36,7 @@ export const CollegeComparison: React.FC = () => {
   const [gender, setGender] = useState('')
   const [page, setPage] = useState(1)
   const [selectedSchools, setSelectedSchools] = useState<ProgramAggregateSchool[]>([])
+  const [loadingTimeout, setLoadingTimeout] = React.useState(false)
 
   const { data: filterData } = useComparisonFilters()
 
@@ -56,6 +57,12 @@ export const CollegeComparison: React.FC = () => {
 
   const schools = data?.data ?? []
   const totalItems = data?.total ?? 0
+
+  React.useEffect(() => {
+    if (!isLoading) return
+    const timer = setTimeout(() => setLoadingTimeout(true), 8000)
+    return () => clearTimeout(timer)
+  }, [isLoading])
 
   const toggleSelection = (school: ProgramAggregateSchool) => {
     setSelectedSchools((prev) => {
@@ -176,13 +183,16 @@ export const CollegeComparison: React.FC = () => {
         </section>
 
         <section className="grid grid-cols-1 gap-8 md:grid-cols-2">
-          {isLoading && !schools.length ? (
+          {(isLoading && !schools.length && !loadingTimeout) ? (
             <div className="col-span-full flex justify-center py-16">
               <div className="h-16 w-16 animate-spin rounded-full border-4 border-yellow-500/30 border-b-yellow-500" />
             </div>
-          ) : isError ? (
-            <div className="col-span-full rounded-2xl border border-red-500/40 bg-red-500/10 p-6 text-center text-red-100">
-              {error?.message || 'Unable to load program aggregates right now.'}
+          ) : isError || (isLoading && loadingTimeout) ? (
+            <div className="col-span-full rounded-2xl border border-yellow-500/20 bg-zinc-900/80 p-12 text-center">
+              <p className="text-2xl font-black uppercase tracking-tight text-white">No Reviews Yet</p>
+              <p className="mt-3 text-sm text-zinc-400 max-w-sm mx-auto">
+                Program rankings appear here once athletes start submitting reviews. Be the first to review your program.
+              </p>
             </div>
           ) : schools.length === 0 ? (
             <div className="col-span-full rounded-2xl border border-yellow-500/30 bg-black/70 p-8 text-center text-gray-300">

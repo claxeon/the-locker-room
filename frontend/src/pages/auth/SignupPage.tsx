@@ -298,7 +298,7 @@ export function SignupPage() {
 
   // ── Signup form
   return (
-    <div className="min-h-screen bg-black flex items-start justify-center px-4 py-16">
+    <div className="min-h-screen bg-black flex items-start justify-center px-4 pt-24 pb-16">
       <div className="max-w-xl w-full space-y-8">
         {/* Header */}
         <div className="space-y-2">
@@ -485,7 +485,7 @@ export function SignupPage() {
                 required
               />
             </div>
-            <div className="col-span-1">
+            <div className="col-span-1 min-w-0">
               <label htmlFor="gender" className={LABEL_BASE}>
                 Division
               </label>

@@ -1,5 +1,5 @@
 import React from 'react'
-import { ArrowLeft, MapPin, Shield, Trophy, SpotlightIcon } from 'lucide-react'
+import { ArrowLeft, MapPin, Shield, Trophy } from 'lucide-react'
 
 import { useSchoolProfile } from '../hooks/useSupabaseData'
 import { SchoolProfile as SchoolProfileType } from '../lib/supabase'
@@ -71,9 +71,6 @@ export const SchoolProfile: React.FC<SchoolProfileProps> = ({ slug, onBack }) =>
           <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/20 via-transparent to-purple-500/20 opacity-25" />
           <div className="relative flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
             <div className="space-y-4">
-              <span className="inline-flex items-center gap-2 rounded-full border border-yellow-500/30 bg-yellow-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.35em] text-yellow-400">
-                <SpotlightIcon className="h-4 w-4" /> Spotlight Program
-              </span>
               <h1 className="text-4xl font-black uppercase tracking-tight text-white md:text-5xl">
                 {school.institution_name}
               </h1>
@@ -83,7 +80,7 @@ export const SchoolProfile: React.FC<SchoolProfileProps> = ({ slug, onBack }) =>
                 <ProfileMeta icon={<Shield className="h-4 w-4 text-teal-300" />} label="Sanction" value={school.sanction_name} />
               </div>
             </div>
-            <div className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-xl border border-yellow-500/40 bg-black/70 p-2">
+            <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-xl border border-yellow-500/40 bg-black/70 p-2">
               {school.logo_url ? (
                 <img
                   src={school.logo_url}
@@ -96,7 +93,7 @@ export const SchoolProfile: React.FC<SchoolProfileProps> = ({ slug, onBack }) =>
                   }}
                 />
               ) : (
-                <Trophy className="h-10 w-10 text-yellow-400" />
+                <Trophy className="h-8 w-8 text-yellow-400" />
               )}
             </div>
           </div>
