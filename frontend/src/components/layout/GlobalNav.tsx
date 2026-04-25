@@ -73,8 +73,8 @@ export const GlobalNav: React.FC = () => {
           onClick={handleSignOut}
           className={cn(
             'hidden sm:flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold uppercase tracking-widest transition-colors',
-            'border border-zinc-700/60 bg-black/50 backdrop-blur-xl',
-            'text-zinc-400 hover:text-red-400 hover:border-red-500/40',
+            'border border-zinc-800 bg-zinc-900/90 backdrop-blur-xl',
+            'text-zinc-500 hover:text-red-400 hover:border-red-500/40',
           )}
         >
           Sign Out
@@ -92,8 +92,8 @@ export const GlobalNav: React.FC = () => {
                 'flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold uppercase tracking-widest transition-colors',
                 'border bg-black/50 backdrop-blur-xl',
                 isActive
-                  ? 'border-yellow-500/40 text-yellow-300'
-                  : 'border-zinc-700/60 text-zinc-400 hover:text-yellow-400 hover:border-yellow-500/30',
+                  ? 'border-yellow-500/40 text-yellow-400'
+                  : 'border-zinc-800 text-zinc-500 hover:text-yellow-400 hover:border-yellow-500/30',
               )
             }
           >
@@ -110,14 +110,14 @@ export const GlobalNav: React.FC = () => {
       {user ? (
         <button
           onClick={handleSignOut}
-          className="flex sm:hidden items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold uppercase tracking-widest border border-zinc-700/60 bg-black/50 backdrop-blur-xl text-zinc-400 hover:text-red-400 hover:border-red-500/40 transition-colors"
+          className="flex sm:hidden items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold uppercase tracking-widest border border-zinc-800 bg-zinc-900/90 backdrop-blur-xl text-zinc-500 hover:text-red-400 hover:border-red-500/40 transition-colors"
         >
           Sign Out
         </button>
       ) : (
         <NavLink
           to="/login"
-          className="flex sm:hidden items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold uppercase tracking-widest border border-zinc-700/60 bg-black/50 backdrop-blur-xl text-zinc-400 hover:text-yellow-400 hover:border-yellow-500/30 transition-colors"
+          className="flex sm:hidden items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold uppercase tracking-widest border border-zinc-800 bg-zinc-900/90 backdrop-blur-xl text-zinc-500 hover:text-yellow-400 hover:border-yellow-500/30 transition-colors"
         >
           <LogIn size={13} strokeWidth={2.5} />
           Sign In

@@ -1,8 +1,7 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { MapPin, Shield } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
 
-import { Button } from './ui/button'
 import { SportsDirectoryEntry } from '../lib/supabase'
 
 interface SchoolCardProps {
@@ -11,19 +10,18 @@ interface SchoolCardProps {
 }
 
 const cardVariants = {
-  initial: { opacity: 0, y: 12 },
+  initial: { opacity: 0, y: 8 },
   animate: { opacity: 1, y: 0 },
 }
 
 export const SchoolCard: React.FC<SchoolCardProps> = ({ school, onClick }) => {
   const handleLogoError = (event: React.SyntheticEvent<HTMLImageElement>) => {
-    const target = event.currentTarget
-    target.src = `https://placehold.co/128x128/eab308/000000?text=${school.institution_name.charAt(0)}`
+    event.currentTarget.src = `https://placehold.co/64x64/18181b/eab308?text=${school.institution_name.charAt(0)}`
   }
 
   return (
     <motion.div
-      className={`group relative overflow-hidden border-4 border-yellow-500/30 bg-black/60 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-yellow-500 hover:shadow-[0_20px_40px_-15px_rgba(234,179,8,0.45)] ${
+      className={`group flex items-center gap-4 rounded-2xl border border-zinc-800/80 bg-zinc-900/60 px-5 py-4 transition-all duration-200 hover:border-zinc-700 hover:bg-zinc-900 ${
         onClick ? 'cursor-pointer' : ''
       }`}
       variants={cardVariants}
@@ -31,61 +29,50 @@ export const SchoolCard: React.FC<SchoolCardProps> = ({ school, onClick }) => {
       animate="animate"
       onClick={onClick}
     >
-      <div className="absolute -inset-1 opacity-0 transition-opacity duration-300 group-hover:opacity-20">
-        <div className="h-full w-full bg-gradient-to-br from-yellow-500/40 via-transparent to-purple-500/30" />
-      </div>
+      {/* Yellow left-rail accent */}
+      <div className="h-10 w-0.5 flex-shrink-0 rounded-full bg-yellow-500/50 transition-colors group-hover:bg-yellow-500" />
 
-      <div className="relative z-10 flex items-start justify-between gap-4">
-        <div className="space-y-3">
-          <h3 className="text-2xl font-black uppercase text-white">
-            {school.institution_name}
-          </h3>
-          <div className="flex flex-wrap items-center gap-3 text-sm text-gray-300">
-            <span className="inline-flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-yellow-500" />
-              {school.state_cd}
-            </span>
-            <span className="inline-flex items-center gap-2">
-              <Shield className="h-4 w-4 text-purple-400" />
-              {school.classification_name}
-            </span>
-            <span className="inline-flex items-center gap-2">
-              <Shield className="h-4 w-4 text-teal-300" />
-              {school.sanction_name}
-            </span>
-          </div>
+      {/* Logo */}
+      {school.logo_url ? (
+        <div className="h-11 w-11 flex-shrink-0 overflow-hidden rounded-xl border border-zinc-800 bg-black/60">
+          <img
+            src={school.logo_url}
+            alt={`${school.institution_name} logo`}
+            className="h-full w-full object-contain p-1.5"
+            onError={handleLogoError}
+          />
         </div>
+      ) : (
+        <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900">
+          <span className="text-base font-black text-yellow-500">
+            {school.institution_name.charAt(0)}
+          </span>
+        </div>
+      )}
 
-        {school.logo_url && (
-          <div className="h-20 w-20 overflow-hidden rounded-lg border-2 border-yellow-500/40 bg-black/70">
-            <img
-              src={school.logo_url}
-              alt={`${school.institution_name} logo`}
-              className="h-full w-full object-contain p-2"
-              onError={handleLogoError}
-            />
-          </div>
-        )}
+      {/* Name + meta */}
+      <div className="min-w-0 flex-1">
+        <h3 className="truncate text-sm font-bold uppercase tracking-wide text-white transition-colors group-hover:text-yellow-400">
+          {school.institution_name}
+        </h3>
+        <p className="mt-0.5 text-[10px] font-medium uppercase tracking-wider text-zinc-600">
+          {school.state_cd}&nbsp;·&nbsp;{school.classification_name}&nbsp;·&nbsp;{school.sanction_name}
+        </p>
       </div>
 
-      <div className="relative z-10 mt-6 flex flex-wrap items-center gap-3">
-        <span className="inline-flex items-center gap-2 rounded-full border border-yellow-500/40 bg-yellow-500/10 px-4 py-2 text-sm font-semibold uppercase tracking-wider text-yellow-300">
+      {/* Chips */}
+      <div className="flex flex-shrink-0 flex-col items-end gap-1.5">
+        <span className="rounded-full border border-yellow-500/25 bg-yellow-500/10 px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-yellow-400">
           {school.sport}
         </span>
-        <span className="inline-flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/15 px-4 py-2 text-sm font-semibold uppercase tracking-wider text-purple-200">
+        <span className="rounded-full border border-purple-500/20 bg-purple-500/10 px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-purple-300">
           {school.gender}
         </span>
       </div>
 
+      {/* Arrow */}
       {onClick && (
-        <div className="relative z-10 mt-6 flex justify-end">
-          <Button
-            variant="outline"
-            className="border-2 border-yellow-500 bg-yellow-500/15 px-6 py-2 text-sm font-black uppercase tracking-wider text-yellow-400 hover:bg-yellow-500/25"
-          >
-            View Details
-          </Button>
-        </div>
+        <ChevronRight className="h-4 w-4 flex-shrink-0 text-zinc-700 transition-colors group-hover:text-yellow-500" />
       )}
     </motion.div>
   )

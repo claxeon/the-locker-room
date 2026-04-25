@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Target, Users } from 'lucide-react'
+
 
 import { useSportsDirectory } from '../hooks/useSupabaseData'
 import { Pagination } from './Pagination'
@@ -68,15 +68,19 @@ export const SportsDirectory: React.FC<SportsDirectoryProps> = ({ onSchoolClick 
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="mx-auto max-w-4xl text-center"
+          className="max-w-3xl"
         >
-          <h1 className="mt-6 text-5xl font-black uppercase tracking-tight text-white md:text-6xl">
-            Explore The Locker Room
+          <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-yellow-500">Programs</p>
+          <h1
+            className="text-white leading-tight"
+            style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: "clamp(2.5rem, 6vw, 4.5rem)" }}
+          >
+            Explore the{' '}
+            <span style={{ fontStyle: 'italic' }}>Locker Room</span>
           </h1>
-          <p className="mt-4 text-lg text-gray-300">
+          <p className="mt-4 max-w-xl text-sm leading-relaxed text-zinc-500">
             Find verified athletic programs across the nation. Filter by sport,
-            gender, and location to uncover the perfect fit for your next
-            chapter.
+            gender, and location to uncover the perfect fit for your next chapter.
           </p>
         </motion.header>
 
@@ -86,52 +90,34 @@ export const SportsDirectory: React.FC<SportsDirectoryProps> = ({ onSchoolClick 
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
         >
-          <div className="rounded-xl border border-yellow-500/20 bg-white/5 p-6 text-left">
-            <span className="text-sm font-semibold uppercase tracking-wider text-yellow-500">
-              Total Programs
-            </span>
-            <p className="mt-2 text-3xl font-black text-white">
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6 text-left">
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500">Total Programs</span>
+            <p className="mt-2 leading-none text-yellow-500" style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(2rem, 4vw, 2.75rem)' }}>
               {loading ? '—' : totalCount.toLocaleString()}
             </p>
-            <p className="mt-2 text-sm text-gray-400">
-              Verified teams with transparent NIL and culture insights.
-            </p>
+            <p className="mt-2 text-xs text-zinc-600">Verified teams with transparent NIL and culture insights.</p>
           </div>
-          <div className="rounded-xl border border-yellow-500/20 bg-white/5 p-6 text-left">
-            <span className="text-sm font-semibold uppercase tracking-wider text-yellow-500">
-              Sports Covered
-            </span>
-            <p className="mt-2 flex items-center gap-3 text-3xl font-black text-white">
-              <Target className="h-8 w-8 text-purple-300" />
-              50+
-            </p>
-            <p className="mt-2 text-sm text-gray-400">
-              From basketball and football to emerging coed programs.
-            </p>
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6 text-left">
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500">Sports Covered</span>
+            <p className="mt-2 leading-none text-yellow-500" style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(2rem, 4vw, 2.75rem)' }}>50+</p>
+            <p className="mt-2 text-xs text-zinc-600">From basketball and football to emerging coed programs.</p>
           </div>
-          <div className="rounded-xl border border-yellow-500/20 bg-white/5 p-6 text-left">
-            <span className="text-sm font-semibold uppercase tracking-wider text-yellow-500">
-              Athletes In Network
-            </span>
-            <p className="mt-2 flex items-center gap-3 text-3xl font-black text-white">
-              <Users className="h-8 w-8 text-teal-300" />
-              10K+
-            </p>
-            <p className="mt-2 text-sm text-gray-400">
-              Student athletes sharing real-time reviews and data.
-            </p>
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6 text-left">
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500">Athletes in Network</span>
+            <p className="mt-2 leading-none text-yellow-500" style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(2rem, 4vw, 2.75rem)' }}>10K+</p>
+            <p className="mt-2 text-xs text-zinc-600">Student athletes sharing real-time reviews and data.</p>
           </div>
         </motion.section>
 
         <SportsFilters filters={filters} onFilterChange={setFilters} />
 
-        <section className="overflow-hidden rounded-xl border border-yellow-500/25 bg-black/60 backdrop-blur">
-          <header className="flex flex-wrap items-center justify-between gap-3 border-b border-yellow-500/30 px-6 py-5">
-            <h2 className="text-3xl font-black uppercase tracking-tight text-white">
+        <section className="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900/40">
+          <header className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800 px-6 py-4">
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-zinc-400">
               Sports Directory
             </h2>
-            <div className="text-sm font-semibold uppercase tracking-wider text-gray-300">
-              {loading ? 'Loading programs…' : `${totalCount} total programs`}
+            <div className="text-[10px] font-semibold uppercase tracking-widest text-zinc-600">
+              {loading ? 'Loading…' : `${totalCount.toLocaleString()} programs`}
             </div>
           </header>
 
@@ -141,17 +127,17 @@ export const SportsDirectory: React.FC<SportsDirectoryProps> = ({ onSchoolClick 
             </div>
           ) : schools.length === 0 ? (
             <div className="px-6 py-16 text-center">
-              <p className="text-2xl font-black uppercase text-white">
-                No Programs Found
+              <p className="text-sm font-semibold uppercase tracking-widest text-zinc-500">
+                No programs found
               </p>
-              <p className="mt-3 text-sm uppercase tracking-wider text-gray-400">
+              <p className="mt-2 text-xs text-zinc-700">
                 Adjust your filters to discover more opportunities.
               </p>
             </div>
           ) : (
             <>
-              <div className="px-6 pb-10 pt-8">
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <div className="px-4 pb-6 pt-4">
+                <div className="flex flex-col gap-2">
                   {schools.map((school) => (
                     <SchoolCard
                       key={`${school.school_id}-${school.sport}-${school.gender}`}

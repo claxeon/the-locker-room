@@ -776,11 +776,12 @@ export function ExploreReviews() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.05 }}
-            className="text-4xl sm:text-5xl font-black uppercase tracking-tight text-white mb-4"
+            className="text-white mb-4 leading-tight"
+            style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: 'clamp(2.5rem, 7vw, 5rem)' }}
           >
-            Discover What Athletes
+            Discover what athletes
             <br />
-            <span className="text-yellow-500">Are Saying</span>
+            <span className="text-yellow-500" style={{ fontStyle: 'italic' }}>are saying</span>
           </motion.h1>
 
           <motion.p
@@ -826,20 +827,23 @@ export function ExploreReviews() {
 
         {/* ── Section 1: Top Rated Programs ─────────────────────────────── */}
         <section>
-          <div className="flex items-center gap-3 mb-2">
-            <Trophy size={18} className="text-yellow-500" />
-            <h2 className="text-white text-sm font-black uppercase tracking-[0.2em]">
+          <div className="flex items-center gap-3 mb-1">
+            <Trophy size={14} className="text-yellow-500" />
+            <h2 className="text-zinc-400 text-[10px] font-semibold uppercase tracking-widest">
               Top Rated Programs
             </h2>
           </div>
-          <p className="text-zinc-500 text-xs mb-6 ml-7">
+          <p className="text-zinc-700 text-xs mb-6 ml-[26px]">
             Ranked by verified athlete reviews
           </p>
 
           {loadingTop ? (
             <CardSkeleton count={6} />
           ) : topRated.length === 0 ? (
-            <EmptyState message="No ratings yet — be the first to review a program." />
+            <div className="rounded-2xl border border-dashed border-zinc-800 py-12 text-center">
+              <p className="text-xs font-semibold uppercase tracking-widest text-zinc-600">No ratings yet</p>
+              <p className="mt-1 text-xs text-zinc-700">Be the first athlete to review a program</p>
+            </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {topRated.map((school) => (
@@ -855,20 +859,23 @@ export function ExploreReviews() {
 
         {/* ── Section 2: Recently Reviewed ──────────────────────────────── */}
         <section>
-          <div className="flex items-center gap-3 mb-2">
-            <Clock size={18} className="text-yellow-500" />
-            <h2 className="text-white text-sm font-black uppercase tracking-[0.2em]">
+          <div className="flex items-center gap-3 mb-1">
+            <Clock size={14} className="text-yellow-500" />
+            <h2 className="text-zinc-400 text-[10px] font-semibold uppercase tracking-widest">
               Recently Reviewed
             </h2>
           </div>
-          <p className="text-zinc-500 text-xs mb-6 ml-7">
+          <p className="text-zinc-700 text-xs mb-6 ml-[26px]">
             Latest verified athlete reviews
           </p>
 
           {loadingRecent ? (
             <RowSkeleton count={3} />
           ) : recentReviews.length === 0 ? (
-            <EmptyState message="No reviews yet. Be the first athlete to share your experience." />
+            <div className="rounded-2xl border border-dashed border-zinc-800 py-12 text-center">
+              <p className="text-xs font-semibold uppercase tracking-widest text-zinc-600">No reviews yet</p>
+              <p className="mt-1 text-xs text-zinc-700">Be the first athlete to share your experience</p>
+            </div>
           ) : (
             <div className="overflow-x-auto pb-4 -mx-6 px-6">
               <div className="flex gap-4 snap-x snap-mandatory w-max">
@@ -889,13 +896,13 @@ export function ExploreReviews() {
 
         {/* ── Section 3: Trending by Sport ──────────────────────────────── */}
         <section>
-          <div className="flex items-center gap-3 mb-2">
-            <TrendingUp size={18} className="text-yellow-500" />
-            <h2 className="text-white text-sm font-black uppercase tracking-[0.2em]">
+          <div className="flex items-center gap-3 mb-1">
+            <TrendingUp size={14} className="text-yellow-500" />
+            <h2 className="text-zinc-400 text-[10px] font-semibold uppercase tracking-widest">
               Trending by Sport
             </h2>
           </div>
-          <p className="text-zinc-500 text-xs mb-6 ml-7">
+          <p className="text-zinc-700 text-xs mb-6 ml-[26px]">
             Sports with the most athlete activity
           </p>
 
@@ -928,13 +935,16 @@ export function ExploreReviews() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 text-center"
+          className="bg-zinc-900 border border-zinc-800 rounded-2xl p-10 text-center"
         >
-          <Flame size={32} className="text-yellow-500 mx-auto mb-4" />
-          <h3 className="text-white text-xl font-black uppercase tracking-wide mb-2">
+          <Flame size={20} className="text-yellow-500 mx-auto mb-5" />
+          <h3
+            className="text-white mb-2"
+            style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(1.5rem, 3vw, 2rem)' }}
+          >
             Share Your Experience
           </h3>
-          <p className="text-zinc-400 text-sm mb-6 max-w-sm mx-auto">
+          <p className="text-zinc-500 text-sm mb-7 max-w-sm mx-auto leading-relaxed">
             Help future athletes make informed decisions. Your honest review matters.
           </p>
           <button
@@ -942,7 +952,7 @@ export function ExploreReviews() {
             className="inline-flex items-center gap-2 bg-yellow-500 hover:bg-yellow-400 text-black font-bold text-sm px-6 py-3 rounded-xl transition-colors"
           >
             Find Your Program
-            <ChevronRight size={16} />
+            <ChevronRight size={14} />
           </button>
         </motion.div>
       </div>
