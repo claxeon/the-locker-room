@@ -34,6 +34,9 @@ import { CollegeComparison } from "./pages/CollegeComparison";
 import { LoginPage } from "./pages/auth/LoginPage";
 import { SignupPage } from "./pages/auth/SignupPage";
 
+// ── Dashboard
+import { UserDashboard } from "./pages/dashboard/UserDashboard";
+
 // ── Auth context
 import { AuthProvider, useAuth } from "./hooks/useAuth";
 
@@ -128,6 +131,16 @@ function App() {
             {/* ── Auth routes ───────────────────────────────────────────── */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
+
+            {/* ── Protected routes ──────────────────────────────────────── */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <UserDashboard />
+                </ProtectedRoute>
+              }
+            />
 
             {/* ── Protected routes (examples — uncomment as features ship) ─
             <Route
