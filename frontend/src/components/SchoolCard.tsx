@@ -1,6 +1,6 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { MapPin, Shield, SpotlightIcon } from 'lucide-react'
+import { MapPin, Shield } from 'lucide-react'
 
 import { Button } from './ui/button'
 import { SportsDirectoryEntry } from '../lib/supabase'
@@ -37,10 +37,6 @@ export const SchoolCard: React.FC<SchoolCardProps> = ({ school, onClick }) => {
 
       <div className="relative z-10 flex items-start justify-between gap-4">
         <div className="space-y-3">
-          <span className="inline-flex items-center gap-2 rounded-full border border-yellow-500/40 bg-yellow-500/10 px-3 py-1 text-xs font-black uppercase tracking-widest text-yellow-400">
-            <SpotlightIcon className="h-3.5 w-3.5" />
-            Spotlight Program
-          </span>
           <h3 className="text-2xl font-black uppercase text-white">
             {school.institution_name}
           </h3>
