@@ -4,6 +4,7 @@ import { ArrowLeft, MapPin, Shield, Trophy, SpotlightIcon } from 'lucide-react'
 import { useSchoolProfile } from '../hooks/useSupabaseData'
 import { SchoolProfile as SchoolProfileType } from '../lib/supabase'
 import { Button } from './ui/button'
+import { ReviewsSection } from './reviews/ReviewsSection'
 
 interface SchoolProfileProps {
   slug: string
@@ -135,6 +136,11 @@ export const SchoolProfile: React.FC<SchoolProfileProps> = ({ slug, onBack }) =>
             ))}
           </div>
         </section>
+
+        <ReviewsSection
+          schoolId={school.school_id}
+          schoolName={school.institution_name}
+        />
       </div>
     </div>
   )
