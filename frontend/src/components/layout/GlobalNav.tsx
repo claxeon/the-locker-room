@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react'
-import { Briefcase, FileText, Home, Search, LayoutDashboard, LogIn } from 'lucide-react'
+import { Briefcase, FileText, Home, Flame, LayoutDashboard, LogIn } from 'lucide-react'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 
@@ -28,10 +28,10 @@ const baseNavItems: TubelightNavItem[] = [
       (path === '/directory' && hash !== '#filters') || path.startsWith('/school/'),
   },
   {
-    name: 'Search',
-    to: '/directory#filters',
-    icon: Search,
-    isActiveMatch: (path, hash) => path === '/directory' && hash === '#filters',
+    name: 'Explore',
+    to: '/explore',
+    icon: Flame,
+    isActiveMatch: (path) => path === '/explore',
   },
 ]
 

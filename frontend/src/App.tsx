@@ -40,6 +40,9 @@ import { UserDashboard } from "./pages/dashboard/UserDashboard";
 // ── Admin
 import { AdminDashboard } from "./pages/admin/AdminDashboard";
 
+// ── Explore Reviews
+import { ExploreReviews } from "./pages/ExploreReviews";
+
 // ── Auth context
 import { AuthProvider, useAuth } from "./hooks/useAuth";
 
@@ -145,6 +148,7 @@ function App() {
             <Route path="/directory" element={<SportsDirectoryWrapper />} />
             <Route path="/school/:slug" element={<SchoolProfileWrapper />} />
             <Route path="/college-comparison" element={<CollegeComparison />} />
+            <Route path="/explore" element={<ExploreReviews />} />
 
             {/* ── Auth routes ───────────────────────────────────────────── */}
             <Route path="/login" element={<LoginPage />} />
