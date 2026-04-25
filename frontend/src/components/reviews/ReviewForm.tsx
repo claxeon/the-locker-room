@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, CheckCircle, AlertCircle } from 'lucide-react'
@@ -7,7 +7,7 @@ import { useAuth } from '../../hooks/useAuth'
 import { StarRating } from './StarRating'
 
 interface ReviewFormProps {
-  schoolId: string
+  schoolId: number   // INTEGER — matches schools.school_id
   schoolName: string
   onSuccess: () => void
   onCancel: () => void
@@ -31,6 +31,27 @@ const RATING_LABELS: { key: keyof RatingsState; label: string }[] = [
   { key: 'equity', label: 'Gender Equity' },
 ]
 
+const FALLBACK_GENDERS = ["Men's", "Women's", "Mixed"]
+
+// sports_offered stores 'Men' / 'Women' — normalize to match reviews CHECK constraint
+const normalizeGender = (g: string): string => {
+  if (g === 'Men') return "Men's"
+  if (g === 'Women') return "Women's"
+  if (g === 'Coed' || g === 'Co-ed') return 'Mixed'
+  return g
+}
+
+// Strip gender suffix from sport names for cleaner display
+// e.g. "Basketball Men's" -> "Basketball", "Swimming and diving Women's" -> "Swimming and diving"
+const cleanSportLabel = (sport: string): string => {
+  return sport
+    .replace(/\s+Men's$/, '')
+    .replace(/\s+Women's$/, '')
+    .replace(/\s+Coed$/, '')
+    .replace(/\s+Mixed$/, '')
+    .trim()
+}
+
 export const ReviewForm: React.FC<ReviewFormProps> = ({
   schoolId,
   schoolName,
@@ -39,10 +60,60 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
 }) => {
   const { user, profile, loading: authLoading } = useAuth()
 
+  // ── Program fields ──────────────────────────────────────────────────────────
   const [sport, setSport] = useState(profile?.sport ?? '')
   const [gender, setGender] = useState('')
   const [yearStart, setYearStart] = useState<number | ''>('')
   const [yearEnd, setYearEnd] = useState<number | ''>('')
+
+  // ── Sport / gender options from DB ──────────────────────────────────────────
+  const [availableSports, setAvailableSports] = useState<string[]>([])
+  const [sportsLoading, setSportsLoading] = useState(false)
+  const [availableGenders, setAvailableGenders] = useState<string[]>([])
+
+  // Load sports for this school
+  useEffect(() => {
+    if (!schoolId) return
+    setSportsLoading(true)
+    supabase
+      .from('sports_offered')
+      .select('sport')
+      .eq('school_id', schoolId)
+      .order('sport')
+      .then(({ data }) => {
+        if (data) {
+          const unique = Array.from(new Set(data.map((d: any) => d.sport))).sort() as string[]
+          setAvailableSports(unique)
+        }
+        setSportsLoading(false)
+      })
+  }, [schoolId])
+
+  // Load genders for selected sport
+  useEffect(() => {
+    if (!schoolId || !sport) {
+      setAvailableGenders([])
+      setGender('')
+      return
+    }
+    supabase
+      .from('sports_offered')
+      .select('gender')
+      .eq('school_id', schoolId)
+      .eq('sport', sport)
+      .then(({ data }) => {
+        if (data) {
+          const genders = Array.from(
+            new Set(data.map((d: any) => normalizeGender(d.gender)).filter(Boolean))
+          ) as string[]
+          setAvailableGenders(genders)
+          if (genders.length === 1) setGender(genders[0])
+          else setGender('')
+        }
+      })
+  }, [schoolId, sport])
+
+  // ── Review content ──────────────────────────────────────────────────────────
   const [ratings, setRatings] = useState<RatingsState>({
     facilities: 0,
     coaching: 0,
@@ -52,7 +123,11 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
     equity: 0,
   })
   const [reviewText, setReviewText] = useState('')
+  const [pros, setPros] = useState('')
+  const [cons, setCons] = useState('')
   const [isAnonymous, setIsAnonymous] = useState(true)
+
+  // ── Submission state ────────────────────────────────────────────────────────
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -65,12 +140,9 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
     e.preventDefault()
     setError(null)
 
-    // Validate all ratings
     const missingRatings = RATING_LABELS.filter(({ key }) => ratings[key] === 0)
     if (missingRatings.length > 0) {
-      setError(
-        `Please rate: ${missingRatings.map((r) => r.label).join(', ')}`
-      )
+      setError(`Please rate: ${missingRatings.map((r) => r.label).join(', ')}`)
       return
     }
 
@@ -92,6 +164,8 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
         culture_rating: ratings.culture,
         equity_rating: ratings.equity,
         review_text: reviewText.trim() || null,
+        pros: pros.trim() || null,
+        cons: cons.trim() || null,
         is_anonymous: isAnonymous,
         moderation_status: 'pending',
       })
@@ -99,10 +173,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
       if (insertError) throw insertError
 
       setSubmitted(true)
-      // Give user time to read the success message before closing
-      setTimeout(() => {
-        onSuccess()
-      }, 3000)
+      setTimeout(() => onSuccess(), 3000)
     } catch (err) {
       setError(
         err instanceof Error
@@ -114,7 +185,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
     }
   }
 
-  // ── Auth loading state ──────────────────────────────────────────────────────
+  // ── Auth loading ────────────────────────────────────────────────────────────
   if (authLoading) {
     return (
       <div className="flex min-h-[200px] items-center justify-center">
@@ -153,13 +224,11 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
     )
   }
 
-  // ── Verification gating ─────────────────────────────────────────────────────
+  // ── Verification gate ───────────────────────────────────────────────────────
   if (profile && profile.verification_status !== 'approved') {
     const messages: Record<string, string> = {
-      pending:
-        "Your roster verification is under review. You'll be able to post once an admin approves your account.",
-      rejected:
-        'Your verification was not approved. Contact support.',
+      pending: "Your roster verification is under review. You'll be able to post once an admin approves your account.",
+      rejected: 'Your verification was not approved. Contact support.',
     }
     return (
       <motion.div
@@ -184,7 +253,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
     )
   }
 
-  // ── Success state ───────────────────────────────────────────────────────────
+  // ── Success ─────────────────────────────────────────────────────────────────
   if (submitted) {
     return (
       <motion.div
@@ -202,6 +271,8 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
       </motion.div>
     )
   }
+
+  const genderOptions = availableGenders.length > 0 ? availableGenders : FALLBACK_GENDERS
 
   // ── Full form ───────────────────────────────────────────────────────────────
   return (
@@ -230,12 +301,13 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
       </div>
 
       <form onSubmit={handleSubmit} className="p-6 space-y-8">
-        {/* Basic info */}
+        {/* Your Program */}
         <section className="space-y-5">
           <h3 className="text-xs font-black uppercase tracking-[0.3em] text-gray-400">
             Your Program
           </h3>
           <div className="grid gap-4 sm:grid-cols-2">
+            {/* Sport dropdown */}
             <div className="flex flex-col gap-1.5">
               <label
                 htmlFor="sport"
@@ -243,15 +315,25 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
               >
                 Sport
               </label>
-              <input
+              <select
                 id="sport"
-                type="text"
                 value={sport}
                 onChange={(e) => setSport(e.target.value)}
-                placeholder="e.g. Soccer"
-                className="rounded-lg border border-yellow-500/20 bg-black/60 px-4 py-2.5 text-sm text-white placeholder-gray-600 focus:border-yellow-500/60 focus:outline-none focus:ring-1 focus:ring-yellow-500/30 transition-colors"
-              />
+                disabled={sportsLoading}
+                className="rounded-lg border border-yellow-500/20 bg-black/60 px-4 py-2.5 text-sm text-white focus:border-yellow-500/60 focus:outline-none focus:ring-1 focus:ring-yellow-500/30 transition-colors appearance-none disabled:opacity-50"
+              >
+                <option value="">
+                  {sportsLoading ? 'Loading sports…' : 'Select sport…'}
+                </option>
+                {availableSports.map((s) => (
+                  <option key={s} value={s}>
+                    {cleanSportLabel(s)}
+                  </option>
+                ))}
+              </select>
             </div>
+
+            {/* Gender — dynamic based on sport */}
             <div className="flex flex-col gap-1.5">
               <label
                 htmlFor="gender"
@@ -263,15 +345,20 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
                 id="gender"
                 value={gender}
                 onChange={(e) => setGender(e.target.value)}
-                className="rounded-lg border border-yellow-500/20 bg-black/60 px-4 py-2.5 text-sm text-white focus:border-yellow-500/60 focus:outline-none focus:ring-1 focus:ring-yellow-500/30 transition-colors appearance-none"
+                disabled={!sport}
+                className="rounded-lg border border-yellow-500/20 bg-black/60 px-4 py-2.5 text-sm text-white focus:border-yellow-500/60 focus:outline-none focus:ring-1 focus:ring-yellow-500/30 transition-colors appearance-none disabled:opacity-50"
               >
-                <option value="" className="text-gray-400">Select…</option>
-                <option value="Men's">Men's</option>
-                <option value="Women's">Women's</option>
-                <option value="Co-ed">Co-ed</option>
+                <option value="">Select…</option>
+                {genderOptions.map((g) => (
+                  <option key={g} value={g}>
+                    {g}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
+
+          {/* Year range */}
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="flex flex-col gap-1.5">
               <label
@@ -333,32 +420,71 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
           </div>
         </section>
 
-        {/* Review text */}
+        {/* Pros */}
+        <section className="space-y-2">
+          <div className="flex items-center justify-between">
+            <label
+              htmlFor="pros"
+              className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400"
+            >
+              Pros <span className="normal-case text-gray-600">(optional)</span>
+            </label>
+            <span className={`text-xs tabular-nums ${pros.length > 450 ? 'text-yellow-400' : 'text-gray-600'}`}>
+              {pros.length}/500
+            </span>
+          </div>
+          <textarea
+            id="pros"
+            value={pros}
+            onChange={(e) => { if (e.target.value.length <= 500) setPros(e.target.value) }}
+            rows={3}
+            placeholder="What did you like? (facilities, culture, coaching quality…)"
+            className="w-full rounded-lg border border-green-500/20 bg-black/60 px-4 py-3 text-sm text-white placeholder-gray-600 focus:border-green-500/40 focus:outline-none focus:ring-1 focus:ring-green-500/20 transition-colors resize-none"
+          />
+        </section>
+
+        {/* Cons */}
+        <section className="space-y-2">
+          <div className="flex items-center justify-between">
+            <label
+              htmlFor="cons"
+              className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400"
+            >
+              Cons <span className="normal-case text-gray-600">(optional)</span>
+            </label>
+            <span className={`text-xs tabular-nums ${cons.length > 450 ? 'text-yellow-400' : 'text-gray-600'}`}>
+              {cons.length}/500
+            </span>
+          </div>
+          <textarea
+            id="cons"
+            value={cons}
+            onChange={(e) => { if (e.target.value.length <= 500) setCons(e.target.value) }}
+            rows={3}
+            placeholder="What could be improved?"
+            className="w-full rounded-lg border border-red-500/20 bg-black/60 px-4 py-3 text-sm text-white placeholder-gray-600 focus:border-red-500/40 focus:outline-none focus:ring-1 focus:ring-red-500/20 transition-colors resize-none"
+          />
+        </section>
+
+        {/* Written review */}
         <section className="space-y-2">
           <div className="flex items-center justify-between">
             <label
               htmlFor="reviewText"
               className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400"
             >
-              Written Review{' '}
-              <span className="normal-case text-gray-600">(optional)</span>
+              Written Review <span className="normal-case text-gray-600">(optional)</span>
             </label>
-            <span
-              className={`text-xs tabular-nums ${
-                reviewText.length > 950 ? 'text-yellow-400' : 'text-gray-600'
-              }`}
-            >
+            <span className={`text-xs tabular-nums ${reviewText.length > 950 ? 'text-yellow-400' : 'text-gray-600'}`}>
               {reviewText.length}/1000
             </span>
           </div>
           <textarea
             id="reviewText"
             value={reviewText}
-            onChange={(e) => {
-              if (e.target.value.length <= 1000) setReviewText(e.target.value)
-            }}
+            onChange={(e) => { if (e.target.value.length <= 1000) setReviewText(e.target.value) }}
             rows={5}
-            placeholder="Share your experience with this program — facilities, culture, coaching quality, support…"
+            placeholder="Share your overall experience — anything the Pros/Cons didn't cover…"
             className="w-full rounded-lg border border-yellow-500/20 bg-black/60 px-4 py-3 text-sm text-white placeholder-gray-600 focus:border-yellow-500/60 focus:outline-none focus:ring-1 focus:ring-yellow-500/30 transition-colors resize-none"
           />
         </section>
@@ -373,9 +499,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
           >
             <span
               className={`relative inline-flex h-6 w-11 items-center rounded-full border-2 transition-colors ${
-                isAnonymous
-                  ? 'border-yellow-500 bg-yellow-500/20'
-                  : 'border-gray-600 bg-gray-800'
+                isAnonymous ? 'border-yellow-500 bg-yellow-500/20' : 'border-gray-600 bg-gray-800'
               }`}
             >
               <span

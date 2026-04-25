@@ -1,14 +1,17 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { PenLine, X, MessageSquarePlus } from 'lucide-react'
+import { PenLine, X, MessageSquarePlus, ChevronDown } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 import { ReviewCard, Review } from './ReviewCard'
 import { ReviewForm } from './ReviewForm'
 
 interface ReviewsSectionProps {
-  schoolId: string
+  schoolId: number   // INTEGER — matches schools.school_id
   schoolName: string
 }
+
+type SortOption = 'recent' | 'highest' | 'lowest' | 'helpful'
+type GenderFilter = 'all' | "Men's" | "Women's" | 'Mixed'
 
 const RATING_CATEGORIES: {
   key: keyof Pick<
@@ -29,6 +32,12 @@ const RATING_CATEGORIES: {
   { key: 'culture_rating', label: 'Team Culture' },
   { key: 'equity_rating', label: 'Gender Equity' },
 ]
+
+const computeComposite = (review: Review): number => {
+  const values = RATING_CATEGORIES.map(({ key }) => review[key] as number)
+  const sum = values.reduce((a, b) => a + b, 0)
+  return Math.round((sum / values.length) * 10) / 10
+}
 
 const AggregateBar: React.FC<{ label: string; value: number }> = ({
   label,
@@ -55,6 +64,9 @@ const AggregateBar: React.FC<{ label: string; value: number }> = ({
   )
 }
 
+const SELECT_CLASS =
+  'rounded-lg border border-yellow-500/20 bg-black/60 px-3 py-2 text-xs font-semibold uppercase tracking-[0.15em] text-gray-300 focus:border-yellow-500/40 focus:outline-none appearance-none cursor-pointer hover:border-yellow-500/40 transition-colors'
+
 export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
   schoolId,
   schoolName,
@@ -63,6 +75,11 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
+
+  // ── Sort & filter state ──────────────────────────────────────────────────────
+  const [sort, setSort] = useState<SortOption>('recent')
+  const [genderFilter, setGenderFilter] = useState<GenderFilter>('all')
+  const [sportFilter, setSportFilter] = useState<string>('all')
 
   const fetchReviews = useCallback(async () => {
     setLoading(true)
@@ -108,6 +125,44 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
             10
         ) / 10
       : 0
+
+  // ── Derived sport list ───────────────────────────────────────────────────────
+  const availableSports = useMemo(() => {
+    const sports = reviews
+      .map(r => r.sport)
+      .filter((s): s is string => !!s)
+    return ['all', ...Array.from(new Set(sports)).sort()]
+  }, [reviews])
+
+  // ── Filtered + sorted reviews ────────────────────────────────────────────────
+  const displayedReviews = useMemo(() => {
+    let result = [...reviews]
+
+    // Gender filter
+    if (genderFilter !== 'all') {
+      result = result.filter(r => r.gender === genderFilter)
+    }
+
+    // Sport filter
+    if (sportFilter !== 'all') {
+      result = result.filter(r => r.sport === sportFilter)
+    }
+
+    // Sort
+    if (sort === 'recent') {
+      result.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    } else if (sort === 'highest') {
+      result.sort((a, b) => computeComposite(b) - computeComposite(a))
+    } else if (sort === 'lowest') {
+      result.sort((a, b) => computeComposite(a) - computeComposite(b))
+    } else if (sort === 'helpful') {
+      result.sort((a, b) => ((b as any).helpful_count ?? 0) - ((a as any).helpful_count ?? 0))
+    }
+
+    return result
+  }, [reviews, sort, genderFilter, sportFilter])
+
+  const filtersActive = genderFilter !== 'all' || sportFilter !== 'all'
 
   const handleSuccess = () => {
     setModalOpen(false)
@@ -164,6 +219,76 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
         </motion.div>
       )}
 
+      {/* ── Filter / sort bar ─────────────────────────────────────────────────── */}
+      {!loading && !error && reviews.length > 0 && (
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          {/* Left — result count + clear filters */}
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-semibold uppercase tracking-[0.15em] text-gray-500">
+              {displayedReviews.length} review{displayedReviews.length !== 1 ? 's' : ''}
+            </span>
+            {filtersActive && (
+              <button
+                onClick={() => { setGenderFilter('all'); setSportFilter('all') }}
+                className="inline-flex items-center gap-1.5 rounded-full border border-yellow-500/20 bg-yellow-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-yellow-400 hover:bg-yellow-500/20 transition-colors"
+              >
+                <X className="h-3 w-3" />
+                Clear filters
+              </button>
+            )}
+          </div>
+
+          {/* Right — dropdowns */}
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Sort */}
+            <div className="relative">
+              <select
+                value={sort}
+                onChange={e => setSort(e.target.value as SortOption)}
+                className={`${SELECT_CLASS} pr-8`}
+              >
+                <option value="recent">Most Recent</option>
+                <option value="highest">Highest Rated</option>
+                <option value="lowest">Lowest Rated</option>
+                <option value="helpful">Most Helpful</option>
+              </select>
+              <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-500" />
+            </div>
+
+            {/* Gender */}
+            <div className="relative">
+              <select
+                value={genderFilter}
+                onChange={e => setGenderFilter(e.target.value as GenderFilter)}
+                className={`${SELECT_CLASS} pr-8`}
+              >
+                <option value="all">All Genders</option>
+                <option value="Men's">Men's</option>
+                <option value="Women's">Women's</option>
+                <option value="Mixed">Mixed</option>
+              </select>
+              <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-500" />
+            </div>
+
+            {/* Sport */}
+            <div className="relative">
+              <select
+                value={sportFilter}
+                onChange={e => setSportFilter(e.target.value)}
+                className={`${SELECT_CLASS} pr-8`}
+              >
+                {availableSports.map(sport => (
+                  <option key={sport} value={sport}>
+                    {sport === 'all' ? 'All Sports' : sport}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-500" />
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Loading skeleton */}
       {loading && (
         <div className="space-y-4">
@@ -183,7 +308,7 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
         </div>
       )}
 
-      {/* Empty state */}
+      {/* Empty state — no reviews at all */}
       {!loading && !error && reviews.length === 0 && (
         <motion.div
           initial={{ opacity: 0, y: 24 }}
@@ -211,11 +336,25 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
 
       {/* Review list */}
       {!loading && !error && reviews.length > 0 && (
-        <div className="space-y-5">
-          {reviews.map((review) => (
-            <ReviewCard key={review.id} review={review} />
-          ))}
-        </div>
+        <>
+          {displayedReviews.length > 0 ? (
+            <div className="space-y-5">
+              {displayedReviews.map((review) => (
+                <ReviewCard key={review.id} review={review} />
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-xl border border-yellow-500/10 bg-black/20 py-12 text-center">
+              <p className="text-sm text-gray-500">No reviews match your filters.</p>
+              <button
+                onClick={() => { setGenderFilter('all'); setSportFilter('all') }}
+                className="mt-3 text-xs text-yellow-400 hover:text-yellow-300"
+              >
+                Clear filters
+              </button>
+            </div>
+          )}
+        </>
       )}
 
       {/* Review form modal */}

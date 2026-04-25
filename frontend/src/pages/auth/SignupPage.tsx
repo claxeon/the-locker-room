@@ -8,11 +8,13 @@
  *
  * After a successful signUp() call this page:
  *   1. Inserts a roster_submissions row with the evidence and metadata.
- *   2. Switches to a confirmation screen explaining both verification steps.
+ *   2. Updates the profile row with school_id if a school was selected.
+ *   3. Switches to a confirmation screen explaining both verification steps.
  */
 
-import React, { useState, FormEvent, ChangeEvent } from "react";
+import React, { useState, FormEvent, ChangeEvent, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import { Search } from "lucide-react";
 import { supabase } from "../../lib/supabase";
 
 // ---------------------------------------------------------------------------
@@ -24,11 +26,17 @@ interface FormState {
   email: string;
   password: string;
   confirmPassword: string;
-  schoolName: string;
   sport: string;
   gender: string;
   graduationYear: string;
   rosterEvidence: string;
+}
+
+interface SchoolResult {
+  school_id: number;
+  institution_name: string;
+  state_cd: string;
+  classification_name: string;
 }
 
 const INITIAL_FORM: FormState = {
@@ -36,7 +44,6 @@ const INITIAL_FORM: FormState = {
   email: "",
   password: "",
   confirmPassword: "",
-  schoolName: "",
   sport: "",
   gender: "",
   graduationYear: "",
@@ -75,6 +82,47 @@ export function SignupPage() {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [successEmail, setSuccessEmail] = useState("");
+
+  // ── School autocomplete state ─────────────────────────────────────────────
+  const [schoolQuery, setSchoolQuery] = useState("");
+  const [schoolResults, setSchoolResults] = useState<SchoolResult[]>([]);
+  const [selectedSchoolId, setSelectedSchoolId] = useState<number | null>(null);
+  const [schoolDropdownOpen, setSchoolDropdownOpen] = useState(false);
+  const schoolSearchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Debounced school search
+  useEffect(() => {
+    if (schoolSearchTimeout.current) {
+      clearTimeout(schoolSearchTimeout.current);
+    }
+
+    if (schoolQuery.length < 2) {
+      setSchoolResults([]);
+      setSchoolDropdownOpen(false);
+      return;
+    }
+
+    schoolSearchTimeout.current = setTimeout(async () => {
+      const { data } = await supabase
+        .from("schools")
+        .select("school_id, institution_name, state_cd, classification_name")
+        .ilike("institution_name", `%${schoolQuery}%`)
+        .limit(8);
+
+      if (data && data.length > 0) {
+        setSchoolResults(data as SchoolResult[]);
+        setSchoolDropdownOpen(true);
+      } else {
+        setSchoolResults([]);
+        setSchoolDropdownOpen(false);
+      }
+    }, 250);
+
+    return () => {
+      if (schoolSearchTimeout.current) clearTimeout(schoolSearchTimeout.current);
+    };
+  }, [schoolQuery]);
 
   // ── Input change handler
   function handleChange(
@@ -97,7 +145,7 @@ export function SignupPage() {
       return "Password must be at least 8 characters.";
     if (form.password !== form.confirmPassword)
       return "Passwords do not match.";
-    if (!form.schoolName.trim()) return "School name is required.";
+    if (!schoolQuery.trim()) return "School name is required.";
     if (!form.sport.trim()) return "Sport is required.";
     if (!form.gender) return "Please select a gender division.";
     if (!form.graduationYear) return "Graduation year is required.";
@@ -129,7 +177,7 @@ export function SignupPage() {
           options: {
             data: {
               full_name: form.fullName.trim(),
-              school_name: form.schoolName.trim(),
+              school_name: schoolQuery.trim(),
               sport: form.sport.trim(),
               gender: form.gender,
               graduation_year: parseInt(form.graduationYear, 10),
@@ -145,18 +193,21 @@ export function SignupPage() {
 
       const newUser = signUpData?.user;
 
-      // ── 2. Insert roster_submissions row so the admin can verify later.
-      //       We use the user's id from the just-created auth user.
-      //       If signUp returns a user (email not yet confirmed but row exists)
-      //       we insert immediately; otherwise we defer and the user can resubmit
-      //       after confirming their email — but typically Supabase returns a user
-      //       even before email confirmation.
       if (newUser) {
+        // ── 2. Update profile with school_id if a school was selected from autocomplete.
+        if (selectedSchoolId) {
+          await supabase
+            .from("profiles")
+            .update({ school_id: selectedSchoolId })
+            .eq("id", newUser.id);
+        }
+
+        // ── 3. Insert roster_submissions row so the admin can verify later.
         const { error: submissionError } = await supabase
           .from("roster_submissions")
           .insert({
             user_id: newUser.id,
-            school_name: form.schoolName.trim(),
+            school_name: schoolQuery.trim(),
             sport: form.sport.trim(),
             gender: form.gender,
             graduation_year: parseInt(form.graduationYear, 10),
@@ -173,7 +224,8 @@ export function SignupPage() {
         }
       }
 
-      // ── 3. Show confirmation screen.
+      // ── 4. Show confirmation screen.
+      setSuccessEmail(form.email.trim());
       setSuccess(true);
     } catch (err: unknown) {
       setError(
@@ -206,7 +258,7 @@ export function SignupPage() {
               <p>
                 <span className="text-white font-semibold">Confirm your email.</span>{" "}
                 We've sent a verification link to{" "}
-                <span className="text-yellow-500">{form.email}</span>. Click
+                <span className="text-yellow-500">{successEmail}</span>. Click
                 the link to activate your account. Check your spam folder if
                 you don't see it within a few minutes.
               </p>
@@ -348,21 +400,72 @@ export function SignupPage() {
             </div>
           </div>
 
-          {/* School */}
+          {/* School autocomplete */}
           <div>
-            <label htmlFor="schoolName" className={LABEL_BASE}>
-              School
+            <label htmlFor="schoolSearch" className={LABEL_BASE}>
+              Your School
             </label>
-            <input
-              id="schoolName"
-              name="schoolName"
-              type="text"
-              value={form.schoolName}
-              onChange={handleChange}
-              placeholder="e.g. University of Michigan"
-              className={INPUT_BASE}
-              required
-            />
+            <div className="relative">
+              {/* Search icon */}
+              <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center">
+                <Search className="h-4 w-4 text-white/30" />
+              </div>
+              <input
+                id="schoolSearch"
+                type="text"
+                autoComplete="off"
+                value={schoolQuery}
+                onChange={(e) => {
+                  setSchoolQuery(e.target.value);
+                  // Clear selected school if user edits after picking one
+                  if (selectedSchoolId) setSelectedSchoolId(null);
+                  if (error) setError(null);
+                }}
+                onFocus={() => {
+                  if (schoolResults.length > 0) setSchoolDropdownOpen(true);
+                }}
+                onBlur={() => {
+                  // Delay to allow onMouseDown on dropdown items to fire first
+                  setTimeout(() => setSchoolDropdownOpen(false), 150);
+                }}
+                placeholder="Search your university…"
+                className={`${INPUT_BASE} pl-10`}
+              />
+
+              {/* Dropdown */}
+              {schoolDropdownOpen && schoolResults.length > 0 && (
+                <div className="absolute top-full left-0 right-0 z-50 mt-1 rounded-lg border border-yellow-500/20 bg-gray-950 shadow-xl overflow-hidden">
+                  {schoolResults.map((school) => (
+                    <button
+                      key={school.school_id}
+                      type="button"
+                      onMouseDown={() => {
+                        setSchoolQuery(school.institution_name);
+                        setSelectedSchoolId(school.school_id);
+                        setSchoolDropdownOpen(false);
+                        if (error) setError(null);
+                      }}
+                      className="w-full px-4 py-2.5 text-left text-sm text-white hover:bg-yellow-500/10 transition-colors"
+                    >
+                      <span className="font-semibold">{school.institution_name}</span>
+                      <span className="ml-2 text-xs text-gray-500">
+                        {school.state_cd} · {school.classification_name}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            {selectedSchoolId && (
+              <p className="mt-1.5 text-xs text-yellow-500/70">
+                ✓ School matched to database
+              </p>
+            )}
+            {schoolQuery.length >= 2 && !selectedSchoolId && schoolResults.length === 0 && !schoolDropdownOpen && (
+              <p className="mt-1.5 text-xs text-white/30">
+                No matching schools found. You can still type your school name manually.
+              </p>
+            )}
           </div>
 
           {/* Sport + Gender + Graduation year */}

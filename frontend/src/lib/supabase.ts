@@ -11,7 +11,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 // Types for our data
 export interface SchoolProfile {
-  school_id: string
+  school_id: number  // INTEGER in DB
   slug: string
   institution_name: string
   state_cd: string
@@ -25,7 +25,7 @@ export interface SchoolProfile {
 }
 
 export interface SportsDirectoryEntry {
-  school_id: string
+  school_id: number  // INTEGER in DB
   slug: string
   institution_name: string
   state_cd: string

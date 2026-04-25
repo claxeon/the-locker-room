@@ -1,7 +1,9 @@
-import React from 'react'
-import { motion } from 'framer-motion'
-import { User, Shield } from 'lucide-react'
+import React, { useState, useEffect, useRef } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { User, Shield, ThumbsUp, Flag, CheckCircle, XCircle } from 'lucide-react'
 import { StarRating } from './StarRating'
+import { supabase } from '../../lib/supabase'
+import { useAuth } from '../../hooks/useAuth'
 
 export interface Review {
   id: string
@@ -18,6 +20,10 @@ export interface Review {
   culture_rating: number
   equity_rating: number
   review_text: string | null
+  pros: string | null
+  cons: string | null
+  helpful_count: number
+  flagged_count: number
   is_anonymous: boolean
   moderation_status: string
   created_at: string
@@ -46,6 +52,13 @@ const RATING_CATEGORIES: {
   { key: 'support_rating', label: 'Support Staff' },
   { key: 'culture_rating', label: 'Team Culture' },
   { key: 'equity_rating', label: 'Gender Equity' },
+]
+
+const FLAG_REASONS = [
+  'Inaccurate',
+  'Inappropriate',
+  'Spam',
+  'Conflict of interest',
 ]
 
 const formatDate = (iso: string): string => {
@@ -85,7 +98,116 @@ const RatingBar: React.FC<{ label: string; value: number }> = ({
 }
 
 export const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
+  const { user } = useAuth()
   const composite = computeComposite(review)
+
+  // ── Helpful vote state ─────────────────────────────────────────────────────
+  const [helpfulCount, setHelpfulCount] = useState(review.helpful_count ?? 0)
+  const [hasVotedHelpful, setHasVotedHelpful] = useState(false)
+  const [helpfulLoading, setHelpfulLoading] = useState(false)
+
+  // ── Flag state ─────────────────────────────────────────────────────────────
+  const [hasFlagged, setHasFlagged] = useState(false)
+  const [flagMenuOpen, setFlagMenuOpen] = useState(false)
+  const [flagging, setFlagging] = useState(false)
+  const flagRef = useRef<HTMLDivElement>(null)
+
+  // ── Load existing votes for current user ───────────────────────────────────
+  useEffect(() => {
+    if (!user) return
+    const checkVotes = async () => {
+      const { data } = await supabase
+        .from('review_votes')
+        .select('vote_type')
+        .eq('review_id', review.id)
+        .eq('user_id', user.id)
+      if (data) {
+        setHasVotedHelpful(data.some((v) => v.vote_type === 'helpful'))
+        setHasFlagged(data.some((v) => v.vote_type === 'flag'))
+      }
+    }
+    checkVotes()
+  }, [user, review.id])
+
+  // ── Close flag dropdown on outside click ──────────────────────────────────
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (flagRef.current && !flagRef.current.contains(e.target as Node)) {
+        setFlagMenuOpen(false)
+      }
+    }
+    if (flagMenuOpen) document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [flagMenuOpen])
+
+  // ── Handlers ───────────────────────────────────────────────────────────────
+  const handleHelpful = async () => {
+    if (!user || helpfulLoading) return
+
+    setHelpfulLoading(true)
+    const prevCount = helpfulCount
+    const prevVoted = hasVotedHelpful
+
+    // Optimistic update
+    if (hasVotedHelpful) {
+      setHelpfulCount((c) => c - 1)
+      setHasVotedHelpful(false)
+    } else {
+      setHelpfulCount((c) => c + 1)
+      setHasVotedHelpful(true)
+    }
+
+    try {
+      if (prevVoted) {
+        const { error } = await supabase
+          .from('review_votes')
+          .delete()
+          .eq('review_id', review.id)
+          .eq('user_id', user.id)
+          .eq('vote_type', 'helpful')
+        if (error) throw error
+        // Decrement via RPC (bypasses RLS on reviews table)
+        await supabase.rpc('increment_helpful_count', { p_review_id: review.id, p_delta: -1 })
+      } else {
+        const { error } = await supabase
+          .from('review_votes')
+          .insert({ review_id: review.id, user_id: user.id, vote_type: 'helpful' })
+        if (error) throw error
+        // Increment via RPC (bypasses RLS on reviews table)
+        await supabase.rpc('increment_helpful_count', { p_review_id: review.id, p_delta: 1 })
+      }
+    } catch {
+      // Revert optimistic update on error
+      setHelpfulCount(prevCount)
+      setHasVotedHelpful(prevVoted)
+    } finally {
+      setHelpfulLoading(false)
+    }
+  }
+
+  const handleFlagReason = async (reason: string) => {
+    if (!user || flagging) return
+    setFlagMenuOpen(false)
+    setFlagging(true)
+    try {
+      const { error } = await supabase
+        .from('review_votes')
+        .insert({
+          review_id: review.id,
+          user_id: user.id,
+          vote_type: 'flag',
+          flag_reason: reason,
+        })
+      if (error) throw error
+      // Increment via RPC (bypasses RLS on reviews table)
+      await supabase.rpc('increment_flagged_count', { p_review_id: review.id, p_delta: 1 })
+      setHasFlagged(true)
+    } catch {
+      // Silently ignore duplicate flag errors
+    } finally {
+      setFlagging(false)
+    }
+  }
 
   const displayName =
     review.is_anonymous || !review.reviewer_name
@@ -165,7 +287,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
           ))}
         </div>
 
-        {/* Divider */}
+        {/* Review text */}
         {review.review_text && (
           <div className="border-t border-yellow-500/10 pt-4">
             <p className="text-sm leading-relaxed text-gray-300">
@@ -174,10 +296,109 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
           </div>
         )}
 
-        {/* Footer — date */}
-        <p className="text-xs text-gray-600">
-          {formatDate(review.created_at)}
-        </p>
+        {/* Pros block */}
+        {review.pros && (
+          <div className="border-l-2 border-green-500/40 pl-3">
+            <div className="flex items-center gap-1.5 mb-1">
+              <CheckCircle className="h-3.5 w-3.5 text-green-400 shrink-0" />
+              <span className="text-xs font-black uppercase tracking-[0.2em] text-green-400">
+                Pros
+              </span>
+            </div>
+            <p className="text-sm leading-relaxed text-green-300">
+              {review.pros}
+            </p>
+          </div>
+        )}
+
+        {/* Cons block */}
+        {review.cons && (
+          <div className="border-l-2 border-red-500/40 pl-3">
+            <div className="flex items-center gap-1.5 mb-1">
+              <XCircle className="h-3.5 w-3.5 text-red-400 shrink-0" />
+              <span className="text-xs font-black uppercase tracking-[0.2em] text-red-400">
+                Cons
+              </span>
+            </div>
+            <p className="text-sm leading-relaxed text-red-300">
+              {review.cons}
+            </p>
+          </div>
+        )}
+
+        {/* Footer row — date + actions */}
+        <div className="flex items-center justify-between pt-1">
+          <p className="text-xs text-gray-600">{formatDate(review.created_at)}</p>
+
+          <div className="flex items-center gap-3">
+            {/* Helpful button */}
+            <button
+              onClick={handleHelpful}
+              disabled={helpfulLoading}
+              aria-label="Mark as helpful"
+              className={`flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.15em] transition-colors disabled:opacity-60 ${
+                hasVotedHelpful
+                  ? 'text-yellow-400'
+                  : 'text-gray-500 hover:text-yellow-400'
+              } ${!user ? 'cursor-default' : ''}`}
+            >
+              <ThumbsUp
+                className={`h-3.5 w-3.5 ${hasVotedHelpful ? 'fill-yellow-400' : ''}`}
+              />
+              <span>Helpful ({helpfulCount})</span>
+            </button>
+
+            {/* Flag / Report button */}
+            <div className="relative" ref={flagRef}>
+              {hasFlagged ? (
+                <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.15em] text-red-500/60 cursor-default">
+                  <Flag className="h-3.5 w-3.5" />
+                  <span>Reported</span>
+                </span>
+              ) : (
+                <button
+                  onClick={() => {
+                    if (!user) return
+                    setFlagMenuOpen((prev) => !prev)
+                  }}
+                  aria-label="Report review"
+                  className={`flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.15em] transition-colors text-gray-600 hover:text-red-400 ${
+                    !user ? 'cursor-default' : ''
+                  }`}
+                >
+                  <Flag className="h-3.5 w-3.5" />
+                  <span>Report</span>
+                </button>
+              )}
+
+              {/* Flag reason dropdown */}
+              <AnimatePresence>
+                {flagMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 6, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 6, scale: 0.95 }}
+                    transition={{ duration: 0.12 }}
+                    className="absolute right-0 bottom-full mb-2 z-50 w-44 rounded-xl border border-gray-700 bg-gray-950 shadow-xl overflow-hidden"
+                  >
+                    <p className="px-3 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 border-b border-gray-800">
+                      Reason
+                    </p>
+                    {FLAG_REASONS.map((reason) => (
+                      <button
+                        key={reason}
+                        onClick={() => handleFlagReason(reason)}
+                        className="w-full text-left px-3 py-2.5 text-xs text-gray-300 hover:bg-red-500/10 hover:text-red-300 transition-colors"
+                      >
+                        {reason}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+        </div>
       </div>
     </motion.article>
   )
