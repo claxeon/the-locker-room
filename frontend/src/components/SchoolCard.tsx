@@ -18,7 +18,12 @@ const cardVariants = {
 
 export const SchoolCard: React.FC<SchoolCardProps> = ({ school, onClick }) => {
   const handleLogoError = (event: React.SyntheticEvent<HTMLImageElement>) => {
-    event.currentTarget.src = `https://placehold.co/64x64/18181b/eab308?text=${school.institution_name.charAt(0)}`
+    // Hide broken img and show the initials fallback via sibling trick:
+    // Remove src so the img element disappears, then reveal the sibling fallback.
+    const img = event.currentTarget
+    img.style.display = 'none'
+    const fallback = img.nextElementSibling as HTMLElement | null
+    if (fallback) fallback.style.display = 'flex'
   }
 
   // Support both old SportsDirectoryEntry (sport/gender) and new SchoolProfile (programs array)
@@ -46,17 +51,32 @@ export const SchoolCard: React.FC<SchoolCardProps> = ({ school, onClick }) => {
 
       {/* Logo */}
       {school.logo_url ? (
-        <div className="h-14 w-14 flex-shrink-0 overflow-hidden rounded-xl border border-zinc-800 bg-black/80 p-1.5">
-          <img
-            src={school.logo_url}
-            alt={`${school.institution_name} logo`}
-            className="h-full w-full object-contain"
-            onError={handleLogoError}
-          />
+        <div className="relative h-14 w-14 flex-shrink-0">
+          <div className="h-14 w-14 overflow-hidden rounded-xl border border-zinc-800 bg-black/80 p-1.5">
+            <img
+              src={school.logo_url}
+              alt={`${school.institution_name} logo`}
+              className="h-full w-full object-contain"
+              onError={handleLogoError}
+            />
+            {/* Hidden fallback revealed on img error */}
+            <span
+              className="hidden h-full w-full items-center justify-center text-lg font-black text-yellow-500"
+              aria-label={school.institution_name}
+            >
+              {school.institution_name.charAt(0)}
+            </span>
+          </div>
         </div>
       ) : (
-        <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900">
-          <span className="text-xl font-black text-yellow-500">
+        <div
+          className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-xl border border-zinc-800"
+          style={{ background: 'linear-gradient(135deg, #1c1917 0%, #27272a 100%)' }}
+        >
+          <span
+            className="text-lg font-black tracking-tight"
+            style={{ color: '#eab308', fontFamily: "'Instrument Serif', Georgia, serif", fontStyle: 'italic' }}
+          >
             {school.institution_name.charAt(0)}
           </span>
         </div>

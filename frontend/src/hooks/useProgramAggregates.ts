@@ -8,6 +8,7 @@ export type ProgramAggregateFilters = {
   state?: string
   gender?: string
   sport?: string
+  name?: string
 }
 
 export type ProgramAggregateSchool = {
@@ -30,6 +31,7 @@ export type UseProgramAggregatesParams = {
   filters?: ProgramAggregateFilters
   page?: number
   pageSize?: number
+  enabled?: boolean
 }
 
 type FetchResponse = {
@@ -148,6 +150,10 @@ const fetchProgramAggregates = async ({
   if (filters?.state) {
     schoolQuery = schoolQuery.eq('state_cd', filters.state)
   }
+  // Apply name search
+  if (filters?.name && filters.name.trim().length > 0) {
+    schoolQuery = schoolQuery.ilike('institution_name', `%${filters.name.trim()}%`)
+  }
 
   const { data: schoolData, error: schoolError } = await schoolQuery
   if (schoolError) throw schoolError
@@ -194,6 +200,7 @@ export const useProgramAggregates = ({
   filters,
   page = 1,
   pageSize = 20,
+  enabled = true,
 }: UseProgramAggregatesParams) => {
   const fetcher = useCallback(
     () => fetchProgramAggregates({ filters, page, pageSize }),
@@ -203,6 +210,7 @@ export const useProgramAggregates = ({
   return useQuery<FetchResponse, Error>({
     queryKey: ['program-aggregates', filters, page, pageSize],
     queryFn: fetcher,
+    enabled,
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 30,
   })

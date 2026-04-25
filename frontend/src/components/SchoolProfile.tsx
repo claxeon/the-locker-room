@@ -98,20 +98,41 @@ export const SchoolProfile: React.FC<SchoolProfileProps> = ({ slug, onBack }) =>
           <div className="flex items-start gap-6">
             {/* Logo — large, prominent */}
             <div className="flex-shrink-0 h-20 w-20 sm:h-24 sm:w-24 rounded-2xl border border-zinc-700 bg-black p-2 shadow-lg shadow-black/60">
-              {school.logo_url ? (
-                <img
-                  src={school.logo_url}
-                  alt={`${school.institution_name} logo`}
-                  className="h-full w-full object-contain"
-                  onError={(e) => {
-                    const t = e.currentTarget
-                    t.onerror = null
-                    t.src = `https://placehold.co/128x128/09090b/eab308?text=${school.institution_name.charAt(0)}`
-                  }}
-                />
+{school.logo_url ? (
+                <div className="relative h-full w-full">
+                  <img
+                    src={school.logo_url}
+                    alt={`${school.institution_name} logo`}
+                    className="h-full w-full object-contain"
+                    onError={(e) => {
+                      const img = e.currentTarget
+                      img.style.display = 'none'
+                      const fb = img.nextElementSibling as HTMLElement | null
+                      if (fb) fb.style.display = 'flex'
+                    }}
+                  />
+                  {/* Fallback: shown when img fails */}
+                  <div
+                    className="hidden h-full w-full items-center justify-center"
+                    style={{ background: 'linear-gradient(135deg, #1c1917 0%, #27272a 100%)' }}
+                  >
+                    <span
+                      className="text-3xl font-black tracking-tight"
+                      style={{ color: '#eab308', fontFamily: "'Instrument Serif', Georgia, serif", fontStyle: 'italic' }}
+                    >
+                      {school.institution_name.charAt(0)}
+                    </span>
+                  </div>
+                </div>
               ) : (
-                <div className="h-full w-full flex items-center justify-center">
-                  <span className="text-3xl font-black text-yellow-500">
+                <div
+                  className="h-full w-full flex items-center justify-center rounded-xl"
+                  style={{ background: 'linear-gradient(135deg, #1c1917 0%, #27272a 100%)' }}
+                >
+                  <span
+                    className="text-3xl font-black tracking-tight"
+                    style={{ color: '#eab308', fontFamily: "'Instrument Serif', Georgia, serif", fontStyle: 'italic' }}
+                  >
                     {school.institution_name.charAt(0)}
                   </span>
                 </div>

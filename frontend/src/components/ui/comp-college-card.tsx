@@ -8,7 +8,6 @@ import {
   RadarChart,
   ResponsiveContainer,
 } from 'recharts'
-import { GraduationCap } from 'lucide-react'
 
 export type CollegeRatings = {
   facilities: number
@@ -88,20 +87,37 @@ export function CollegeCard({ data, isSelected = false, onSelect }: CollegeCardP
 
       <div className="relative flex items-start justify-between gap-4">
         <div className="flex items-center gap-4">
-          <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-xl border border-yellow-500/40 bg-black/60">
+          <div
+            className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-xl border border-yellow-500/40"
+            style={{ background: 'linear-gradient(135deg, #09090b 0%, #27272a 100%)' }}
+          >
             {logoUrl ? (
-              <img
-                src={logoUrl}
-                alt={`${name} logo`}
-                className="h-full w-full object-contain p-1.5"
-                onError={(event) => {
-                  const target = event.currentTarget
-                  target.onerror = null
-                  target.src = `https://placehold.co/128x128/eab308/000000?text=${name.charAt(0)}`
-                }}
-              />
+              <>
+                <img
+                  src={logoUrl}
+                  alt={`${name} logo`}
+                  className="h-full w-full object-contain p-1.5"
+                  onError={(event) => {
+                    const img = event.currentTarget
+                    img.style.display = 'none'
+                    const fb = img.nextElementSibling as HTMLElement | null
+                    if (fb) fb.style.display = 'flex'
+                  }}
+                />
+                <span
+                  className="hidden h-full w-full items-center justify-center text-xl font-black tracking-tight"
+                  style={{ color: '#eab308', fontFamily: "'Instrument Serif', Georgia, serif", fontStyle: 'italic' }}
+                >
+                  {name.charAt(0)}
+                </span>
+              </>
             ) : (
-              <GraduationCap className="h-8 w-8 text-yellow-400" />
+              <span
+                className="flex h-full w-full items-center justify-center text-xl font-black tracking-tight"
+                style={{ color: '#eab308', fontFamily: "'Instrument Serif', Georgia, serif", fontStyle: 'italic' }}
+              >
+                {name.charAt(0)}
+              </span>
             )}
           </div>
 

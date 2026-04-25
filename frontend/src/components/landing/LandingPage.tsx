@@ -395,7 +395,7 @@ const TestimonialsSection = () => {
   }, [])
 
   return (
-    <section id="athlete-voices" className="w-full bg-black px-6 py-28">
+    <section id="athlete-voices" className="w-full bg-black px-6 py-28" style={{ scrollMarginTop: '80px' }}>
       <div className="mx-auto max-w-4xl">
         <div className="mb-14 text-center">
           <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-yellow-500">

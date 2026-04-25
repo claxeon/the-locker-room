@@ -42,30 +42,41 @@ export const CollegeComparison: React.FC = () => {
   const [division, setDivision] = useState('')
   const [state, setState] = useState('')
   const [gender, setGender] = useState('')
+  const [nameSearch, setNameSearch] = useState('')
   const [page, setPage] = useState(1)
   const [selectedSchools, setSelectedSchools] = useState<ProgramAggregateSchool[]>([])
   const [loadingTimeout, setLoadingTimeout] = React.useState(false)
 
   const { data: filterData } = useComparisonFilters()
 
+  // Debounce name search to avoid a query per keystroke
+  const [debouncedName, setDebouncedName] = React.useState('')
+  React.useEffect(() => {
+    const t = setTimeout(() => setDebouncedName(nameSearch), 350)
+    return () => clearTimeout(t)
+  }, [nameSearch])
+
   const filters = useMemo(
     () => ({
       division: division || undefined,
       state: state || undefined,
       gender: gender || undefined,
+      name: debouncedName || undefined,
     }),
-    [division, state, gender]
+    [division, state, gender, debouncedName]
   )
+
+  const noFiltersActive = !division && !state && !gender && !debouncedName
 
   const { data, isLoading, isError, isFetching } = useProgramAggregates({
     filters,
     page,
     pageSize: PAGE_SIZE,
+    enabled: !noFiltersActive,
   })
 
   const schools = data?.data ?? []
   const totalItems = data?.total ?? 0
-  const noFiltersActive = !division && !state && !gender
 
   React.useEffect(() => {
     if (!isLoading) return
@@ -90,6 +101,11 @@ export const CollegeComparison: React.FC = () => {
       setter(event.target.value)
       setPage(1)
     }
+
+  const handleNameSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNameSearch(event.target.value)
+    setPage(1)
+  }
 
   return (
     <div className="relative min-h-screen w-full bg-black text-white">
@@ -132,8 +148,21 @@ export const CollegeComparison: React.FC = () => {
         {/* Filter bar */}
         <section className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-6 backdrop-blur">
           <p className="mb-4 text-[10px] font-semibold uppercase tracking-widest text-zinc-400">
-            Filter Programs
+            Find &amp; Filter Programs
           </p>
+          {/* Name search — full width on top */}
+          <div className="mb-4 flex flex-col gap-1.5">
+            <label className="text-xs font-semibold uppercase tracking-widest text-zinc-500">
+              Search by School Name
+            </label>
+            <input
+              type="text"
+              value={nameSearch}
+              onChange={handleNameSearch}
+              placeholder="e.g. Alabama, Duke, Ohio State…"
+              className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 text-sm text-white placeholder-zinc-600 focus:border-yellow-500/60 focus:outline-none focus:ring-1 focus:ring-yellow-500/20 transition-colors"
+            />
+          </div>
           <div className="grid gap-4 md:grid-cols-4">
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-semibold uppercase tracking-widest text-zinc-500">
@@ -192,7 +221,28 @@ export const CollegeComparison: React.FC = () => {
 
         {/* Grid */}
         <section className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          {isLoading && !schools.length && !loadingTimeout ? (
+          {noFiltersActive ? (
+            /* Default empty state — prompt to search */
+            <div className="col-span-full flex flex-col items-center gap-4 rounded-xl border border-dashed border-zinc-800 p-16 text-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full border border-zinc-800 bg-zinc-900">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-yellow-500" aria-hidden="true">
+                  <circle cx="11" cy="11" r="8"/>
+                  <path d="m21 21-4.35-4.35"/>
+                </svg>
+              </div>
+              <div>
+                <p
+                  className="text-white"
+                  style={{ ...serifItalic, fontSize: 'clamp(1.25rem, 3vw, 1.75rem)' }}
+                >
+                  Search for programs to compare
+                </p>
+                <p className="mt-2 text-sm text-zinc-500 max-w-sm mx-auto leading-relaxed">
+                  Type a school name above or use the filters to find programs with athlete reviews.
+                </p>
+              </div>
+            </div>
+          ) : isLoading && !schools.length && !loadingTimeout ? (
             <div className="col-span-full flex justify-center py-16">
               <div className="h-12 w-12 animate-spin rounded-full border-2 border-zinc-800 border-t-yellow-500" />
             </div>
@@ -201,19 +251,6 @@ export const CollegeComparison: React.FC = () => {
               <p className="text-sm font-semibold text-zinc-400">No reviews yet</p>
               <p className="mt-1 text-xs text-zinc-600 max-w-sm mx-auto">
                 Program rankings appear here once athletes start submitting reviews.
-              </p>
-            </div>
-          ) : !isLoading && schools.length === 0 && totalItems === 0 && noFiltersActive ? (
-            <div className="col-span-full rounded-xl border border-dashed border-zinc-700 p-16 text-center">
-              <p
-                className="text-yellow-500"
-                style={{ ...serifItalic, fontSize: 'clamp(1.5rem, 3vw, 2rem)' }}
-              >
-                Rankings Coming Soon
-              </p>
-              <p className="mt-3 text-sm text-zinc-400 max-w-md mx-auto leading-relaxed">
-                College program rankings appear here once athletes start submitting reviews.
-                Be the first to review your program.
               </p>
             </div>
           ) : schools.length === 0 ? (
