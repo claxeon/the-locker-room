@@ -3,8 +3,6 @@ import { useQuery } from '@tanstack/react-query'
 
 import { supabase } from '../lib/supabase'
 
-const MAX_ROWS = 50
-
 export type ProgramAggregateFilters = {
   division?: string
   state?: string
@@ -49,107 +47,147 @@ const fetchProgramAggregates = async ({
   page = 1,
   pageSize = 20,
 }: UseProgramAggregatesParams): Promise<FetchResponse> => {
-  const from = Math.max((page - 1) * pageSize, 0)
-  if (from >= MAX_ROWS) {
+  // Step 1: Get all program_aggregates with review_count > 0
+  // We need school-level aggregates, so fetch all rows and group client-side
+  let aggQuery = supabase
+    .from('program_aggregates')
+    .select(
+      'school_id, sport, facilities_rating, coaching_rating, balance_rating, support_rating, culture_rating, equity_rating, review_count'
+    )
+    .gt('review_count', 0)
+
+  // If filtering by sport, apply to aggregates directly
+  if (filters?.sport) {
+    aggQuery = aggQuery.eq('sport', filters.sport)
+  }
+
+  const { data: aggData, error: aggError } = await aggQuery
+  if (aggError) throw aggError
+
+  // If no data yet (no reviews submitted), return early — no infinite loading
+  if (!aggData || aggData.length === 0) {
     return { data: [], total: 0 }
   }
 
-  const to = Math.min(from + pageSize - 1, MAX_ROWS - 1)
+  // Group by school_id and compute weighted averages across sports
+  const schoolMap = new Map<
+    number,
+    {
+      totalWeight: number
+      facilities: number
+      coaching: number
+      balance: number
+      support: number
+      culture: number
+      equity: number
+      reviewCount: number
+    }
+  >()
 
-  let allowedSchoolIds: string[] | undefined
+  for (const row of aggData) {
+    const sid = row.school_id as number
+    const w = (row.review_count as number) || 1
+    const existing = schoolMap.get(sid) ?? {
+      totalWeight: 0,
+      facilities: 0,
+      coaching: 0,
+      balance: 0,
+      support: 0,
+      culture: 0,
+      equity: 0,
+      reviewCount: 0,
+    }
+    existing.totalWeight += w
+    existing.facilities += (row.facilities_rating as number) * w
+    existing.coaching += (row.coaching_rating as number) * w
+    existing.balance += (row.balance_rating as number) * w
+    existing.support += (row.support_rating as number) * w
+    existing.culture += (row.culture_rating as number) * w
+    existing.equity += (row.equity_rating as number) * w
+    existing.reviewCount += w
+    schoolMap.set(sid, existing)
+  }
 
-  if (filters?.sport || filters?.gender) {
-    let sportsQuery = supabase
-      .from('sports_offered_rows')
+  if (schoolMap.size === 0) {
+    return { data: [], total: 0 }
+  }
+
+  // Step 2: Fetch school info for all school_ids that have reviews
+  // If gender filter is active, narrow via sports_offered join
+  let filteredSchoolIds = Array.from(schoolMap.keys())
+
+  if (filters?.gender) {
+    const { data: genderRows, error: genderError } = await supabase
+      .from('sports_offered')
       .select('school_id')
+      .eq('gender', filters.gender)
+      .in('school_id', filteredSchoolIds)
 
-    if (filters.sport) {
-      sportsQuery = sportsQuery.eq('sport', filters.sport)
-    }
+    if (genderError) throw genderError
 
-    if (filters.gender) {
-      sportsQuery = sportsQuery.eq('gender', filters.gender)
-    }
+    const genderSchoolIds = Array.from(
+      new Set((genderRows ?? []).map((r) => r.school_id as number))
+    )
 
-    if (filters.division) {
-      sportsQuery = sportsQuery.eq('division', filters.division)
-    }
-
-    const { data: sportsRows, error: sportsError } = await sportsQuery
-    if (sportsError) throw sportsError
-
-    const schoolIds = Array.from(
-      new Set((sportsRows || []).map((row) => row.school_id).filter(Boolean))
-    ) as string[]
-
-    if (!schoolIds.length) {
+    if (genderSchoolIds.length === 0) {
       return { data: [], total: 0 }
     }
 
-    allowedSchoolIds = schoolIds
+    filteredSchoolIds = genderSchoolIds
   }
 
-  let aggregatesQuery = supabase
-    .from('program_aggregates')
-    .select(
-      `
-        school_id,
-        facilities_rating,
-        coaching_rating,
-        balance_rating,
-        support_rating,
-        culture_rating,
-        equity_rating,
-        review_count,
-        schools_rows(name, division, state_cd, location, logo_url)
-      `,
-      { count: 'exact' }
-    )
-    .order('facilities_rating', { ascending: false })
+  let schoolQuery = supabase
+    .from('schools')
+    .select('school_id, institution_name, state_cd, classification_name, sanction_name, logo_url')
+    .in('school_id', filteredSchoolIds)
 
+  // Apply division and state filters on the schools table
   if (filters?.division) {
-    aggregatesQuery = aggregatesQuery.eq('schools_rows.division', filters.division)
+    schoolQuery = schoolQuery.eq('classification_name', filters.division)
   }
-
   if (filters?.state) {
-    aggregatesQuery = aggregatesQuery.eq('schools_rows.state_cd', filters.state)
+    schoolQuery = schoolQuery.eq('state_cd', filters.state)
   }
 
-  if (allowedSchoolIds) {
-    aggregatesQuery = aggregatesQuery.in('school_id', allowedSchoolIds)
-  }
+  const { data: schoolData, error: schoolError } = await schoolQuery
+  if (schoolError) throw schoolError
 
-  const { data, error, count } = await aggregatesQuery.range(from, to)
-
-  if (error) throw error
-
-  const rows = (data || []) as Array<Record<string, unknown>>
-
-  const transformed: ProgramAggregateSchool[] = rows.map((row) => {
-    const schoolsRows = row['schools_rows']
-    const school = Array.isArray(schoolsRows) ? schoolsRows[0] : schoolsRows
-
+  // Build final list, sorted by composite score desc
+  const results: ProgramAggregateSchool[] = (schoolData ?? []).map((school) => {
+    const agg = schoolMap.get(school.school_id as number)!
+    const tw = agg.totalWeight
     return {
-      schoolId: String(row['school_id'] ?? ''),
-      name: (school as Record<string, unknown>)?.['name']?.toString() ?? 'Unknown',
-      division: (school as Record<string, unknown>)?.['division']?.toString() ?? 'N/A',
-      state: (school as Record<string, unknown>)?.['state_cd']?.toString() ?? 'N/A',
-      location: (school as Record<string, unknown>)?.['location']?.toString() ?? 'N/A',
-      logoUrl: ((school as Record<string, unknown>)?.['logo_url'] as string | null) ?? null,
-      facilities: normalizeNumber(row['facilities_rating'] as number | null | undefined),
-      coaching: normalizeNumber(row['coaching_rating'] as number | null | undefined),
-      balance: normalizeNumber(row['balance_rating'] as number | null | undefined),
-      support: normalizeNumber(row['support_rating'] as number | null | undefined),
-      culture: normalizeNumber(row['culture_rating'] as number | null | undefined),
-      equity: normalizeNumber(row['equity_rating'] as number | null | undefined),
-      reviewCount: Math.max((row['review_count'] as number | null | undefined) ?? 0, 0),
+      schoolId: String(school.school_id),
+      name: school.institution_name as string,
+      division: (school.classification_name as string) ?? 'N/A',
+      state: (school.state_cd as string) ?? 'N/A',
+      location: (school.state_cd as string) ?? 'N/A',
+      logoUrl: (school.logo_url as string | null) ?? null,
+      facilities: normalizeNumber(agg.facilities / tw),
+      coaching: normalizeNumber(agg.coaching / tw),
+      balance: normalizeNumber(agg.balance / tw),
+      support: normalizeNumber(agg.support / tw),
+      culture: normalizeNumber(agg.culture / tw),
+      equity: normalizeNumber(agg.equity / tw),
+      reviewCount: agg.reviewCount,
     }
   })
 
-  return {
-    data: transformed,
-    total: Math.min(count ?? transformed.length, MAX_ROWS),
-  }
+  // Sort by composite score descending
+  results.sort((a, b) => {
+    const compA =
+      (a.facilities + a.coaching + a.balance + a.support + a.culture + a.equity) / 6
+    const compB =
+      (b.facilities + b.coaching + b.balance + b.support + b.culture + b.equity) / 6
+    return compB - compA
+  })
+
+  // Paginate client-side
+  const total = results.length
+  const from = (page - 1) * pageSize
+  const paginated = results.slice(from, from + pageSize)
+
+  return { data: paginated, total }
 }
 
 export const useProgramAggregates = ({

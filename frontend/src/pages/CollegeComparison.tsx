@@ -58,6 +58,9 @@ export const CollegeComparison: React.FC = () => {
   const schools = data?.data ?? []
   const totalItems = data?.total ?? 0
 
+  // True when no filters are active
+  const noFiltersActive = !division && !state && !gender
+
   React.useEffect(() => {
     if (!isLoading) return
     const timer = setTimeout(() => setLoadingTimeout(true), 8000)
@@ -177,13 +180,18 @@ export const CollegeComparison: React.FC = () => {
               </div>
               <div className="mt-2 rounded-lg border border-yellow-500/30 bg-black/40 px-4 py-3 text-sm font-semibold text-yellow-300">
                 {selectedSchools.length} program{selectedSchools.length === 1 ? '' : 's'}
+                {totalItems > 0 && (
+                  <span className="ml-2 text-gray-400 font-normal">
+                    / {totalItems} matching
+                  </span>
+                )}
               </div>
             </div>
           </div>
         </section>
 
         <section className="grid grid-cols-1 gap-8 md:grid-cols-2">
-          {(isLoading && !schools.length && !loadingTimeout) ? (
+          {isLoading && !schools.length && !loadingTimeout ? (
             <div className="col-span-full flex justify-center py-16">
               <div className="h-16 w-16 animate-spin rounded-full border-4 border-yellow-500/30 border-b-yellow-500" />
             </div>
@@ -192,6 +200,18 @@ export const CollegeComparison: React.FC = () => {
               <p className="text-2xl font-black uppercase tracking-tight text-white">No Reviews Yet</p>
               <p className="mt-3 text-sm text-zinc-400 max-w-sm mx-auto">
                 Program rankings appear here once athletes start submitting reviews. Be the first to review your program.
+              </p>
+            </div>
+          ) : !isLoading && schools.length === 0 && totalItems === 0 && noFiltersActive ? (
+            // "No Data Yet" state — database has no reviews yet
+            <div className="col-span-full rounded-2xl border border-yellow-500/20 bg-zinc-900/80 p-12 text-center">
+              <div className="text-5xl mb-4">🏆</div>
+              <p className="text-2xl font-black uppercase tracking-tight text-white">
+                Rankings Coming Soon
+              </p>
+              <p className="mt-3 text-sm text-zinc-400 max-w-md mx-auto leading-relaxed">
+                College program rankings appear here once athletes start submitting reviews.
+                Be the first to review your program and help others make informed decisions.
               </p>
             </div>
           ) : schools.length === 0 ? (
@@ -217,7 +237,7 @@ export const CollegeComparison: React.FC = () => {
           )}
         </section>
 
-        {(isFetching && schools.length > 0) && (
+        {isFetching && schools.length > 0 && (
           <div className="flex justify-center text-xs font-semibold uppercase tracking-[0.3em] text-gray-400">
             Updating results…
           </div>
@@ -234,9 +254,25 @@ export const CollegeComparison: React.FC = () => {
         </div>
 
         {selectedSchools.length >= 2 && (
-          <ComparisonTable schools={selectedSchools} />
+          <div id="comparison-table">
+            <ComparisonTable schools={selectedSchools} />
+          </div>
         )}
       </main>
+
+      {/* Sticky compare CTA — visible when 2+ schools are selected */}
+      {selectedSchools.length >= 2 && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
+          <button
+            onClick={() =>
+              document.getElementById('comparison-table')?.scrollIntoView({ behavior: 'smooth' })
+            }
+            className="bg-yellow-500 text-black font-black uppercase tracking-widest px-8 py-3 rounded-full shadow-2xl hover:bg-yellow-400 transition-colors text-sm"
+          >
+            Compare {selectedSchools.length} Programs ↓
+          </button>
+        </div>
+      )}
     </div>
   )
 }
