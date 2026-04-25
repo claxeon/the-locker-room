@@ -94,17 +94,17 @@ export const SchoolCard: React.FC<SchoolCardProps> = ({ school, onClick }) => {
 
         {/* Logo */}
         {school.logo_url ? (
-          <div className="h-11 w-11 flex-shrink-0 overflow-hidden rounded-xl border border-zinc-800 bg-black/60">
+          <div className="h-14 w-14 flex-shrink-0 overflow-hidden rounded-xl border border-zinc-800 bg-black/80 p-1.5">
             <img
               src={school.logo_url}
               alt={`${school.institution_name} logo`}
-              className="h-full w-full object-contain p-1.5"
+              className="h-full w-full object-contain"
               onError={handleLogoError}
             />
           </div>
         ) : (
-          <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900">
-            <span className="text-base font-black text-yellow-500">
+          <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900">
+            <span className="text-xl font-black text-yellow-500">
               {school.institution_name.charAt(0)}
             </span>
           </div>

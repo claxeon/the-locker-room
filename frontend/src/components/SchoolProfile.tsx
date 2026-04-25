@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { ArrowLeft, MapPin, Shield, Trophy } from 'lucide-react'
+import { ArrowLeft, MapPin, Shield } from 'lucide-react'
 
 import { useSchoolProfile } from '../hooks/useSupabaseData'
 import { SchoolProfile as SchoolProfileType } from '../lib/supabase'
@@ -89,21 +89,43 @@ export const SchoolProfile: React.FC<SchoolProfileProps> = ({ slug, onBack }) =>
   return (
     <div className="relative min-h-screen bg-black pb-24 text-white">
 
-      {/* ── Campus Hero Banner ── */}
-      {!heroBroken && (
-        <div className="relative h-52 sm:h-64 w-full overflow-hidden">
+      {/* ── Campus Hero Banner with logo badge ── */}
+      <div className={`relative w-full overflow-visible ${heroBroken ? 'h-32 bg-zinc-950' : 'h-52 sm:h-64'}`}>
+        {!heroBroken && (
           <img
             src={heroUrl}
             alt={`${school.institution_name} campus`}
             className="h-full w-full object-cover"
             onError={() => setHeroBroken(true)}
           />
-          {/* Dramatic gradient: black top (for nav), transparent mid, black bottom */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/20 to-black" />
-          {/* Subtle yellow left accent */}
-          <div className="absolute left-0 top-0 h-full w-1 bg-yellow-500/40" />
+        )}
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/10 to-black" />
+        {/* Yellow left accent stripe */}
+        <div className="absolute left-0 top-0 h-full w-1 bg-yellow-500/50" />
+
+        {/* Logo badge — large, centered, bottom-anchored, overlaps into content below */}
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 z-10">
+          <div className="flex h-24 w-24 sm:h-28 sm:w-28 items-center justify-center rounded-2xl border-2 border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/80 p-2.5 backdrop-blur">
+            {school.logo_url ? (
+              <img
+                src={school.logo_url}
+                alt={`${school.institution_name} logo`}
+                className="h-full w-full object-contain"
+                onError={(e) => {
+                  const t = e.currentTarget
+                  t.onerror = null
+                  t.src = `https://placehold.co/128x128/27272a/eab308?text=${school.institution_name.charAt(0)}`
+                }}
+              />
+            ) : (
+              <span className="text-4xl font-black text-yellow-500">
+                {school.institution_name.charAt(0)}
+              </span>
+            )}
+          </div>
         </div>
-      )}
+      </div>
 
       {/* Top glow fallback (no image) */}
       {heroBroken && (
@@ -116,7 +138,8 @@ export const SchoolProfile: React.FC<SchoolProfileProps> = ({ slug, onBack }) =>
         />
       )}
 
-      <div className={`relative mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 ${heroBroken ? 'pt-28' : 'pt-6'}`}>
+      {/* Extra space to account for the logo badge overlapping the hero */}
+      <div className={`relative mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 ${heroBroken ? 'pt-28' : 'pt-20'}`}>
         {/* Back button — editorial ghost style */}
         <button
           onClick={onBack}
@@ -125,40 +148,22 @@ export const SchoolProfile: React.FC<SchoolProfileProps> = ({ slug, onBack }) =>
           <ArrowLeft className="h-3.5 w-3.5" /> Back to Directory
         </button>
 
-        {/* School header card — pulled up slightly to overlap hero */}
-        <section className="rounded-xl border border-zinc-800 bg-zinc-900/80 p-8 backdrop-blur">
-          <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
-            <div className="space-y-4">
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-yellow-500">
-                {school.classification_name}
-              </p>
-              <h1
-                className="leading-[1.05] text-white"
-                style={{ fontSize: 'clamp(1.75rem, 4vw, 3rem)', ...serifItalic }}
-              >
-                {school.institution_name}
-              </h1>
-              <div className="flex flex-wrap gap-3">
-                <ProfileMeta icon={<MapPin className="h-3.5 w-3.5 text-yellow-500" />} label={school.state_cd} />
-                <ProfileMeta icon={<Shield className="h-3.5 w-3.5 text-zinc-400" />} label={school.classification_name} />
-                <ProfileMeta icon={<Shield className="h-3.5 w-3.5 text-zinc-400" />} label={school.sanction_name} />
-              </div>
-            </div>
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900 p-2">
-              {school.logo_url ? (
-                <img
-                  src={school.logo_url}
-                  alt={`${school.institution_name} logo`}
-                  className="h-full w-full object-contain"
-                  onError={(event) => {
-                    const target = event.currentTarget
-                    target.onerror = null
-                    target.src = `https://placehold.co/128x128/27272a/eab308?text=${school.institution_name.charAt(0)}`
-                  }}
-                />
-              ) : (
-                <Trophy className="h-7 w-7 text-yellow-500" />
-              )}
+        {/* School header card — centered layout, logo badge above overlaps hero */}
+        <section className="rounded-xl border border-zinc-800 bg-zinc-900/80 p-8 pt-16 backdrop-blur text-center">
+          <div className="flex flex-col items-center gap-4">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-yellow-500">
+              {school.classification_name}
+            </p>
+            <h1
+              className="leading-[1.05] text-white"
+              style={{ fontSize: 'clamp(1.75rem, 4vw, 3rem)', ...serifItalic }}
+            >
+              {school.institution_name}
+            </h1>
+            <div className="flex flex-wrap justify-center gap-3">
+              <ProfileMeta icon={<MapPin className="h-3.5 w-3.5 text-yellow-500" />} label={school.state_cd} />
+              <ProfileMeta icon={<Shield className="h-3.5 w-3.5 text-zinc-400" />} label={school.classification_name} />
+              <ProfileMeta icon={<Shield className="h-3.5 w-3.5 text-zinc-400" />} label={school.sanction_name} />
             </div>
           </div>
         </section>
