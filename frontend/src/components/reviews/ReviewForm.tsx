@@ -200,9 +200,9 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-2xl border border-yellow-500/25 bg-black/60 p-8 text-center backdrop-blur"
+        className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-8 text-center backdrop-blur"
       >
-        <p className="text-lg font-black uppercase tracking-tight text-white">
+        <p className="text-base font-semibold text-white">
           Sign in to Leave a Review
         </p>
         <p className="mt-2 text-sm text-gray-400">
@@ -210,7 +210,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
         </p>
         <Link
           to="/login"
-          className="mt-6 inline-block border-2 border-yellow-500 bg-yellow-500/10 px-8 py-3 text-xs font-black uppercase tracking-[0.3em] text-yellow-400 hover:bg-yellow-500/20 transition-colors rounded-lg"
+          className="mt-6 inline-block rounded-lg bg-yellow-500 px-8 py-3 text-xs font-bold uppercase tracking-widest text-black hover:bg-yellow-400 transition-colors"
         >
           Sign In
         </Link>
@@ -234,7 +234,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-2xl border border-yellow-500/25 bg-black/60 p-8 text-center backdrop-blur"
+        className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-8 text-center backdrop-blur"
       >
         <AlertCircle className="mx-auto mb-4 h-10 w-10 text-yellow-400" />
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-yellow-400">
@@ -259,10 +259,10 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="rounded-2xl border border-yellow-500/25 bg-black/60 p-10 text-center backdrop-blur"
+        className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-10 text-center backdrop-blur"
       >
         <CheckCircle className="mx-auto mb-4 h-14 w-14 text-yellow-400" />
-        <h3 className="text-xl font-black uppercase tracking-tight text-white">
+        <h3 className="text-lg font-semibold text-white">
           Review Submitted!
         </h3>
         <p className="mt-3 text-sm leading-relaxed text-gray-300">
@@ -279,15 +279,15 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
     <motion.div
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-2xl border border-yellow-500/25 bg-black/60 backdrop-blur"
+      className="rounded-xl border border-zinc-800 bg-zinc-900/60 backdrop-blur"
     >
       {/* Header */}
-      <div className="flex items-start justify-between border-b border-yellow-500/20 p-6">
+      <div className="flex items-start justify-between border-b border-zinc-800 p-6">
         <div>
-          <h2 className="text-2xl font-black uppercase tracking-tight text-white">
+          <h2 className="text-xl font-semibold text-white">
             Write a Review
           </h2>
-          <p className="mt-1 text-sm font-semibold uppercase tracking-[0.2em] text-yellow-400">
+          <p className="mt-1 text-sm text-yellow-500">
             {schoolName}
           </p>
         </div>
@@ -303,7 +303,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
       <form onSubmit={handleSubmit} className="p-6 space-y-8">
         {/* Your Program */}
         <section className="space-y-5">
-          <h3 className="text-xs font-black uppercase tracking-[0.3em] text-gray-400">
+          <h3 className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">
             Your Program
           </h3>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -405,7 +405,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
 
         {/* Star ratings */}
         <section className="space-y-5">
-          <h3 className="text-xs font-black uppercase tracking-[0.3em] text-gray-400">
+          <h3 className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">
             Rate Your Experience
           </h3>
           <div className="grid gap-5 sm:grid-cols-2">
@@ -544,14 +544,14 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-lg border border-gray-700 bg-transparent px-6 py-3 text-xs font-black uppercase tracking-[0.3em] text-gray-400 hover:border-gray-500 hover:text-gray-200 transition-colors"
+            className="rounded-lg border border-zinc-800 bg-transparent px-6 py-3 text-xs font-semibold uppercase tracking-widest text-zinc-400 hover:border-zinc-600 hover:text-zinc-200 transition-colors"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={submitting}
-            className="rounded-lg border-2 border-yellow-500 bg-yellow-500/10 px-8 py-3 text-xs font-black uppercase tracking-[0.3em] text-yellow-400 hover:bg-yellow-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="rounded-lg bg-yellow-500 px-8 py-3 text-xs font-bold uppercase tracking-widest text-black hover:bg-yellow-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {submitting ? 'Submitting…' : 'Submit Review'}
           </button>

@@ -13,6 +13,11 @@ import {
 
 const PAGE_SIZE = 20
 
+const serifItalic: React.CSSProperties = {
+  fontFamily: "'Instrument Serif', Georgia, serif",
+  fontStyle: 'italic',
+}
+
 const buildCardData = (school: ProgramAggregateSchool): CollegeCardData => ({
   schoolId: school.schoolId,
   name: school.name,
@@ -29,6 +34,9 @@ const buildCardData = (school: ProgramAggregateSchool): CollegeCardData => ({
     equity: school.equity,
   },
 })
+
+const selectCls =
+  'rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 text-sm text-white focus:border-yellow-500/60 focus:outline-none focus:ring-1 focus:ring-yellow-500/20 transition-colors appearance-none'
 
 export const CollegeComparison: React.FC = () => {
   const [division, setDivision] = useState('')
@@ -49,7 +57,7 @@ export const CollegeComparison: React.FC = () => {
     [division, state, gender]
   )
 
-  const { data, isLoading, isError, error, isFetching } = useProgramAggregates({
+  const { data, isLoading, isError, isFetching } = useProgramAggregates({
     filters,
     page,
     pageSize: PAGE_SIZE,
@@ -57,8 +65,6 @@ export const CollegeComparison: React.FC = () => {
 
   const schools = data?.data ?? []
   const totalItems = data?.total ?? 0
-
-  // True when no filters are active
   const noFiltersActive = !division && !state && !gender
 
   React.useEffect(() => {
@@ -70,9 +76,7 @@ export const CollegeComparison: React.FC = () => {
   const toggleSelection = (school: ProgramAggregateSchool) => {
     setSelectedSchools((prev) => {
       const exists = prev.some((item) => item.schoolId === school.schoolId)
-      if (exists) {
-        return prev.filter((item) => item.schoolId !== school.schoolId)
-      }
+      if (exists) return prev.filter((item) => item.schoolId !== school.schoolId)
       return [...prev, school]
     })
   }
@@ -80,9 +84,8 @@ export const CollegeComparison: React.FC = () => {
   const isSelected = (schoolId: string) =>
     selectedSchools.some((item) => item.schoolId === schoolId)
 
-  const handleFilterChange = (
-    setter: React.Dispatch<React.SetStateAction<string>>
-  ) =>
+  const handleFilterChange =
+    (setter: React.Dispatch<React.SetStateAction<string>>) =>
     (event: React.ChangeEvent<HTMLSelectElement>) => {
       setter(event.target.value)
       setPage(1)
@@ -90,133 +93,132 @@ export const CollegeComparison: React.FC = () => {
 
   return (
     <div className="relative min-h-screen w-full bg-black text-white">
-      <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br from-black via-black to-purple-900/30" />
-      <div className="pointer-events-none absolute inset-0 -z-20">
-        <div
-          className="h-full w-full"
-          style={{
-            backgroundImage:
-              'radial-gradient(circle at 20% 20%, rgba(234, 179, 8, 0.15), transparent 45%), radial-gradient(circle at 80% 0%, rgba(168, 85, 247, 0.2), transparent 40%)',
-          }}
-        />
-      </div>
+      {/* Single subtle yellow top-glow — no purple */}
+      <div
+        className="pointer-events-none absolute inset-0 -z-10"
+        style={{
+          background:
+            'radial-gradient(ellipse 70% 40% at 50% -5%, rgba(234,179,8,0.08) 0%, transparent 70%)',
+        }}
+      />
 
       <NavBarDemo />
 
       <main className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-4 pb-24 pt-32">
+        {/* Editorial header */}
         <motion.section
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center"
+          className="flex flex-col gap-3"
         >
-          <h1 className="text-4xl font-black uppercase tracking-tight text-white md:text-6xl">
-            College <span className="text-yellow-500">Comparison</span>
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-yellow-500">
+            Programs
+          </p>
+          <h1
+            className="leading-[1.05] text-white"
+            style={{ fontSize: 'clamp(2.5rem, 6vw, 5rem)', ...serifItalic }}
+          >
+            College{' '}
+            <span className="not-italic" style={{ fontFamily: "'Instrument Serif', Georgia, serif" }}>
+              Comparison
+            </span>
           </h1>
-          <p className="mt-4 text-lg text-gray-300">
+          <p className="max-w-lg text-sm text-zinc-400">
             Select programs to compare culture, support, facilities, and more across the nation.
           </p>
         </motion.section>
 
-        <section className="rounded-2xl border border-yellow-500/25 bg-black/70 p-6 backdrop-blur">
+        {/* Filter bar */}
+        <section className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-6 backdrop-blur">
+          <p className="mb-4 text-[10px] font-semibold uppercase tracking-widest text-zinc-400">
+            Filter Programs
+          </p>
           <div className="grid gap-4 md:grid-cols-4">
-            <div className="flex flex-col gap-2">
-              <label className="text-xs font-semibold uppercase tracking-[0.3em] text-gray-400">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold uppercase tracking-widest text-zinc-500">
                 Division
               </label>
-              <select
-                value={division}
-                onChange={handleFilterChange(setDivision)}
-                className="rounded-lg border-2 border-yellow-500/30 bg-black/40 px-4 py-3 text-sm font-semibold uppercase tracking-wider text-white focus:border-yellow-500 focus:outline-none focus:ring-4 focus:ring-yellow-500/20"
-              >
+              <select value={division} onChange={handleFilterChange(setDivision)} className={selectCls}>
                 <option value="">All Divisions</option>
-                {filterData?.divisions.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
+                {filterData?.divisions.map((o) => (
+                  <option key={o} value={o}>{o}</option>
                 ))}
               </select>
             </div>
 
-            <div className="flex flex-col gap-2">
-              <label className="text-xs font-semibold uppercase tracking-[0.3em] text-gray-400">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold uppercase tracking-widest text-zinc-500">
                 State
               </label>
-              <select
-                value={state}
-                onChange={handleFilterChange(setState)}
-                className="rounded-lg border-2 border-yellow-500/30 bg-black/40 px-4 py-3 text-sm font-semibold uppercase tracking-wider text-white focus:border-yellow-500 focus:outline-none focus:ring-4 focus:ring-yellow-500/20"
-              >
+              <select value={state} onChange={handleFilterChange(setState)} className={selectCls}>
                 <option value="">All States</option>
-                {filterData?.states.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
+                {filterData?.states.map((o) => (
+                  <option key={o} value={o}>{o}</option>
                 ))}
               </select>
             </div>
 
-            <div className="flex flex-col gap-2">
-              <label className="text-xs font-semibold uppercase tracking-[0.3em] text-gray-400">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold uppercase tracking-widest text-zinc-500">
                 Gender
               </label>
-              <select
-                value={gender}
-                onChange={handleFilterChange(setGender)}
-                className="rounded-lg border-2 border-yellow-500/30 bg-black/40 px-4 py-3 text-sm font-semibold uppercase tracking-wider text-white focus:border-yellow-500 focus:outline-none focus:ring-4 focus:ring-yellow-500/20"
-              >
+              <select value={gender} onChange={handleFilterChange(setGender)} className={selectCls}>
                 <option value="">All Genders</option>
-                {filterData?.genders.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
+                {filterData?.genders.map((o) => (
+                  <option key={o} value={o}>{o}</option>
                 ))}
               </select>
             </div>
 
-            <div className="flex flex-col justify-end">
-              <div className="text-xs font-semibold uppercase tracking-[0.3em] text-gray-400">
+            <div className="flex flex-col justify-end gap-1.5">
+              <label className="text-xs font-semibold uppercase tracking-widest text-zinc-500">
                 Selected
-              </div>
-              <div className="mt-2 rounded-lg border border-yellow-500/30 bg-black/40 px-4 py-3 text-sm font-semibold text-yellow-300">
-                {selectedSchools.length} program{selectedSchools.length === 1 ? '' : 's'}
+              </label>
+              <div className="rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 text-sm text-white">
+                <span style={serifItalic} className="text-yellow-500">
+                  {selectedSchools.length}
+                </span>
+                <span className="ml-1 text-zinc-400">
+                  program{selectedSchools.length === 1 ? '' : 's'}
+                </span>
                 {totalItems > 0 && (
-                  <span className="ml-2 text-gray-400 font-normal">
-                    / {totalItems} matching
-                  </span>
+                  <span className="ml-2 text-zinc-600 text-xs">/ {totalItems} matching</span>
                 )}
               </div>
             </div>
           </div>
         </section>
 
-        <section className="grid grid-cols-1 gap-8 md:grid-cols-2">
+        {/* Grid */}
+        <section className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {isLoading && !schools.length && !loadingTimeout ? (
             <div className="col-span-full flex justify-center py-16">
-              <div className="h-16 w-16 animate-spin rounded-full border-4 border-yellow-500/30 border-b-yellow-500" />
+              <div className="h-12 w-12 animate-spin rounded-full border-2 border-zinc-800 border-t-yellow-500" />
             </div>
           ) : isError || (isLoading && loadingTimeout) ? (
-            <div className="col-span-full rounded-2xl border border-yellow-500/20 bg-zinc-900/80 p-12 text-center">
-              <p className="text-2xl font-black uppercase tracking-tight text-white">No Reviews Yet</p>
-              <p className="mt-3 text-sm text-zinc-400 max-w-sm mx-auto">
-                Program rankings appear here once athletes start submitting reviews. Be the first to review your program.
+            <div className="col-span-full rounded-xl border border-dashed border-zinc-700 p-12 text-center">
+              <p className="text-sm font-semibold text-zinc-400">No reviews yet</p>
+              <p className="mt-1 text-xs text-zinc-600 max-w-sm mx-auto">
+                Program rankings appear here once athletes start submitting reviews.
               </p>
             </div>
           ) : !isLoading && schools.length === 0 && totalItems === 0 && noFiltersActive ? (
-            // "No Data Yet" state — database has no reviews yet
-            <div className="col-span-full rounded-2xl border border-yellow-500/20 bg-zinc-900/80 p-12 text-center">
-              <div className="text-5xl mb-4">🏆</div>
-              <p className="text-2xl font-black uppercase tracking-tight text-white">
+            <div className="col-span-full rounded-xl border border-dashed border-zinc-700 p-16 text-center">
+              <p
+                className="text-yellow-500"
+                style={{ ...serifItalic, fontSize: 'clamp(1.5rem, 3vw, 2rem)' }}
+              >
                 Rankings Coming Soon
               </p>
               <p className="mt-3 text-sm text-zinc-400 max-w-md mx-auto leading-relaxed">
                 College program rankings appear here once athletes start submitting reviews.
-                Be the first to review your program and help others make informed decisions.
+                Be the first to review your program.
               </p>
             </div>
           ) : schools.length === 0 ? (
-            <div className="col-span-full rounded-2xl border border-yellow-500/30 bg-black/70 p-8 text-center text-gray-300">
-              No programs match your filters yet. Try adjusting your search.
+            <div className="col-span-full rounded-xl border border-dashed border-zinc-700 p-8 text-center">
+              <p className="text-sm text-zinc-400">No programs match your filters.</p>
             </div>
           ) : (
             schools.map((school, index) => (
@@ -224,7 +226,7 @@ export const CollegeComparison: React.FC = () => {
                 key={school.schoolId}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.05 }}
+                transition={{ duration: 0.5, delay: index * 0.04 }}
                 className="h-full"
               >
                 <CollegeCard
@@ -238,8 +240,8 @@ export const CollegeComparison: React.FC = () => {
         </section>
 
         {isFetching && schools.length > 0 && (
-          <div className="flex justify-center text-xs font-semibold uppercase tracking-[0.3em] text-gray-400">
-            Updating results…
+          <div className="flex justify-center text-[10px] font-semibold uppercase tracking-widest text-zinc-500">
+            Updating…
           </div>
         )}
 
@@ -260,14 +262,14 @@ export const CollegeComparison: React.FC = () => {
         )}
       </main>
 
-      {/* Sticky compare CTA — visible when 2+ schools are selected */}
+      {/* Sticky compare CTA */}
       {selectedSchools.length >= 2 && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
           <button
             onClick={() =>
               document.getElementById('comparison-table')?.scrollIntoView({ behavior: 'smooth' })
             }
-            className="bg-yellow-500 text-black font-black uppercase tracking-widest px-8 py-3 rounded-full shadow-2xl hover:bg-yellow-400 transition-colors text-sm"
+            className="bg-yellow-500 text-black font-bold uppercase tracking-widest px-8 py-3 rounded-full shadow-2xl hover:bg-yellow-400 transition-colors text-sm"
           >
             Compare {selectedSchools.length} Programs ↓
           </button>

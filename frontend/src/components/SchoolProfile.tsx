@@ -3,7 +3,6 @@ import { ArrowLeft, MapPin, Shield, Trophy } from 'lucide-react'
 
 import { useSchoolProfile } from '../hooks/useSupabaseData'
 import { SchoolProfile as SchoolProfileType } from '../lib/supabase'
-import { Button } from './ui/button'
 import { ReviewsSection } from './reviews/ReviewsSection'
 import { SchoolScorecard } from './scorecard/SchoolScorecard'
 import { ReviewAnalytics } from './scorecard/ReviewAnalytics'
@@ -13,43 +12,39 @@ interface SchoolProfileProps {
   onBack: () => void
 }
 
+const serifItalic: React.CSSProperties = {
+  fontFamily: "'Instrument Serif', Georgia, serif",
+  fontStyle: 'italic',
+}
+
 export const SchoolProfile: React.FC<SchoolProfileProps> = ({ slug, onBack }) => {
   const { data: schools, loading, error } = useSchoolProfile(slug)
   const school = schools[0] as SchoolProfileType | undefined
 
   if (loading) {
     return (
-      <div className="relative min-h-screen bg-black py-16">
-        <BackgroundGlow />
-        <div className="relative mx-auto flex max-w-3xl items-center justify-center px-6">
-          <div className="h-16 w-16 animate-spin rounded-full border-4 border-yellow-500/30 border-b-yellow-500" />
-        </div>
+      <div className="relative min-h-screen bg-black py-32 flex items-center justify-center">
+        <div className="h-10 w-10 animate-spin rounded-full border-2 border-zinc-800 border-t-yellow-500" />
       </div>
     )
   }
 
   if (error || !school) {
     return (
-      <div className="relative min-h-screen bg-black py-16 text-white">
-        <BackgroundGlow />
-        <div className="relative mx-auto max-w-3xl px-6">
-          <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-8 backdrop-blur">
-            <h2 className="text-2xl font-black uppercase tracking-wide text-red-200">
-              School Not Found
-            </h2>
-            <p className="mt-4 text-sm text-red-100/80">
-              {error || 'The requested school could not be located. Please try again later.'}
+      <div className="relative min-h-screen bg-black pt-32 text-white">
+        <div className="mx-auto max-w-3xl px-6">
+          <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-8">
+            <h2 className="text-lg font-semibold text-red-300">School Not Found</h2>
+            <p className="mt-2 text-sm text-red-400/70">
+              {error || 'The requested school could not be located.'}
             </p>
           </div>
-          <div className="mt-6">
-            <Button
-              variant="outline"
-              className="border-2 border-yellow-500 bg-yellow-500/10 px-6 py-2 text-xs font-black uppercase tracking-[0.3em] text-yellow-400 hover:bg-yellow-500/20"
-              onClick={onBack}
-            >
-              <ArrowLeft className="mr-2 h-4 w-4" /> Back to Directory
-            </Button>
-          </div>
+          <button
+            onClick={onBack}
+            className="mt-6 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-400 hover:text-white transition-colors"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" /> Back to Directory
+          </button>
         </div>
       </div>
     )
@@ -57,32 +52,44 @@ export const SchoolProfile: React.FC<SchoolProfileProps> = ({ slug, onBack }) =>
 
   return (
     <div className="relative min-h-screen bg-black pb-24 pt-28 text-white">
-      <BackgroundGlow />
-      <div className="relative mx-auto flex w-full max-w-5xl flex-col gap-8 px-4">
-        <div className="flex items-center justify-between">
-          <Button
-            variant="outline"
-            className="border-2 border-yellow-500 bg-yellow-500/10 px-6 py-2 text-xs font-black uppercase tracking-[0.3em] text-yellow-400 hover:bg-yellow-500/20"
-            onClick={onBack}
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Directory
-          </Button>
-        </div>
+      {/* Subtle single yellow top-glow — no purple */}
+      <div
+        className="pointer-events-none absolute inset-0 -z-10"
+        style={{
+          background:
+            'radial-gradient(ellipse 60% 35% at 50% -5%, rgba(234,179,8,0.07) 0%, transparent 70%)',
+        }}
+      />
 
-        <section className="relative overflow-hidden rounded-2xl border border-yellow-500/30 bg-black/70 p-8 backdrop-blur">
-          <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/20 via-transparent to-purple-500/20 opacity-25" />
-          <div className="relative flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+      <div className="relative mx-auto flex w-full max-w-5xl flex-col gap-8 px-4">
+        {/* Back button — editorial ghost style */}
+        <button
+          onClick={onBack}
+          className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-500 hover:text-white transition-colors self-start"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" /> Back to Directory
+        </button>
+
+        {/* School header card */}
+        <section className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-8 backdrop-blur">
+          <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
             <div className="space-y-4">
-              <h1 className="text-4xl font-black uppercase tracking-tight text-white md:text-5xl">
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-yellow-500">
+                {school.classification_name}
+              </p>
+              <h1
+                className="leading-[1.05] text-white"
+                style={{ fontSize: 'clamp(1.75rem, 4vw, 3rem)', ...serifItalic }}
+              >
                 {school.institution_name}
               </h1>
-              <div className="grid gap-4 text-sm text-gray-200 md:grid-cols-3">
-                <ProfileMeta icon={<MapPin className="h-4 w-4 text-yellow-400" />} label="State" value={school.state_cd} />
-                <ProfileMeta icon={<Shield className="h-4 w-4 text-purple-300" />} label="Division" value={school.classification_name} />
-                <ProfileMeta icon={<Shield className="h-4 w-4 text-teal-300" />} label="Sanction" value={school.sanction_name} />
+              <div className="flex flex-wrap gap-3">
+                <ProfileMeta icon={<MapPin className="h-3.5 w-3.5 text-yellow-500" />} label={school.state_cd} />
+                <ProfileMeta icon={<Shield className="h-3.5 w-3.5 text-zinc-400" />} label={school.classification_name} />
+                <ProfileMeta icon={<Shield className="h-3.5 w-3.5 text-zinc-400" />} label={school.sanction_name} />
               </div>
             </div>
-            <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-xl border border-yellow-500/40 bg-black/70 p-2">
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900 p-2">
               {school.logo_url ? (
                 <img
                   src={school.logo_url}
@@ -91,11 +98,11 @@ export const SchoolProfile: React.FC<SchoolProfileProps> = ({ slug, onBack }) =>
                   onError={(event) => {
                     const target = event.currentTarget
                     target.onerror = null
-                    target.src = `https://placehold.co/128x128/eab308/000000?text=${school.institution_name.charAt(0)}`
+                    target.src = `https://placehold.co/128x128/27272a/eab308?text=${school.institution_name.charAt(0)}`
                   }}
                 />
               ) : (
-                <Trophy className="h-8 w-8 text-yellow-400" />
+                <Trophy className="h-7 w-7 text-yellow-500" />
               )}
             </div>
           </div>
@@ -108,36 +115,36 @@ export const SchoolProfile: React.FC<SchoolProfileProps> = ({ slug, onBack }) =>
 
         <ReviewAnalytics schoolId={school.school_id} />
 
-        <section className="rounded-2xl border border-yellow-500/25 bg-black/70 p-8 backdrop-blur">
-          <header className="mb-8 flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <h2 className="text-3xl font-black uppercase tracking-tight text-white">
-                Sports Programs
-              </h2>
-              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-gray-400">
-                {school.programs.length} Active Teams
-              </p>
-            </div>
+        {/* Sports Programs */}
+        <section className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-8 backdrop-blur">
+          <header className="mb-6">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">
+              Active Teams
+            </p>
+            <h2
+              className="mt-1 text-white"
+              style={{ fontSize: 'clamp(1.25rem, 2.5vw, 1.75rem)', ...serifItalic }}
+            >
+              Sports Programs
+            </h2>
+            <p className="mt-1 text-xs text-zinc-500">
+              {school.programs.length} programs offered
+            </p>
           </header>
 
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-3 md:grid-cols-2">
             {school.programs.map((program, index) => (
               <article
                 key={`${program.sport}-${program.gender}-${index}`}
-                className="group relative overflow-hidden rounded-xl border border-yellow-500/30 bg-black/60 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-yellow-500 hover:shadow-[0_20px_40px_-20px_rgba(234,179,8,0.35)]"
+                className="flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 transition-colors hover:border-zinc-700"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 via-transparent to-purple-500/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                <div className="relative flex items-center justify-between">
-                  <div>
-                    <h3 className="text-lg font-black uppercase tracking-wide text-white">
-                      {program.sport}
-                    </h3>
-                    <p className="text-sm text-gray-300">{program.gender}</p>
-                  </div>
-                  <span className="inline-flex items-center rounded-full border border-yellow-500/30 bg-yellow-500/10 px-3 py-1 text-xs font-black uppercase tracking-[0.3em] text-yellow-300">
-                    {program.gender}
-                  </span>
+                <div>
+                  <p className="text-sm font-semibold text-white">{program.sport}</p>
+                  <p className="text-xs text-zinc-500">{program.gender}</p>
                 </div>
+                <span className="inline-flex items-center rounded-full border border-zinc-700 bg-zinc-800 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-400">
+                  {program.gender === "Men's" ? "M" : program.gender === "Women's" ? "W" : "Co"}
+                </span>
               </article>
             ))}
           </div>
@@ -152,32 +159,9 @@ export const SchoolProfile: React.FC<SchoolProfileProps> = ({ slug, onBack }) =>
   )
 }
 
-const BackgroundGlow = () => (
-  <>
-    <div className="pointer-events-none absolute inset-0 -z-20 bg-gradient-to-br from-black via-black to-purple-900/30" />
-    <div className="pointer-events-none absolute inset-0 -z-10" style={{
-      backgroundImage:
-        'radial-gradient(circle at 20% 20%, rgba(234, 179, 8, 0.15), transparent 45%), radial-gradient(circle at 80% 0%, rgba(168, 85, 247, 0.2), transparent 40%)',
-    }} />
-  </>
-)
-
-type ProfileMetaProps = {
-  icon: React.ReactNode
-  label: string
-  value: string
-}
-
-const ProfileMeta = ({ icon, label, value }: ProfileMetaProps) => (
-  <div className="flex items-center gap-3 rounded-lg border border-yellow-500/20 bg-black/60 px-4 py-3">
-    <span className="flex h-8 w-8 items-center justify-center rounded-full border border-yellow-500/30 bg-yellow-500/10">
-      {icon}
-    </span>
-    <div className="flex flex-col">
-      <span className="text-xs font-semibold uppercase tracking-[0.3em] text-gray-400">
-        {label}
-      </span>
-      <span className="text-sm font-semibold text-white">{value}</span>
-    </div>
-  </div>
+const ProfileMeta = ({ icon, label }: { icon: React.ReactNode; label: string }) => (
+  <span className="inline-flex items-center gap-1.5 rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs text-zinc-300">
+    {icon}
+    {label}
+  </span>
 )

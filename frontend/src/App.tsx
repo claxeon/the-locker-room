@@ -34,6 +34,7 @@ import { CollegeComparison } from "./pages/CollegeComparison";
 import { LoginPage } from "./pages/auth/LoginPage";
 import { SignupPage } from "./pages/auth/SignupPage";
 import { ResetPasswordPage } from "./pages/auth/ResetPasswordPage";
+import { NotFoundPage } from "./pages/NotFoundPage";
 
 // ── Dashboard
 import { UserDashboard } from "./pages/dashboard/UserDashboard";
@@ -74,7 +75,7 @@ const SportsDirectoryWrapper: React.FC = () => {
 
 const LandingPageWrapper: React.FC = () => {
   const navigate = useNavigate();
-  return <LandingPage onGetStarted={() => navigate("/directory")} />;
+  return <LandingPage onGetStarted={() => navigate("/signup")} />;
 };
 
 // ---------------------------------------------------------------------------
@@ -186,6 +187,7 @@ function App() {
               }
             />
             ──────────────────────────────────────────────────────────────── */}
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </div>
       </AuthProvider>

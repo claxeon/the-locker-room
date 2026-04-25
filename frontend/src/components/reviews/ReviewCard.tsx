@@ -227,16 +227,16 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -4 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-      className="group relative overflow-hidden rounded-2xl border border-yellow-500/25 bg-black/60 p-6 backdrop-blur transition-shadow duration-300 hover:shadow-[0_20px_40px_-20px_rgba(234,179,8,0.3)]"
+      className="group relative overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900 p-6 transition-colors duration-200 hover:border-zinc-700"
     >
       {/* Subtle hover gradient */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-yellow-500/5 via-transparent to-purple-500/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-yellow-500/3 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
       <div className="relative space-y-5">
         {/* Header row */}
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="flex items-center gap-3">
-            <span className="flex h-9 w-9 items-center justify-center rounded-full border border-yellow-500/30 bg-yellow-500/10">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full border border-zinc-800 bg-zinc-800">
               {review.is_anonymous ? (
                 <Shield className="h-4 w-4 text-yellow-400" />
               ) : (
@@ -244,7 +244,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
               )}
             </span>
             <div>
-              <p className="text-sm font-black uppercase tracking-wide text-white">
+              <p className="text-sm font-semibold text-white">
                 {displayName}
               </p>
               {yearRange && (
@@ -268,12 +268,12 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
         {(review.sport || review.gender) && (
           <div className="flex flex-wrap gap-2">
             {review.sport && (
-              <span className="inline-flex items-center rounded-full border border-yellow-500/30 bg-yellow-500/10 px-3 py-1 text-xs font-black uppercase tracking-[0.25em] text-yellow-300">
+              <span className="inline-flex items-center rounded-full border border-zinc-800 bg-zinc-800 px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-300">
                 {review.sport}
               </span>
             )}
             {review.gender && (
-              <span className="inline-flex items-center rounded-full border border-purple-500/30 bg-purple-500/10 px-3 py-1 text-xs font-black uppercase tracking-[0.25em] text-purple-300">
+              <span className="inline-flex items-center rounded-full border border-zinc-700 bg-zinc-800/50 px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-400">
                 {review.gender}
               </span>
             )}
@@ -289,7 +289,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
 
         {/* Review text */}
         {review.review_text && (
-          <div className="border-t border-yellow-500/10 pt-4">
+          <div className="border-t border-zinc-800 pt-4">
             <p className="text-sm leading-relaxed text-gray-300">
               {review.review_text}
             </p>
@@ -381,7 +381,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
                     transition={{ duration: 0.12 }}
                     className="absolute right-0 bottom-full mb-2 z-50 w-44 rounded-xl border border-gray-700 bg-gray-950 shadow-xl overflow-hidden"
                   >
-                    <p className="px-3 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 border-b border-gray-800">
+                    <p className="px-3 py-2 text-[10px] font-semibold uppercase tracking-widest text-zinc-500 border-b border-zinc-800">
                       Reason
                     </p>
                     {FLAG_REASONS.map((reason) => (
