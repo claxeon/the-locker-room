@@ -13,12 +13,12 @@ interface SchoolScorecardProps {
 interface ProgramAggregate {
   sport: string
   review_count: number
-  avg_facilities: number
-  avg_coaching: number
-  avg_balance: number
-  avg_support: number
-  avg_culture: number
-  avg_equity: number
+  facilities_rating: number
+  coaching_rating: number
+  balance_rating: number
+  support_rating: number
+  culture_rating: number
+  equity_rating: number
 }
 
 interface SportBreakdownItem {
@@ -59,20 +59,20 @@ function computeStats(aggregates: ProgramAggregate[], totalReviews: number): Sch
   for (const row of aggregates) {
     const w = row.review_count
     totalWeight += w
-    wFacilities += row.avg_facilities * w
-    wCoaching   += row.avg_coaching   * w
-    wBalance    += row.avg_balance    * w
-    wSupport    += row.avg_support    * w
-    wCulture    += row.avg_culture    * w
-    wEquity     += row.avg_equity     * w
+    wFacilities += row.facilities_rating * w
+    wCoaching   += row.coaching_rating   * w
+    wBalance    += row.balance_rating    * w
+    wSupport    += row.support_rating    * w
+    wCulture    += row.culture_rating    * w
+    wEquity     += row.equity_rating     * w
 
     const sportOverall = (
-      row.avg_facilities +
-      row.avg_coaching +
-      row.avg_balance +
-      row.avg_support +
-      row.avg_culture +
-      row.avg_equity
+      row.facilities_rating +
+      row.coaching_rating +
+      row.balance_rating +
+      row.support_rating +
+      row.culture_rating +
+      row.equity_rating
     ) / 6
 
     sportBreakdown.push({
@@ -287,7 +287,7 @@ export function SchoolScorecard({ schoolId, schoolName }: SchoolScorecardProps) 
         const [aggResult, countResult] = await Promise.all([
           supabase
             .from('program_aggregates')
-            .select('sport, review_count, avg_facilities, avg_coaching, avg_balance, avg_support, avg_culture, avg_equity')
+            .select('sport, review_count, facilities_rating, coaching_rating, balance_rating, support_rating, culture_rating, equity_rating')
             .eq('school_id', schoolId)
             .gt('review_count', 0),
           supabase
