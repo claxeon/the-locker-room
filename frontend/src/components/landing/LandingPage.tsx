@@ -71,7 +71,7 @@ const proofData = [
 ]
 
 const proofStats = [
-  { label: "Schools Indexed", value: "1,132" },
+  { label: "Schools Indexed", value: "1,086" },
   { label: "Sports Programs", value: "19,000+" },
   { label: "Sanctioning Bodies", value: "6" },
   { label: "Sports Tracked", value: "90+" },
@@ -206,7 +206,7 @@ const HeroSection = ({ onGetStarted }: { onGetStarted?: () => void }) => {
           className="flex items-center gap-12 pt-4"
         >
           {[
-            { n: "1,132", label: "Schools Indexed" },
+            { n: "1,086", label: "Schools Indexed" },
             { n: "19,000+", label: "Sports Programs" },
             { n: "6", label: "Sanctioning Bodies" },
           ].map((stat, i) => (
@@ -310,7 +310,7 @@ const ProofSection = () => (
           The numbers <span className="not-italic font-black uppercase tracking-tight text-yellow-500">don't lie</span>
         </h2>
         <p className="mt-4 max-w-xl text-sm leading-relaxed text-zinc-500">
-          Every number below is real data from our database — 1,132 schools, 19,081 sports programs across 6 sanctioning bodies.
+          Every number below is real data from our database — 1,086 schools, 19,081 sports programs across 6 sanctioning bodies.
         </p>
       </div>
 

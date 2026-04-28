@@ -1,126 +1,98 @@
-import React, { useMemo, useState } from 'react'
-import { motion } from 'framer-motion'
+/**
+ * College Comparison page
+ *
+ * Redesigned to:
+ *   1. Search the FULL directory (1,086 schools) via useSchoolSearch — not just reviewed ones
+ *   2. Show "no reviews yet" state on cards for schools without data
+ *   3. Pull accreditation / sanction body into card metadata
+ *   4. Overlay multi-school radar in the ComparisonTable
+ *   5. Per-metric bar chart rows with animated fills
+ */
+
+import React, { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 import NavBarDemo from '../components/layout/GlobalNav'
 import ComparisonTable from '../components/ComparisonTable'
-import { Pagination } from '../components/Pagination'
 import { CollegeCard, CollegeCardData } from '../components/ui/comp-college-card'
-import { useComparisonFilters } from '../hooks/useComparisonFilters'
-import {
-  ProgramAggregateSchool,
-  useProgramAggregates,
-} from '../hooks/useProgramAggregates'
-
-const PAGE_SIZE = 20
+import { useSchoolSearch, SchoolSearchResult } from '../hooks/useSchoolSearch'
+import { Search, X, Info } from 'lucide-react'
 
 const serifItalic: React.CSSProperties = {
   fontFamily: "'Instrument Serif', Georgia, serif",
   fontStyle: 'italic',
 }
 
-const buildCardData = (school: ProgramAggregateSchool): CollegeCardData => ({
-  schoolId: school.schoolId,
-  name: school.name,
-  division: school.division,
-  location: school.location,
-  logoUrl: school.logoUrl,
-  reviewCount: school.reviewCount,
-  ratings: {
-    facilities: school.facilities,
-    coaching: school.coaching,
-    balance: school.balance,
-    support: school.support,
-    culture: school.culture,
-    equity: school.equity,
-  },
-})
+const MAX_SELECTIONS = 4
 
-const selectCls =
-  'rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 text-sm text-white focus:border-yellow-500/60 focus:outline-none focus:ring-1 focus:ring-yellow-500/20 transition-colors appearance-none'
+function toCardData(s: SchoolSearchResult): CollegeCardData {
+  return {
+    schoolId: String(s.schoolId),
+    name: s.name,
+    division: s.division,
+    sanction: s.sanction,
+    location: s.location,
+    logoUrl: s.logoUrl,
+    reviewCount: s.reviewCount,
+    hasReviews: s.hasReviews,
+    ratings: {
+      facilities: s.facilities,
+      coaching:   s.coaching,
+      balance:    s.balance,
+      support:    s.support,
+      culture:    s.culture,
+      equity:     s.equity,
+    },
+  }
+}
 
 export const CollegeComparison: React.FC = () => {
-  const [division, setDivision] = useState('')
-  const [state, setState] = useState('')
-  const [gender, setGender] = useState('')
-  const [nameSearch, setNameSearch] = useState('')
-  const [page, setPage] = useState(1)
-  const [selectedSchools, setSelectedSchools] = useState<ProgramAggregateSchool[]>([])
-  const [loadingTimeout, setLoadingTimeout] = React.useState(false)
+  const [query, setQuery] = useState('')
+  const [debouncedQuery, setDebouncedQuery] = useState('')
+  const [selectedSchools, setSelectedSchools] = useState<SchoolSearchResult[]>([])
 
-  const { data: filterData } = useComparisonFilters()
+  // Debounce — 350ms
+  const debounceRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+  const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value
+    setQuery(val)
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(() => setDebouncedQuery(val), 350)
+  }
 
-  // Debounce name search to avoid a query per keystroke
-  const [debouncedName, setDebouncedName] = React.useState('')
-  React.useEffect(() => {
-    const t = setTimeout(() => setDebouncedName(nameSearch), 350)
-    return () => clearTimeout(t)
-  }, [nameSearch])
+  const { data: results = [], isLoading: searching } = useSchoolSearch(debouncedQuery)
 
-  const filters = useMemo(
-    () => ({
-      division: division || undefined,
-      state: state || undefined,
-      gender: gender || undefined,
-      name: debouncedName || undefined,
-    }),
-    [division, state, gender, debouncedName]
-  )
-
-  const noFiltersActive = !division && !state && !gender && !debouncedName
-
-  const { data, isLoading, isError, isFetching } = useProgramAggregates({
-    filters,
-    page,
-    pageSize: PAGE_SIZE,
-    enabled: !noFiltersActive,
-  })
-
-  const schools = data?.data ?? []
-  const totalItems = data?.total ?? 0
-
-  React.useEffect(() => {
-    if (!isLoading) return
-    const timer = setTimeout(() => setLoadingTimeout(true), 8000)
-    return () => clearTimeout(timer)
-  }, [isLoading])
-
-  const toggleSelection = (school: ProgramAggregateSchool) => {
+  const toggleSelection = (school: SchoolSearchResult) => {
     setSelectedSchools((prev) => {
-      const exists = prev.some((item) => item.schoolId === school.schoolId)
-      if (exists) return prev.filter((item) => item.schoolId !== school.schoolId)
+      const exists = prev.some((s) => s.schoolId === school.schoolId)
+      if (exists) return prev.filter((s) => s.schoolId !== school.schoolId)
+      if (prev.length >= MAX_SELECTIONS) return prev // cap at 4
       return [...prev, school]
     })
   }
 
-  const isSelected = (schoolId: string) =>
-    selectedSchools.some((item) => item.schoolId === schoolId)
+  const isSelected = (id: number) => selectedSchools.some((s) => s.schoolId === id)
 
-  const handleFilterChange =
-    (setter: React.Dispatch<React.SetStateAction<string>>) =>
-    (event: React.ChangeEvent<HTMLSelectElement>) => {
-      setter(event.target.value)
-      setPage(1)
-    }
+  const clearAll = () => setSelectedSchools([])
 
-  const handleNameSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNameSearch(event.target.value)
-    setPage(1)
-  }
+  const showResults = debouncedQuery.trim().length >= 2
+  const showCompare = selectedSchools.length >= 2
 
   return (
     <div className="relative min-h-screen w-full bg-black text-white">
-      {/* Single subtle yellow top-glow — no purple */}
+      {/* Background glow */}
       <div
         className="pointer-events-none absolute inset-0 -z-10"
         style={{
           background:
-            'radial-gradient(ellipse 70% 40% at 50% -5%, rgba(234,179,8,0.08) 0%, transparent 70%)',
+            'radial-gradient(ellipse 70% 40% at 50% -5%, rgba(234,179,8,0.07) 0%, transparent 70%)',
         }}
       />
 
       <NavBarDemo />
 
-      <main className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-4 pb-24 pt-32">
+      <main className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-4 pb-32 pt-32">
+
         {/* Editorial header */}
         <motion.section
           initial={{ opacity: 0, y: 24 }}
@@ -136,182 +108,215 @@ export const CollegeComparison: React.FC = () => {
             style={{ fontSize: 'clamp(2.5rem, 6vw, 5rem)', ...serifItalic }}
           >
             College{' '}
-            <span className="not-italic" style={{ fontFamily: "'Instrument Serif', Georgia, serif" }}>
-              Comparison
-            </span>
+            <span className="not-italic font-black uppercase tracking-tight">Comparison</span>
           </h1>
-          <p className="max-w-lg text-sm text-zinc-400">
-            Select programs to compare culture, support, facilities, and more across the nation.
+          <p className="max-w-lg text-sm text-zinc-400 leading-relaxed">
+            Search any of our 1,086 indexed programs. Select up to 4 to compare culture,
+            coaching, facilities, gender equity, and more — side by side.
           </p>
         </motion.section>
 
-        {/* Filter bar */}
-        <section className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-6 backdrop-blur">
-          <p className="mb-4 text-[10px] font-semibold uppercase tracking-widest text-zinc-400">
-            Find &amp; Filter Programs
-          </p>
-          {/* Name search — full width on top */}
-          <div className="mb-4 flex flex-col gap-1.5">
-            <label className="text-xs font-semibold uppercase tracking-widest text-zinc-500">
-              Search by School Name
-            </label>
+        {/* Search bar */}
+        <section className="flex flex-col gap-4">
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500 pointer-events-none" />
             <input
               type="text"
-              value={nameSearch}
-              onChange={handleNameSearch}
-              placeholder="e.g. Alabama, Duke, Ohio State…"
-              className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 text-sm text-white placeholder-zinc-600 focus:border-yellow-500/60 focus:outline-none focus:ring-1 focus:ring-yellow-500/20 transition-colors"
+              value={query}
+              onChange={handleQueryChange}
+              placeholder="Search any school — e.g. Duke, Ohio State, Alabama…"
+              className="w-full rounded-xl border border-zinc-800 bg-zinc-900/80 py-4 pl-11 pr-4 text-sm text-white placeholder-zinc-600 focus:border-yellow-500/60 focus:outline-none focus:ring-1 focus:ring-yellow-500/20 transition-colors"
+              autoComplete="off"
             />
-          </div>
-          <div className="grid gap-4 md:grid-cols-4">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold uppercase tracking-widest text-zinc-500">
-                Division
-              </label>
-              <select value={division} onChange={handleFilterChange(setDivision)} className={selectCls}>
-                <option value="">All Divisions</option>
-                {filterData?.divisions.map((o) => (
-                  <option key={o} value={o}>{o}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold uppercase tracking-widest text-zinc-500">
-                State
-              </label>
-              <select value={state} onChange={handleFilterChange(setState)} className={selectCls}>
-                <option value="">All States</option>
-                {filterData?.states.map((o) => (
-                  <option key={o} value={o}>{o}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold uppercase tracking-widest text-zinc-500">
-                Gender
-              </label>
-              <select value={gender} onChange={handleFilterChange(setGender)} className={selectCls}>
-                <option value="">All Genders</option>
-                {filterData?.genders.map((o) => (
-                  <option key={o} value={o}>{o}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="flex flex-col justify-end gap-1.5">
-              <label className="text-xs font-semibold uppercase tracking-widest text-zinc-500">
-                Selected
-              </label>
-              <div className="rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 text-sm text-white">
-                <span style={serifItalic} className="text-yellow-500">
-                  {selectedSchools.length}
-                </span>
-                <span className="ml-1 text-zinc-400">
-                  program{selectedSchools.length === 1 ? '' : 's'}
-                </span>
-                {totalItems > 0 && (
-                  <span className="ml-2 text-zinc-600 text-xs">/ {totalItems} matching</span>
-                )}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Grid */}
-        <section className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          {noFiltersActive ? (
-            /* Default empty state — prompt to search */
-            <div className="col-span-full flex flex-col items-center gap-4 rounded-xl border border-dashed border-zinc-800 p-16 text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full border border-zinc-800 bg-zinc-900">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-yellow-500" aria-hidden="true">
-                  <circle cx="11" cy="11" r="8"/>
-                  <path d="m21 21-4.35-4.35"/>
-                </svg>
-              </div>
-              <div>
-                <p
-                  className="text-white"
-                  style={{ ...serifItalic, fontSize: 'clamp(1.25rem, 3vw, 1.75rem)' }}
-                >
-                  Search for programs to compare
-                </p>
-                <p className="mt-2 text-sm text-zinc-500 max-w-sm mx-auto leading-relaxed">
-                  Type a school name above or use the filters to find programs with athlete reviews.
-                </p>
-              </div>
-            </div>
-          ) : isLoading && !schools.length && !loadingTimeout ? (
-            <div className="col-span-full flex justify-center py-16">
-              <div className="h-12 w-12 animate-spin rounded-full border-2 border-zinc-800 border-t-yellow-500" />
-            </div>
-          ) : isError || (isLoading && loadingTimeout) ? (
-            <div className="col-span-full rounded-xl border border-dashed border-zinc-700 p-12 text-center">
-              <p className="text-sm font-semibold text-zinc-400">No reviews yet</p>
-              <p className="mt-1 text-xs text-zinc-600 max-w-sm mx-auto">
-                Program rankings appear here once athletes start submitting reviews.
-              </p>
-            </div>
-          ) : schools.length === 0 ? (
-            <div className="col-span-full rounded-xl border border-dashed border-zinc-700 p-8 text-center">
-              <p className="text-sm text-zinc-400">No programs match your filters.</p>
-            </div>
-          ) : (
-            schools.map((school, index) => (
-              <motion.div
-                key={school.schoolId}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.04 }}
-                className="h-full"
+            {query && (
+              <button
+                onClick={() => { setQuery(''); setDebouncedQuery('') }}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-600 hover:text-zinc-400 transition-colors"
               >
-                <CollegeCard
-                  data={buildCardData(school)}
-                  isSelected={isSelected(school.schoolId)}
-                  onSelect={() => toggleSelection(school)}
-                />
-              </motion.div>
-            ))
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+
+          {/* Selection pills */}
+          {selectedSchools.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500">
+                Comparing:
+              </span>
+              {selectedSchools.map((school, idx) => {
+                const colors = ['#eab308', '#22d3ee', '#fb7185', '#a78bfa']
+                return (
+                  <span
+                    key={school.schoolId}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-zinc-700 bg-zinc-900 px-3 py-1 text-xs font-semibold text-white"
+                  >
+                    <span
+                      className="h-2 w-2 rounded-full flex-shrink-0"
+                      style={{ backgroundColor: colors[idx] }}
+                    />
+                    {school.name}
+                    <button
+                      onClick={() => toggleSelection(school)}
+                      className="ml-1 text-zinc-600 hover:text-white transition-colors"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                )
+              })}
+              <button
+                onClick={clearAll}
+                className="text-[10px] font-semibold uppercase tracking-widest text-zinc-600 hover:text-zinc-400 transition-colors ml-1"
+              >
+                Clear all
+              </button>
+              {selectedSchools.length >= MAX_SELECTIONS && (
+                <span className="text-[10px] font-semibold uppercase tracking-widest text-yellow-500/70">
+                  Max 4 programs
+                </span>
+              )}
+            </div>
           )}
         </section>
 
-        {isFetching && schools.length > 0 && (
-          <div className="flex justify-center text-[10px] font-semibold uppercase tracking-widest text-zinc-500">
-            Updating…
-          </div>
-        )}
+        {/* Search results grid */}
+        <AnimatePresence mode="wait">
+          {!showResults ? (
+            <motion.div
+              key="empty"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex flex-col items-center gap-5 rounded-xl border border-dashed border-zinc-800 py-20 text-center"
+            >
+              <div className="flex h-14 w-14 items-center justify-center rounded-full border border-zinc-800 bg-zinc-900">
+                <Search className="h-5 w-5 text-yellow-500" />
+              </div>
+              <div>
+                <p className="text-white" style={{ ...serifItalic, fontSize: 'clamp(1.25rem, 3vw, 1.75rem)' }}>
+                  Search any program to compare
+                </p>
+                <p className="mt-2 text-sm text-zinc-500 max-w-sm mx-auto leading-relaxed">
+                  Type at least 2 characters to search all 1,086 schools in our database.
+                  Select up to 4 programs to compare them side by side.
+                </p>
+              </div>
+              <div className="flex flex-col gap-2 mt-2">
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-zinc-600">Try searching</p>
+                <div className="flex flex-wrap justify-center gap-2">
+                  {['Alabama', 'Duke', 'Ohio State', 'USC', 'Notre Dame'].map((name) => (
+                    <button
+                      key={name}
+                      onClick={() => { setQuery(name); setDebouncedQuery(name) }}
+                      className="rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1 text-xs font-semibold text-zinc-400 hover:border-yellow-500/50 hover:text-white transition-colors"
+                    >
+                      {name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          ) : searching ? (
+            <motion.div
+              key="loading"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex justify-center py-16"
+            >
+              <div className="h-10 w-10 animate-spin rounded-full border-2 border-zinc-800 border-t-yellow-500" />
+            </motion.div>
+          ) : results.length === 0 ? (
+            <motion.div
+              key="no-results"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="rounded-xl border border-dashed border-zinc-800 py-12 text-center"
+            >
+              <p className="text-sm text-zinc-500">No schools found for &ldquo;{debouncedQuery}&rdquo;</p>
+              <p className="mt-1 text-xs text-zinc-700">Try a shorter name or check spelling.</p>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="results"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="flex flex-col gap-4"
+            >
+              {/* Info banner when results have no reviews */}
+              {results.every((r) => !r.hasReviews) && (
+                <div className="flex items-start gap-3 rounded-xl border border-zinc-800 bg-zinc-900/50 px-4 py-3">
+                  <Info className="h-4 w-4 text-yellow-500/70 flex-shrink-0 mt-0.5" />
+                  <p className="text-xs text-zinc-500 leading-relaxed">
+                    These programs haven't been reviewed yet. You can still add them to your comparison — 
+                    their cards will show a placeholder and you can be the first to rate them.
+                  </p>
+                </div>
+              )}
 
-        <div className="mt-4">
-          <Pagination
-            currentPage={page}
-            totalPages={Math.max(1, Math.ceil((totalItems || 0) / PAGE_SIZE))}
-            onPageChange={setPage}
-            totalItems={totalItems}
-            itemsPerPage={PAGE_SIZE}
-          />
-        </div>
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                {results.map((school, index) => (
+                  <motion.div
+                    key={school.schoolId}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: index * 0.04 }}
+                    className={`h-full transition-opacity ${isSelected(school.schoolId) || selectedSchools.length < MAX_SELECTIONS ? '' : 'opacity-50 pointer-events-none'}`}
+                  >
+                    <CollegeCard
+                      data={toCardData(school)}
+                      isSelected={isSelected(school.schoolId)}
+                      onSelect={() => toggleSelection(school)}
+                    />
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {selectedSchools.length >= 2 && (
-          <div id="comparison-table">
-            <ComparisonTable schools={selectedSchools} />
-          </div>
-        )}
+        {/* Comparison table — shown when ≥ 2 selected */}
+        <AnimatePresence>
+          {showCompare && (
+            <motion.div
+              key="table"
+              id="comparison-table"
+              initial={{ opacity: 0, y: 32 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 16 }}
+              transition={{ duration: 0.5 }}
+            >
+              <ComparisonTable schools={selectedSchools} />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
 
       {/* Sticky compare CTA */}
-      {selectedSchools.length >= 2 && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
-          <button
-            onClick={() =>
-              document.getElementById('comparison-table')?.scrollIntoView({ behavior: 'smooth' })
-            }
-            className="bg-yellow-500 text-black font-bold uppercase tracking-widest px-8 py-3 rounded-full shadow-2xl hover:bg-yellow-400 transition-colors text-sm"
+      <AnimatePresence>
+        {showCompare && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2"
           >
-            Compare {selectedSchools.length} Programs ↓
-          </button>
-        </div>
-      )}
+            <button
+              onClick={() =>
+                document
+                  .getElementById('comparison-table')
+                  ?.scrollIntoView({ behavior: 'smooth' })
+              }
+              className="rounded-full bg-yellow-500 px-8 py-3 text-sm font-black uppercase tracking-widest text-black shadow-2xl shadow-yellow-500/30 hover:bg-yellow-400 transition-colors"
+            >
+              Compare {selectedSchools.length} Programs ↓
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

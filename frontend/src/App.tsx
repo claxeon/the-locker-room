@@ -159,6 +159,9 @@ function App() {
             {/* ── Auth routes ───────────────────────────────────────────── */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
+            {/* Canonical redirect for common /auth/* convention */}
+            <Route path="/auth/login" element={<Navigate to="/login" replace />} />
+            <Route path="/auth/signup" element={<Navigate to="/signup" replace />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/terms" element={<TermsPage />} />
