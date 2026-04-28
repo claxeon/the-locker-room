@@ -209,7 +209,7 @@ export const SchoolProfile: React.FC<SchoolProfileProps> = ({ slug, onBack }) =>
             <p className="text-xs text-zinc-500 mt-1">Your review is anonymous and helps other athletes make better decisions.</p>
           </div>
           <Link
-            to="/submit-review"
+            to={`/submit-review?school_id=${school.school_id}&school_name=${encodeURIComponent(school.institution_name)}`}
             className="inline-flex flex-shrink-0 items-center gap-2 rounded-xl bg-yellow-500 hover:bg-yellow-400 transition-colors px-5 py-2.5 text-xs font-black uppercase tracking-widest text-black"
           >
             <PenSquare className="h-3.5 w-3.5" />

@@ -14,6 +14,15 @@ module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
+      fontSize: {
+        '2xs': ['0.625rem', { lineHeight: '0.875rem' }], // 10px — replaces hardcoded text-[10px]
+        'xs':  ['0.75rem',  { lineHeight: '1rem' }],     // 12px standard
+      },
+      letterSpacing: {
+        'label':   '0.08em',   // section labels, nav items
+        'display': '0.12em',   // hero counters
+        'wide':    '0.2em',    // pill badges
+      },
       colors: {
         border: withOpacity("--border"),
         input: withOpacity("--input"),

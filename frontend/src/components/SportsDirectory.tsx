@@ -31,16 +31,29 @@ export const SportsDirectory: React.FC<SportsDirectoryProps> = ({ onSchoolClick 
 
   const renderError = () => (
     <div className="relative min-h-screen bg-black py-16 text-white">
-      <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 via-black to-zinc-900/40" />
-      <div className="relative mx-auto max-w-4xl px-6">
-        <div className="border-4 border-red-500/40 bg-red-500/10 p-8 text-center">
-          <h2 className="text-3xl font-black uppercase text-red-300">
-            Error Loading Sports Directory
-          </h2>
-          <p className="mt-4 text-red-200">{error}</p>
-          <p className="mt-2 text-sm font-medium uppercase tracking-wider text-red-200/70">
-            Check browser console for debugging details
-          </p>
+      <div className="relative mx-auto max-w-lg px-6 pt-32 text-center">
+        <div className="flex flex-col items-center gap-5">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full border border-red-500/30 bg-red-500/10">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-red-400">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 8v4M12 16h.01" />
+            </svg>
+          </div>
+          <div>
+            <h2 className="text-lg font-black uppercase tracking-tight text-white">
+              Unable to Load Programs
+            </h2>
+            <p className="mt-2 text-sm text-zinc-500 leading-relaxed max-w-sm mx-auto">
+              We couldn't connect to our database right now. This is usually temporary —
+              try refreshing the page or check back in a moment.
+            </p>
+          </div>
+          <button
+            onClick={() => window.location.reload()}
+            className="rounded-full border border-zinc-800 bg-zinc-900 px-6 py-2.5 text-xs font-black uppercase tracking-widest text-white hover:border-yellow-500/40 hover:text-yellow-400 transition-colors"
+          >
+            Refresh Page
+          </button>
         </div>
       </div>
     </div>

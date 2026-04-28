@@ -490,12 +490,21 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
         </section>
 
         {/* Anonymity toggle */}
-        <section>
+        <section className="space-y-2">
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">Visibility</span>
+            <span className="rounded bg-zinc-800 px-2 py-0.5 text-[10px] text-zinc-500 leading-tight">
+              {isAnonymous
+                ? 'Your name is hidden. School & sport are still shown.'
+                : 'Your display name will be visible on this review.'}
+            </span>
+          </div>
           <button
             type="button"
             onClick={() => setIsAnonymous((prev) => !prev)}
             className="flex items-center gap-3 group"
             aria-pressed={isAnonymous}
+            aria-label={isAnonymous ? 'Review is anonymous — click to make public' : 'Review is public — click to make anonymous'}
           >
             <span
               className={`relative inline-flex h-6 w-11 items-center rounded-full border-2 transition-colors ${

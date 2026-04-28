@@ -49,6 +49,9 @@ import { ExploreReviews } from "./pages/ExploreReviews";
 import { PrivacyPage } from "./pages/PrivacyPage";
 import { TermsPage } from "./pages/TermsPage";
 
+// ── Submit Review
+import { SubmitReviewPage as SubmitReview } from "./pages/SubmitReviewPage";
+
 // ── Auth context
 import { AuthProvider, useAuth } from "./hooks/useAuth";
 
@@ -186,7 +189,7 @@ function App() {
               }
             />
 
-            {/* ── Protected routes (examples — uncomment as features ship) ─
+            {/* ── Submit Review — protected, requires login ── */}
             <Route
               path="/submit-review"
               element={
@@ -195,7 +198,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            ──────────────────────────────────────────────────────────────── */}
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </div>

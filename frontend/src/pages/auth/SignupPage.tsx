@@ -205,12 +205,18 @@ export function SignupPage() {
 
         // ── 3. Insert roster_submissions row so the admin can verify later.
         // IMPORTANT: schema columns are school_id (integer, NOT NULL) and submitted_evidence
+        // If the user typed a school name manually (not from autocomplete), flag it in
+        // admin_notes so the reviewer knows the school wasn't verified against our DB.
+        const isManualSchool = !selectedSchoolId && schoolQuery.trim().length > 0
         const submissionInsert: Record<string, unknown> = {
           user_id: newUser.id,
           sport: form.sport.trim(),
           gender: form.gender,
           status: "pending",
           submitted_evidence: form.rosterEvidence.trim(),
+          ...(isManualSchool
+            ? { admin_notes: `[MANUAL SCHOOL ENTRY — not matched in DB]: "${schoolQuery.trim()}" — verify this school exists before approving.` }
+            : {}),
         };
         // school_id is NOT NULL — only include it when the user picked from autocomplete
         if (selectedSchoolId) {

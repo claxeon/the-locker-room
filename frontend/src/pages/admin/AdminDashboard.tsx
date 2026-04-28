@@ -83,7 +83,7 @@ const ErrorBanner: React.FC<{ message: string }> = ({ message }) => (
   </div>
 )
 
-const EmptyState: React.FC<{ message: string }> = ({ message }) => (
+const EmptyState: React.FC<{ message: string; hint?: string }> = ({ message, hint }) => (
   <div className="flex flex-col items-center justify-center py-16 text-zinc-500">
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -99,7 +99,8 @@ const EmptyState: React.FC<{ message: string }> = ({ message }) => (
         d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
       />
     </svg>
-    <p className="text-sm uppercase tracking-widest">{message}</p>
+    <p className="text-sm font-semibold uppercase tracking-widest">{message}</p>
+    {hint && <p className="mt-1.5 text-xs text-zinc-600 max-w-xs text-center leading-relaxed">{hint}</p>}
   </div>
 )
 
@@ -302,7 +303,7 @@ const PendingVerificationsTab: React.FC<{ adminUserId: string }> = ({
 
   if (loading) return <Spinner />
   if (error) return <ErrorBanner message={error} />
-  if (submissions.length === 0) return <EmptyState message="No pending verifications" />
+  if (submissions.length === 0) return <EmptyState message="No pending verifications" hint="New athlete submissions will appear here. When an athlete signs up, their roster evidence is queued for your review before they can post." />
 
   return (
     <div className="space-y-5">
@@ -581,7 +582,7 @@ const AllUsersTab: React.FC = () => {
       />
 
       {filtered.length === 0 ? (
-        <EmptyState message="No users found" />
+        <EmptyState message="No users found" hint="Try adjusting the search query. All registered athletes and admins appear here once their account is created." />
       ) : (
         <div className="overflow-x-auto rounded-xl border border-zinc-800">
           <table className="w-full text-sm">
@@ -789,7 +790,7 @@ const ReviewModerationTab: React.FC<ReviewModerationTabProps> = ({
 
   if (loading) return <Spinner />
   if (error) return <ErrorBanner message={error} />
-  if (reviews.length === 0) return <EmptyState message="No pending reviews" />
+  if (reviews.length === 0) return <EmptyState message="No reviews in the queue" hint="Reviews submitted by verified athletes appear here for moderation before they go live on school profiles." />
 
   return (
     <div className="space-y-5">

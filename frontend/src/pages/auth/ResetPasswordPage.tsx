@@ -181,9 +181,6 @@ export function ResetPasswordPage() {
             <AlertCircle size={28} className="text-red-400" />
           </div>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-2">
-              The Locker Room
-            </p>
             <h1 className="text-2xl font-black uppercase tracking-tight text-white mb-2">
               Link Expired
             </h1>
@@ -218,9 +215,6 @@ export function ResetPasswordPage() {
             <CheckCircle size={28} className="text-green-400" />
           </div>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-2">
-              The Locker Room
-            </p>
             <h1 className="text-2xl font-black uppercase tracking-tight text-white mb-2">
               Password Updated
             </h1>
@@ -255,9 +249,6 @@ export function ResetPasswordPage() {
       >
         {/* Header */}
         <div className="space-y-2">
-          <p className="text-yellow-500 text-xs font-bold uppercase tracking-widest">
-            The Locker Room
-          </p>
           <h1 className="text-3xl font-black uppercase tracking-tight text-white">
             Set New Password
           </h1>
