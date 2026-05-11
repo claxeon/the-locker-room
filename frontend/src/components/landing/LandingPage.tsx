@@ -536,7 +536,7 @@ const SanctioningBodiesSection = () => {
 
 /** Fragment 1 — ATHLETE SCORECARD: mini radar + score + breakdown */
 const ScorecardFragment = () => {
-  const cx = 90, cy = 78, r = 52, labelR = 68
+  const cx = 120, cy = 96, r = 58, labelR = 86
   const scores = [82, 77, 88, 74, 91, 79]
   const n = 6
   const axisAngle = (i: number) => -90 + (360 / n) * i
@@ -561,11 +561,11 @@ const ScorecardFragment = () => {
       style={{ backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
     >
       <div className="flex items-start gap-4">
-        {/* Mini radar */}
+        {/* Mini radar — viewBox 240×200, labels have 34px margin each side */}
         <svg
-          viewBox="0 0 180 156"
-          width="140"
-          height="121"
+          viewBox="0 0 240 200"
+          width="150"
+          height="125"
           overflow="visible"
           aria-hidden="true"
           style={{ flexShrink: 0 }}
@@ -583,19 +583,19 @@ const ScorecardFragment = () => {
             const p = polar(axisAngle(i), 100, r)
             return <line key={i} x1={cx} y1={cy} x2={p.x} y2={p.y} stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
           })}
-          {/* Polygon — lavender-quiet */}
-          <polygon points={points} fill="rgba(155,151,181,0.18)" stroke="#9B97B5" strokeWidth="1.5" strokeLinejoin="round" />
+          {/* Polygon — lavender-quiet, full-opacity stroke, 0.15 fill */}
+          <polygon points={points} fill="rgba(155,151,181,0.15)" stroke="#9B97B5" strokeWidth="1.5" strokeLinejoin="round" strokeOpacity="1" />
           {/* Dots */}
           {scores.map((s, i) => {
             const p = polar(axisAngle(i), s, r)
             return <circle key={i} cx={p.x} cy={p.y} r="2.5" fill="#9B97B5" />
           })}
-          {/* Axis labels */}
+          {/* Axis labels — sit at labelR=86, well outside r=58 plot radius */}
           {categories.map((label, i) => {
             const p = polar(axisAngle(i), 100, labelR)
-            const isLeft = p.x < cx - 8, isRight = p.x > cx + 8
+            const isLeft = p.x < cx - 10, isRight = p.x > cx + 10
             const anchor = isLeft ? 'end' : isRight ? 'start' : 'middle'
-            const dy = p.y < cy - 8 ? -4 : p.y > cy + 8 ? 10 : 4
+            const dy = p.y < cy - 10 ? -5 : p.y > cy + 10 ? 12 : 5
             return (
               <text
                 key={label}
@@ -603,10 +603,10 @@ const ScorecardFragment = () => {
                 y={p.y + dy}
                 textAnchor={anchor}
                 fill="#555570"
-                fontSize="7"
+                fontSize="8"
                 fontFamily="Satoshi, Inter, sans-serif"
                 fontWeight="600"
-                letterSpacing="0.10em"
+                letterSpacing="0.08em"
               >
                 {label}
               </text>
@@ -676,55 +676,79 @@ const VerifiedReviewFragment = () => (
   </div>
 )
 
-/** Fragment 3 — COLLEGE COMPARISON: two mini radar cards side by side */
+/** Fragment 3 — COLLEGE COMPARISON: one radar, two overlaid polygons */
 const ComparisonFragment = () => {
-  const makePoints = (scores: number[], cx: number, cy: number, r: number) => {
-    const n = 6
-    return scores.map((s, i) => {
-      const angle = (-90 + (360 / n) * i) * Math.PI / 180
-      return `${cx + (s / 100) * r * Math.cos(angle)},${cy + (s / 100) * r * Math.sin(angle)}`
-    }).join(' ')
+  const cx = 80, cy = 72, r = 44, n = 6
+  const axisAngle = (i: number) => -90 + (360 / n) * i
+  const polar = (angleDeg: number, value: number, radius: number) => {
+    const rad = (angleDeg * Math.PI) / 180
+    const d = (value / 100) * radius
+    return { x: cx + d * Math.cos(rad), y: cy + d * Math.sin(rad) }
   }
-  const MiniRadar = ({ scores, label }: { scores: number[]; label: string }) => {
-    const cx = 44, cy = 40, r = 28
-    const gls = [33, 66, 100]
-    const n = 6
-    const pts = makePoints(scores, cx, cy, r)
-    return (
-      <div className="flex flex-col items-center gap-1.5">
-        <svg viewBox="0 0 88 80" width="88" height="80" overflow="visible" aria-hidden="true">
-          {gls.map((lvl) => {
-            const ps = Array.from({ length: n }, (_, i) => {
-              const a = (-90 + (360 / n) * i) * Math.PI / 180
-              return `${cx + (lvl / 100) * r * Math.cos(a)},${cy + (lvl / 100) * r * Math.sin(a)}`
-            }).join(' ')
-            return <polygon key={lvl} points={ps} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="0.8" />
-          })}
-          {Array.from({ length: n }, (_, i) => {
-            const a = (-90 + (360 / n) * i) * Math.PI / 180
-            return <line key={i} x1={cx} y1={cy} x2={cx + r * Math.cos(a)} y2={cy + r * Math.sin(a)} stroke="rgba(255,255,255,0.07)" strokeWidth="0.8" />
-          })}
-          <polygon points={pts} fill="rgba(155,151,181,0.18)" stroke="#9B97B5" strokeWidth="1.2" strokeLinejoin="round" />
-          {scores.map((s, i) => {
-            const a = (-90 + (360 / n) * i) * Math.PI / 180
-            const d = (s / 100) * r
-            return <circle key={i} cx={cx + d * Math.cos(a)} cy={cy + d * Math.sin(a)} r="2" fill="#9B97B5" />
-          })}
-        </svg>
-        <span style={{ fontSize: '8px', color: '#555570', fontFamily: 'Satoshi, Inter, sans-serif', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
-          {label}
-        </span>
-      </div>
-    )
-  }
+  const makePoints = (scores: number[]) =>
+    scores.map((s, i) => { const p = polar(axisAngle(i), s, r); return `${p.x},${p.y}` }).join(' ')
+
+  // Polygon A — lavender-quiet — "BALANCED" profile
+  const scoresA = [78, 82, 75, 80, 85, 77]
+  // Polygon B — cream — "ELITE FACILITIES" profile
+  const scoresB = [95, 88, 45, 60, 55, 30]
+  const gridLevels = [33, 66, 100]
+
   return (
     <div
-      className="flex items-stretch gap-2 rounded-xl p-3"
+      className="flex flex-col items-center gap-2 rounded-xl p-3"
       style={{ backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
     >
-      <MiniRadar scores={[85, 78, 72, 80, 88, 65]} label="Program A" />
-      <div style={{ width: '1px', backgroundColor: 'rgba(255,255,255,0.07)', alignSelf: 'stretch' }} />
-      <MiniRadar scores={[65, 88, 90, 75, 70, 82]} label="Program B" />
+      <svg
+        viewBox="0 0 160 144"
+        width="130"
+        height="117"
+        overflow="visible"
+        aria-hidden="true"
+      >
+        {/* Grid rings */}
+        {gridLevels.map((lvl) => {
+          const pts = Array.from({ length: n }, (_, i) => {
+            const p = polar(axisAngle(i), lvl, r)
+            return `${p.x},${p.y}`
+          }).join(' ')
+          return <polygon key={lvl} points={pts} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="0.8" />
+        })}
+        {/* Spokes */}
+        {Array.from({ length: n }, (_, i) => {
+          const p = polar(axisAngle(i), 100, r)
+          return <line key={i} x1={cx} y1={cy} x2={p.x} y2={p.y} stroke="rgba(255,255,255,0.06)" strokeWidth="0.8" />
+        })}
+        {/* Polygon A — lavender-quiet, 0.35 fill */}
+        <polygon
+          points={makePoints(scoresA)}
+          fill="rgba(155,151,181,0.35)"
+          stroke="#9B97B5"
+          strokeWidth="1.5"
+          strokeLinejoin="round"
+          strokeOpacity="1"
+        />
+        {/* Polygon B — cream, 0.25 fill */}
+        <polygon
+          points={makePoints(scoresB)}
+          fill="rgba(245,239,224,0.25)"
+          stroke="#F5EFE0"
+          strokeWidth="1.5"
+          strokeLinejoin="round"
+          strokeOpacity="0.70"
+        />
+      </svg>
+      {/* Legend pills */}
+      <div className="flex items-center gap-3">
+        <span className="flex items-center gap-1">
+          <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#9B97B5', flexShrink: 0, display: 'inline-block' }} />
+          <span style={{ fontSize: '8px', color: '#555570', fontFamily: 'Satoshi, Inter, sans-serif', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase' }}>Program A</span>
+        </span>
+        <span className="flex items-center gap-1">
+          <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#F5EFE0', flexShrink: 0, display: 'inline-block' }} />
+          <span style={{ fontSize: '8px', color: '#555570', fontFamily: 'Satoshi, Inter, sans-serif', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase' }}>Program B</span>
+        </span>
+      </div>
     </div>
   )
 }
@@ -760,45 +784,35 @@ const GenderEquityFragment = () => {
   )
 }
 
-/** Fragment 5 — TEAM CULTURE: typographic tag cloud */
+/** Fragment 5 — TEAM CULTURE: editorial three-line typography */
 const CultureFragment = () => {
-  const tags = [
-    { text: 'INCLUSIVE',    size: '12px', opacity: 0.90, x: '10%',  y: '12%'  },
-    { text: 'INTENSE',      size: '10px', opacity: 0.55, x: '56%',  y: '6%'   },
-    { text: 'SUPPORTIVE',   size: '11px', opacity: 0.75, x: '4%',   y: '54%'  },
-    { text: 'COMPETITIVE',  size: '10px', opacity: 0.50, x: '42%',  y: '46%'  },
-    { text: 'DRIVEN',       size: '9px',  opacity: 0.40, x: '68%',  y: '68%'  },
-    { text: 'TIGHT-KNIT',   size: '9px',  opacity: 0.35, x: '8%',   y: '82%'  },
+  const lines = [
+    { text: 'INCLUSIVE · INTENSE',       color: '#F5EFE0', size: '14px', weight: 600 },
+    { text: 'SUPPORTIVE · COMPETITIVE',  color: '#8888a8', size: '13px', weight: 500 },
+    { text: 'DRIVEN · TIGHT-KNIT',       color: '#555570', size: '12px', weight: 500 },
   ]
   return (
     <div
-      className="relative rounded-xl"
-      style={{
-        height: '80px',
-        backgroundColor: 'rgba(255,255,255,0.03)',
-        border: '1px solid rgba(255,255,255,0.07)',
-        overflow: 'hidden',
-      }}
+      className="rounded-xl px-4 py-3"
+      style={{ backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
     >
-      {tags.map(({ text, size, opacity, x, y }) => (
-        <span
-          key={text}
-          style={{
-            position: 'absolute',
-            left: x,
-            top: y,
-            fontSize: size,
-            fontFamily: 'Satoshi, Inter, sans-serif',
-            fontWeight: 800,
-            letterSpacing: '0.14em',
-            color: '#F5EFE0',
-            opacity,
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {text}
-        </span>
-      ))}
+      <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.7 }}>
+        {lines.map(({ text, color, size, weight }) => (
+          <span
+            key={text}
+            style={{
+              fontFamily: 'Satoshi, Inter, sans-serif',
+              fontSize: size,
+              fontWeight: weight,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              color,
+            }}
+          >
+            {text}
+          </span>
+        ))}
+      </div>
     </div>
   )
 }
@@ -869,7 +883,7 @@ const FEATURE_DATA = [
   {
     id: 'culture',
     title: 'Team Culture',
-    description: 'Six-dimension scoring: facilities, coaching, life balance, academic support, culture, and gender equity.',
+    description: 'Athletes describe the room — inclusive, intense, supportive, competitive. The words that don\'t show up in the brochure.',
     fragment: <CultureFragment />,
   },
   {
