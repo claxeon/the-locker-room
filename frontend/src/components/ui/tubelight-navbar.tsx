@@ -17,88 +17,86 @@ export type TubelightNavBarProps = {
   className?: string
 }
 
+/**
+ * NavBar — flat pill nav, no glow, no floating dot, no box-shadow.
+ * Positioning is handled by the parent (GlobalNav). This component
+ * renders only the pill container + items.
+ *
+ * Active state: one subtle lighter fill on the segment only.
+ * Removed: outer glow/halo, floating dot indicator, border emphasis on active item.
+ */
 export function NavBar({ items, className }: TubelightNavBarProps) {
   const location = useLocation()
+
   const activeItem = useMemo(() => {
     const { pathname, hash } = location
     return (
       items.find((item) => item.isActiveMatch?.(pathname, hash)) ??
       items.find((item) => {
         const [itemPath, itemHash] = item.to.split("#")
-        const matchesPath = pathname === itemPath
-        if (!itemHash) {
-          return matchesPath
-        }
-        return matchesPath && hash === `#${itemHash}`
+        if (!itemHash) return pathname === itemPath
+        return pathname === itemPath && hash === `#${itemHash}`
       }) ??
       items[0]
     )
   }, [items, location])
 
   return (
+    // Flat pill container — no box-shadow, no glow, no filter
     <div
-      className={cn(
-        "fixed left-1/2 z-50 -translate-x-1/2",
-        "bottom-6 sm:bottom-auto sm:top-6",
-        className,
-      )}
+      className={cn("flex items-center gap-0.5 rounded-full px-1.5 py-1.5", className)}
+      style={{
+        border: "1px solid rgba(255,255,255,0.08)",
+        backgroundColor: "rgba(255,255,255,0.04)",
+        // No box-shadow — outer glow removed
+      }}
     >
-      {/* Nav pill — navy surface, periwinkle border/glow */}
-      <div
-        className="flex items-center gap-1 rounded-full px-2 py-2 backdrop-blur-xl"
-        style={{
-          border: '1px solid rgba(124,126,184,0.28)',
-          backgroundColor: 'rgba(26,26,46,0.85)',
-          boxShadow: '0 20px 60px -15px rgba(124,126,184,0.30)',
-        }}
-      >
-        {items.map((item) => {
-          const Icon = item.icon
-          const isActive = item.name === activeItem.name
+      {items.map((item) => {
+        const Icon = item.icon
+        const isActive = item.name === activeItem.name
 
-          return (
-            <NavLink
-              key={item.name}
-              to={item.to}
-              className={() =>
-                cn(
-                  "relative flex items-center gap-2 rounded-full px-5 py-2 text-sm font-semibold uppercase tracking-[0.25em] transition-colors",
-                  isActive ? "text-[#f0f0f8]" : "text-[#555570] hover:text-[#a8a8c0]",
-                )
+        return (
+          <NavLink
+            key={item.name}
+            to={item.to}
+            aria-label={item.name}
+            aria-current={isActive ? "page" : undefined}
+            className="relative flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] transition-colors duration-150 ease-out"
+            style={({ isActive: linkActive }) => {
+              // Use the computed isActive (which respects isActiveMatch) not linkActive
+              void linkActive
+              return {
+                color: isActive ? "var(--foreground, #f0f0f8)" : "rgba(255,255,255,0.35)",
               }
-              aria-label={item.name}
-            >
-              <span className="hidden md:inline">{item.name}</span>
-              <span className="inline md:hidden" aria-hidden>
-                <Icon size={18} strokeWidth={2.5} />
-              </span>
+            }}
+            onMouseEnter={(e) => {
+              if (!isActive)
+                (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.75)"
+            }}
+            onMouseLeave={(e) => {
+              if (!isActive)
+                (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.35)"
+            }}
+          >
+            {/* Desktop: text label */}
+            <span className="hidden md:inline">{item.name}</span>
+            {/* Mobile: icon only */}
+            <span className="inline md:hidden" aria-hidden>
+              <Icon size={16} strokeWidth={2} />
+            </span>
 
-              {isActive && (
-                <motion.div
-                  layoutId="tubelight"
-                  className="absolute inset-0 -z-10 rounded-full"
-                  style={{
-                    border: '1px solid rgba(124,126,184,0.30)',
-                    backgroundColor: 'rgba(124,126,184,0.14)',
-                  }}
-                  transition={{ type: "spring", stiffness: 260, damping: 26 }}
-                >
-                  {/* Periwinkle tube-light top accent */}
-                  <div
-                    className="absolute -top-3 left-1/2 h-1 w-8 -translate-x-1/2 rounded-full"
-                    style={{ backgroundColor: '#9496cc' }}
-                  >
-                    <div
-                      className="absolute -top-2 left-1/2 h-5 w-12 -translate-x-1/2 rounded-full blur"
-                      style={{ backgroundColor: 'rgba(148,150,204,0.28)' }}
-                    />
-                  </div>
-                </motion.div>
-              )}
-            </NavLink>
-          )
-        })}
-      </div>
+            {/* Active segment highlight — ONE subtle fill, no border, no glow, no dot */}
+            {isActive && (
+              <motion.span
+                layoutId="nav-active"
+                className="absolute inset-0 -z-10 rounded-full"
+                style={{ backgroundColor: "rgba(255,255,255,0.08)" }}
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              />
+            )}
+          </NavLink>
+        )
+      })}
     </div>
   )
 }
