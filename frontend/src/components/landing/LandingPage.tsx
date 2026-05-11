@@ -451,22 +451,6 @@ const HeroSection = ({ onGetStarted }: { onGetStarted?: () => void }) => {
             <span style={{ color: CREAM, opacity: 0.38 }}>anonymously</span>
           </motion.h2>
 
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.42 }}
-            style={{
-              color: MUTED,
-              fontSize: '18px',
-              lineHeight: 1.5,
-              marginTop: '32px',
-              maxWidth: '480px',
-              fontFamily: 'Satoshi, Inter, sans-serif',
-            }}
-          >
-            Six-dimension scorecards. Verified reviews. Anonymous by default.
-          </motion.p>
-
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
