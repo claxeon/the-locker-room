@@ -103,6 +103,277 @@ const serifStyle: React.CSSProperties = {
   fontStyle: "italic",
 }
 
+// ─── Radar Chart ──────────────────────────────────────────────────────────────
+
+const RADAR_AXES = [
+  "FACILITIES",
+  "COACHING",
+  "LIFE BALANCE",
+  "ACADEMIC SUPPORT",
+  "TEAM CULTURE",
+  "GENDER EQUITY",
+]
+
+const RADAR_PROFILES: { label: string; scores: number[] }[] = [
+  { label: "BALANCED PROGRAM",              scores: [78, 82, 75, 80, 85, 77] },
+  { label: "ELITE FACILITIES, POOR EQUITY", scores: [95, 88, 45, 60, 55, 30] },
+  { label: "STRONG CULTURE, MODEST RESOURCES", scores: [55, 90, 88, 75, 95, 85] },
+]
+
+/** Convert (angle, value, cx, cy, r) → {x, y} on the SVG canvas */
+function polarPoint(
+  angleDeg: number,
+  value: number,
+  cx: number,
+  cy: number,
+  r: number,
+): { x: number; y: number } {
+  const rad = ((angleDeg - 90) * Math.PI) / 180
+  const d = (value / 100) * r
+  return { x: cx + d * Math.cos(rad), y: cy + d * Math.sin(rad) }
+}
+
+/** Build an SVG polygon points string from scores */
+function buildPoints(scores: number[], cx: number, cy: number, r: number): string {
+  return scores
+    .map((s, i) => {
+      const { x, y } = polarPoint((360 / scores.length) * i, s, cx, cy, r)
+      return `${x},${y}`
+    })
+    .join(" ")
+}
+
+/** Linear interpolation between two score arrays */
+function lerpScores(a: number[], b: number[], t: number): number[] {
+  return a.map((v, i) => v + (b[i] - v) * t)
+}
+
+const CYCLE_HOLD = 4000   // ms to hold each profile
+const MORPH_DURATION = 800 // ms for morph transition
+const MORPH_STEPS = 40     // animation frames
+const LABEL_FADE = 200     // ms for label fade each direction
+
+const HeroRadarCard = () => {
+  const n = RADAR_AXES.length
+  const cx = 180
+  const cy = 180
+  const r = 120     // polygon radius
+  const labelR = 148 // label placement radius (outside polygon)
+  const gridLevels = [20, 40, 60, 80, 100]
+
+  const [profileIdx, setProfileIdx] = useState(0)
+  const [displayScores, setDisplayScores] = useState(RADAR_PROFILES[0].scores)
+  const [labelText, setLabelText] = useState(RADAR_PROFILES[0].label)
+  const [labelVisible, setLabelVisible] = useState(true)
+  const [paused, setPaused] = useState(false)
+
+  const pausedRef = useRef(false)
+  const profileIdxRef = useRef(0)
+
+  // Keep refs in sync so the interval closure always has current values
+  useEffect(() => { pausedRef.current = paused }, [paused])
+  useEffect(() => { profileIdxRef.current = profileIdx }, [profileIdx])
+
+  useEffect(() => {
+    let frameId: ReturnType<typeof setTimeout>
+
+    const startMorph = (fromIdx: number, toIdx: number) => {
+      const from = RADAR_PROFILES[fromIdx].scores
+      const to   = RADAR_PROFILES[toIdx].scores
+      let step = 0
+
+      const tick = () => {
+        step++
+        const t = step / MORPH_STEPS
+        const ease = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t // ease-in-out
+        setDisplayScores(lerpScores(from, to, ease))
+        if (step < MORPH_STEPS) {
+          frameId = setTimeout(tick, MORPH_DURATION / MORPH_STEPS)
+        } else {
+          setDisplayScores(to)
+        }
+      }
+      tick()
+    }
+
+    const cycle = () => {
+      frameId = setTimeout(() => {
+        if (pausedRef.current) {
+          // Re-schedule check
+          cycle()
+          return
+        }
+        const nextIdx = (profileIdxRef.current + 1) % RADAR_PROFILES.length
+
+        // 1. Fade out label
+        setLabelVisible(false)
+
+        // 2. After fade-out, swap text + start morph
+        const fromIdx = profileIdxRef.current
+        frameId = setTimeout(() => {
+          setLabelText(RADAR_PROFILES[nextIdx].label)
+          setLabelVisible(true)
+          setProfileIdx(nextIdx)
+          startMorph(fromIdx, nextIdx)
+
+          // 3. Schedule next cycle after hold
+          cycle()
+        }, LABEL_FADE)
+      }, CYCLE_HOLD)
+    }
+
+    cycle()
+    return () => clearTimeout(frameId)
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const points = buildPoints(displayScores, cx, cy, r)
+
+  return (
+    <div
+      className="relative flex-shrink-0 rounded-2xl"
+      style={{
+        width: 'clamp(320px, 45vw, 480px)',
+        aspectRatio: '1 / 1',
+        backgroundColor: '#1a1a2e',
+        border: '1px solid rgba(255,255,255,0.08)',
+        padding: 'clamp(20px, 4vw, 32px)',
+        boxSizing: 'border-box',
+      }}
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      {/* Card header */}
+      <div className="mb-3">
+        <p
+          className="text-2xs font-semibold uppercase tracking-widest"
+          style={{ color: '#555570', letterSpacing: '0.18em' }}
+        >
+          Sample Scorecard
+        </p>
+        <p
+          className="mt-1 font-semibold"
+          style={{
+            fontSize: '16px',
+            color: '#f0f0f8',
+            fontFamily: 'Satoshi, Inter, sans-serif',
+            opacity: labelVisible ? 1 : 0,
+            transition: `opacity ${LABEL_FADE}ms ease`,
+            minHeight: '24px',
+          }}
+        >
+          {labelText}
+        </p>
+      </div>
+
+      {/* SVG Radar */}
+      <svg
+        viewBox="0 0 360 360"
+        className="w-full"
+        style={{ display: 'block', flex: '1 1 auto' }}
+        aria-hidden="true"
+      >
+        {/* Concentric gridlines */}
+        {gridLevels.map((level) => {
+          const pts = Array.from({ length: n }, (_, i) => {
+            const { x, y } = polarPoint((360 / n) * i, level, cx, cy, r)
+            return `${x},${y}`
+          }).join(" ")
+          return (
+            <polygon
+              key={level}
+              points={pts}
+              fill="none"
+              stroke="rgba(255,255,255,0.07)"
+              strokeWidth="1"
+            />
+          )
+        })}
+
+        {/* Axis spokes */}
+        {Array.from({ length: n }, (_, i) => {
+          const { x, y } = polarPoint((360 / n) * i, 100, cx, cy, r)
+          return (
+            <line
+              key={i}
+              x1={cx}
+              y1={cy}
+              x2={x}
+              y2={y}
+              stroke="rgba(255,255,255,0.07)"
+              strokeWidth="1"
+            />
+          )
+        })}
+
+        {/* Data polygon — filled */}
+        <polygon
+          points={points}
+          fill="rgba(124,126,184,0.18)"
+          stroke="#7c7eb8"
+          strokeWidth="2"
+          strokeLinejoin="round"
+        />
+
+        {/* Vertex dots */}
+        {displayScores.map((score, i) => {
+          const { x, y } = polarPoint((360 / n) * i, score, cx, cy, r)
+          return (
+            <circle
+              key={i}
+              cx={x}
+              cy={y}
+              r={3.5}
+              fill="#7c7eb8"
+            />
+          )
+        })}
+
+        {/* Axis labels */}
+        {RADAR_AXES.map((label, i) => {
+          const angle = (360 / n) * i
+          const { x, y } = polarPoint(angle, 100, cx, cy, labelR)
+          // Anchor and offset based on horizontal position
+          const isLeft  = x < cx - 10
+          const isRight = x > cx + 10
+          const anchor = isLeft ? 'end' : isRight ? 'start' : 'middle'
+          // Small vertical nudge for top/bottom labels
+          const dy = y < cy - 10 ? -6 : y > cy + 10 ? 14 : 5
+          return (
+            <text
+              key={label}
+              x={x}
+              y={y + dy}
+              textAnchor={anchor}
+              fill="#555570"
+              fontSize="9"
+              fontFamily="Satoshi, Inter, sans-serif"
+              fontWeight="600"
+              letterSpacing="0.12em"
+              style={{ textTransform: 'uppercase' }}
+            >
+              {label}
+            </text>
+          )
+        })}
+      </svg>
+
+      {/* Caption */}
+      <p
+        className="mt-2 text-center"
+        style={{
+          fontSize: '11px',
+          color: '#555570',
+          fontFamily: 'Satoshi, Inter, sans-serif',
+          letterSpacing: '0.08em',
+          textTransform: 'uppercase' as const,
+        }}
+      >
+        Cycling through real score profiles
+      </p>
+    </div>
+  )
+}
+
 // ─── HeroSection ──────────────────────────────────────────────────────────────
 const HeroSection = ({ onGetStarted }: { onGetStarted?: () => void }) => {
   const heroRef = useRef<HTMLElement | null>(null)
@@ -123,8 +394,14 @@ const HeroSection = ({ onGetStarted }: { onGetStarted?: () => void }) => {
     <section
       ref={heroRef}
       id="hero-section"
-      className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden px-6 text-center"
-      style={{ backgroundColor: '#0f0f1a' }}
+      className="relative flex min-h-screen w-full items-center overflow-hidden"
+      style={{
+        backgroundColor: '#0f0f1a',
+        paddingLeft:  'clamp(24px, 8vw, 80px)',
+        paddingRight: 'clamp(24px, 8vw, 80px)',
+        paddingTop: '96px',    // clear fixed header
+        paddingBottom: '64px',
+      }}
     >
       {/* Periwinkle radial glow — top center */}
       <div
@@ -149,112 +426,115 @@ const HeroSection = ({ onGetStarted }: { onGetStarted?: () => void }) => {
         transition={{ type: "spring", damping: 35, stiffness: 180 }}
       />
 
-      <div className="relative z-10 flex max-w-4xl flex-col items-center gap-8">
-        {/* Eyebrow badge */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-widest"
-          style={{
-            borderColor: 'rgba(124,126,184,0.35)',
-            backgroundColor: 'rgba(124,126,184,0.10)',
-            color: '#9496cc',
-          }}
-        >
-          <BicepsFlexed className="h-3.5 w-3.5" />
-          For Student Athletes
-        </motion.div>
-
-        {/* Heading */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.15 }}
-        >
-          <h1
-            className="leading-[1.05]"
+      {/* Two-column layout */}
+      <div
+        className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-center gap-16 lg:flex-row lg:items-center"
+        style={{ gap: 'clamp(40px, 6vw, 64px)' }}
+      >
+        {/* ── LEFT COLUMN — Text content ── */}
+        <div className="flex flex-1 flex-col items-start">
+          {/* Eyebrow badge */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-widest"
             style={{
-              fontSize: "clamp(4rem, 10vw, 8rem)",
+              borderColor: 'rgba(124,126,184,0.35)',
+              backgroundColor: 'rgba(124,126,184,0.10)',
+              color: '#9496cc',
+            }}
+          >
+            <BicepsFlexed className="h-3.5 w-3.5" />
+            For Student Athletes
+          </motion.div>
+
+          {/* Primary headline */}
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.15 }}
+            style={{
+              fontSize: 'clamp(2.8rem, 6.5vw, 4.5rem)',
               fontFamily: "'Instrument Serif', Georgia, serif",
+              fontWeight: 700,
               color: '#f0f0f8',
+              lineHeight: 1.02,
+              letterSpacing: '-0.02em',
+              marginTop: '24px',
             }}
           >
-            The Locker
+            Giving athletes
             <br />
-            <span style={{ color: '#7c7eb8' }}>Room.</span>
-          </h1>
-        </motion.div>
+            a voice.
+          </motion.h1>
 
-        {/* Tagline */}
-        <motion.p
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="text-base font-medium uppercase tracking-[0.2em]"
-          style={{ color: '#555570' }}
-        >
-          Rate.&nbsp;&nbsp;Review.&nbsp;&nbsp;Reform.
-        </motion.p>
+          {/* Tagline */}
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="font-medium uppercase tracking-[0.2em]"
+            style={{ color: '#555570', fontSize: '13px', marginTop: '24px' }}
+          >
+            Rate.&nbsp;&nbsp;Review.&nbsp;&nbsp;Reform.
+          </motion.p>
 
-        {/* Primary CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.45 }}
-        >
-          <button
-            onClick={onGetStarted}
-            className="group inline-flex items-center gap-3 rounded-xl px-8 py-4 text-sm font-bold uppercase tracking-widest transition-all"
+          {/* Supporting paragraph */}
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.42 }}
             style={{
-              backgroundColor: '#7c7eb8',
-              color: '#0f0f1a',
-              boxShadow: '0 0 32px 0 rgba(124,126,184,0.30)',
-            }}
-            onMouseEnter={e => {
-              (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#9496cc'
-              ;(e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 40px 0 rgba(148,150,204,0.40)'
-            }}
-            onMouseLeave={e => {
-              (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#7c7eb8'
-              ;(e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 32px 0 rgba(124,126,184,0.30)'
+              color: '#8888a8',
+              fontSize: '18px',
+              lineHeight: 1.5,
+              marginTop: '32px',
+              maxWidth: '480px',
+              fontFamily: 'Satoshi, Inter, sans-serif',
             }}
           >
-            Get Started
-            <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-          </button>
-        </motion.div>
+            Six-dimension scorecards. Verified reviews. Anonymous by default.
+          </motion.p>
 
-        {/* Stats row */}
+          {/* Primary CTA */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.55 }}
+            style={{ marginTop: '40px' }}
+          >
+            <button
+              onClick={onGetStarted}
+              className="group inline-flex items-center gap-3 rounded-xl px-8 py-4 text-sm font-bold uppercase tracking-widest transition-all"
+              style={{
+                backgroundColor: '#7c7eb8',
+                color: '#0f0f1a',
+                boxShadow: '0 0 32px 0 rgba(124,126,184,0.30)',
+              }}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#9496cc'
+                ;(e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 40px 0 rgba(148,150,204,0.40)'
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#7c7eb8'
+                ;(e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 32px 0 rgba(124,126,184,0.30)'
+              }}
+            >
+              Get Started
+              <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            </button>
+          </motion.div>
+        </div>
+
+        {/* ── RIGHT COLUMN — Radar chart card ── */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.65 }}
-          className="flex items-center gap-12 pt-4"
+          initial={{ opacity: 0, x: 32 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.7, delay: 0.3, ease: 'easeOut' }}
+          className="flex w-full flex-shrink-0 justify-center lg:w-auto"
         >
-          {[
-            { n: "1,086", label: "Schools Indexed" },
-            { n: "19,000+", label: "Sports Programs" },
-            { n: "6", label: "Sanctioning Bodies" },
-          ].map((stat, i) => (
-            <div key={i} className="flex flex-col items-center gap-1">
-              <span
-                className="leading-none"
-                style={{ ...serifStyle, fontSize: "clamp(1.75rem, 4vw, 2.5rem)", color: '#7c7eb8' }}
-              >
-                {stat.n}
-              </span>
-              <span className="text-2xs font-semibold uppercase tracking-display" style={{ color: '#555570' }}>
-                {stat.label}
-              </span>
-            </div>
-          )).reduce<React.ReactNode[]>((acc, el, i) => {
-            if (i > 0) acc.push(
-              <div key={`div-${i}`} className="h-8 w-px" style={{ backgroundColor: '#3a3a5c' }} />
-            )
-            acc.push(el)
-            return acc
-          }, [])}
+          <HeroRadarCard />
         </motion.div>
       </div>
     </section>
