@@ -13,7 +13,6 @@ import {
   ArrowRight,
   Award,
   BadgeCheck,
-  BicepsFlexed,
   ChevronRight,
   Target,
   Trophy,
@@ -155,12 +154,15 @@ const LABEL_FADE = 200     // ms for label fade each direction
 
 const HeroRadarCard = () => {
   const n = RADAR_AXES.length
-  // Expanded viewBox (420×420) so long axis labels like "GENDER EQUITY" and
-  // "LIFE BALANCE" never clip against the card edge.
-  const cx = 210
-  const cy = 210
-  const r = 120      // polygon radius — same visual scale as before
-  const labelR = 158 // label placement radius (enough margin for longest labels)
+  // ViewBox 340×340, centre at (170,170).
+  // r=88: outer ring sits at 88/170 ≈ 52% of the half-width, leaving ~48% (82px)
+  // on each side for labels. SVG overflow="visible" ensures labels that extend
+  // slightly beyond the viewBox boundary are never clipped by the <svg> element;
+  // the card's overflow:hidden is the only real clip boundary.
+  const cx = 170
+  const cy = 170
+  const r = 88       // polygon outer radius
+  const labelR = 114 // label anchor radius (26px gap beyond outer ring)
   const gridLevels = [20, 40, 60, 80, 100]
 
   const [profileIdx, setProfileIdx] = useState(0)
@@ -267,11 +269,14 @@ const HeroRadarCard = () => {
         </p>
       </div>
 
-      {/* SVG Radar */}
+      {/* SVG Radar — overflow:visible so axis labels outside the viewBox boundary
+           are never clipped by the SVG element itself. The card's border-radius
+           / overflow:hidden is the outer clip boundary. */}
       <svg
-        viewBox="0 0 420 420"
+        viewBox="0 0 340 340"
         className="w-full"
-        style={{ display: 'block', flex: '1 1 auto' }}
+        style={{ display: 'block', flex: '1 1 auto', overflow: 'visible' }}
+        overflow="visible"
         aria-hidden="true"
       >
         {/* Concentric gridlines */}
@@ -430,45 +435,26 @@ const HeroSection = ({ onGetStarted }: { onGetStarted?: () => void }) => {
 
       {/* Two-column layout */}
       <div
-        className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-center gap-16 lg:flex-row lg:items-center"
-        style={{ gap: 'clamp(40px, 6vw, 64px)' }}
+        className="relative z-10 mx-auto grid w-full max-w-7xl grid-cols-1 lg:grid-cols-2"
+        style={{ gap: '64px' }}
       >
         {/* ── LEFT COLUMN — Text content ── */}
-        <div className="flex flex-1 flex-col items-start">
-          {/* Eyebrow badge */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-widest"
-            style={{
-              borderColor: 'rgba(124,126,184,0.35)',
-              backgroundColor: 'rgba(124,126,184,0.10)',
-              color: '#9496cc',
-            }}
-          >
-            <BicepsFlexed className="h-3.5 w-3.5" />
-            For Student Athletes
-          </motion.div>
-
+        <div className="flex flex-col items-start justify-center">
           {/* Primary headline */}
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.15 }}
             style={{
-              fontSize: 'clamp(2.8rem, 6.5vw, 4.5rem)',
+              fontSize: 'clamp(2.4rem, 5vw, 4rem)',
               fontFamily: "'Instrument Serif', Georgia, serif",
               fontWeight: 700,
               color: '#f0f0f8',
               lineHeight: 1.02,
               letterSpacing: '-0.02em',
-              marginTop: '24px',
             }}
           >
-            Giving
-            <br />
-            athletes a voice.
+            Giving athletes a voice.
           </motion.h1>
 
           {/* Tagline */}
@@ -534,7 +520,7 @@ const HeroSection = ({ onGetStarted }: { onGetStarted?: () => void }) => {
           initial={{ opacity: 0, x: 32 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.7, delay: 0.3, ease: 'easeOut' }}
-          className="flex w-full flex-shrink-0 justify-center lg:w-auto"
+          className="flex items-center justify-center"
         >
           <HeroRadarCard />
         </motion.div>
