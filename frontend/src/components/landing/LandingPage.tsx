@@ -417,10 +417,27 @@ const HeroSection = ({ onGetStarted }: { onGetStarted?: () => void }) => {
       >
         {/* LEFT — Text content */}
         <div className="flex flex-col items-start justify-center">
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            style={{
+              fontFamily: "'Instrument Serif', Georgia, serif",
+              fontSize: 'clamp(1.6rem, 3.2vw, 2.6rem)',
+              fontWeight: 700,
+              color: ACCENT,
+              letterSpacing: '-0.01em',
+              lineHeight: 1,
+              marginBottom: '20px',
+            }}
+          >
+            Rate. Review. Reform.
+          </motion.p>
+
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.15 }}
+            transition={{ duration: 0.6, delay: 0.25 }}
             style={{
               fontSize: 'clamp(2.4rem, 5vw, 4rem)',
               fontFamily: "'Instrument Serif', Georgia, serif",
@@ -430,18 +447,9 @@ const HeroSection = ({ onGetStarted }: { onGetStarted?: () => void }) => {
               letterSpacing: '-0.02em',
             }}
           >
-            Giving athletes a voice.
+            Committed to giving athletes a voice,{' '}
+            <span style={{ color: CREAM, opacity: 0.38 }}>anonymously</span>
           </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="font-medium uppercase tracking-[0.2em]"
-            style={{ color: DIM, fontSize: '13px', marginTop: '24px' }}
-          >
-            Rate.&nbsp;&nbsp;Review.&nbsp;&nbsp;Reform.
-          </motion.p>
 
           <motion.p
             initial={{ opacity: 0, y: 16 }}
