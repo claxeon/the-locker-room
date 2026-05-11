@@ -11,12 +11,12 @@ export const NotFoundPage: React.FC = () => {
   const navigate = useNavigate()
 
   return (
-    <div className="relative min-h-screen bg-black text-white flex items-center justify-center px-6">
+    <div className="relative min-h-screen bg-[#0f0f1a] text-white flex items-center justify-center px-6">
       <div
         className="pointer-events-none absolute inset-0 -z-10"
         style={{
           background:
-            'radial-gradient(ellipse 60% 40% at 50% -5%, rgba(234,179,8,0.07) 0%, transparent 70%)',
+            'radial-gradient(ellipse 60% 40% at 50% -5%, rgba(124,126,184,) 0%, transparent 70%)',
         }}
       />
 
@@ -26,7 +26,7 @@ export const NotFoundPage: React.FC = () => {
         transition={{ duration: 0.5 }}
         className="flex flex-col items-center text-center gap-6 max-w-md"
       >
-        <p className="text-[10px] font-semibold uppercase tracking-widest text-yellow-500">
+        <p className="text-[10px] font-semibold uppercase tracking-widest text-[#7c7eb8]">
           404
         </p>
         <h1
@@ -35,19 +35,19 @@ export const NotFoundPage: React.FC = () => {
         >
           Out of bounds.
         </h1>
-        <p className="text-sm text-zinc-400 max-w-xs leading-relaxed">
+        <p className="text-sm text-[#8888a8] max-w-xs leading-relaxed">
           This page doesn't exist or was moved. Head back to the locker room.
         </p>
         <div className="flex items-center gap-4 mt-2">
           <button
             onClick={() => navigate('/')}
-            className="rounded-lg bg-yellow-500 px-6 py-3 text-xs font-bold uppercase tracking-widest text-black hover:bg-yellow-400 transition-colors"
+            className="rounded-lg bg-[#7c7eb8] px-6 py-3 text-xs font-bold uppercase tracking-widest text-black hover:bg-[#9496cc] transition-colors"
           >
             Back to Home
           </button>
           <button
             onClick={() => navigate('/directory')}
-            className="rounded-lg border border-zinc-800 bg-zinc-900 px-6 py-3 text-xs font-semibold uppercase tracking-widest text-zinc-300 hover:border-zinc-600 hover:text-white transition-colors"
+            className="rounded-lg border border-[#3a3a5c] bg-[#1a1a2e] px-6 py-3 text-xs font-semibold uppercase tracking-widest text-[#a8a8c0] hover:border-[#4a4a70] hover:text-white transition-colors"
           >
             Browse Programs
           </button>

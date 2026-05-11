@@ -1,7 +1,6 @@
 import React from 'react'
 
 import { useAllSports, useAllStates } from '../hooks/useSupabaseData'
-import { Button } from './ui/button'
 
 interface SportsFiltersProps {
   filters: {
@@ -12,36 +11,59 @@ interface SportsFiltersProps {
   onFilterChange: (filters: { sport: string; gender: string; state_cd: string }) => void
 }
 
+const selectStyle: React.CSSProperties = {
+  width: '100%',
+  borderRadius: '0.5rem',
+  border: '1px solid #3a3a5c',
+  backgroundColor: 'rgba(26,26,46,0.80)',
+  padding: '0.75rem 1rem',
+  fontSize: '0.75rem',
+  fontWeight: 600,
+  letterSpacing: '0.1em',
+  textTransform: 'uppercase',
+  color: '#f0f0f8',
+  outline: 'none',
+  appearance: 'none' as const,
+  WebkitAppearance: 'none' as const,
+  cursor: 'pointer',
+}
+
 export const SportsFilters: React.FC<SportsFiltersProps> = ({ filters, onFilterChange }) => {
   const { data: sports, loading: sportsLoading } = useAllSports()
   const { data: states, loading: statesLoading } = useAllStates()
 
   const handleChange = (field: keyof typeof filters, value: string) => {
-    onFilterChange({
-      ...filters,
-      [field]: value
-    })
+    onFilterChange({ ...filters, [field]: value })
   }
+
+  const hasActiveFilters = filters.sport || filters.gender || filters.state_cd
 
   return (
     <div
       id="filters"
-      className="rounded-xl border border-yellow-500/25 bg-black/70 p-6 shadow-[0_20px_60px_-25px_rgba(234,179,8,0.4)]"
+      className="rounded-xl p-6"
+      style={{
+        border: '1px solid rgba(124,126,184,0.22)',
+        backgroundColor: 'rgba(26,26,46,0.60)',
+        boxShadow: '0 16px 48px -12px rgba(124,126,184,0.12)',
+      }}
     >
-      <div className="mb-6 flex flex-col gap-2">
-        <h3 className="text-2xl font-black uppercase tracking-wide text-white">
-          Filter Sports Directory
+      <div className="mb-5 flex flex-col gap-1">
+        <h3 className="text-sm font-black uppercase tracking-tight" style={{ color: '#f0f0f8' }}>
+          Filter Programs
         </h3>
-        <p className="text-sm font-semibold uppercase tracking-[0.3em] text-gray-400">
-          Customise your scouting board
+        <p className="text-xs font-semibold uppercase tracking-[0.25em]" style={{ color: '#555570' }}>
+          Narrow your search
         </p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
+        {/* Sport */}
         <div className="flex flex-col gap-2">
           <label
             htmlFor="sport"
-            className="text-xs font-semibold uppercase tracking-wide text-gray-300"
+            className="text-2xs font-semibold uppercase tracking-label"
+            style={{ color: '#8888a8' }}
           >
             Sport
           </label>
@@ -49,22 +71,22 @@ export const SportsFilters: React.FC<SportsFiltersProps> = ({ filters, onFilterC
             id="sport"
             value={filters.sport}
             onChange={(e) => handleChange('sport', e.target.value)}
-            className="w-full rounded-lg border-2 border-yellow-500/30 bg-black/40 px-4 py-3 text-sm font-semibold uppercase tracking-wider text-white shadow-inner focus:border-yellow-500 focus:outline-none focus:ring-4 focus:ring-yellow-500/20"
+            style={selectStyle}
             disabled={sportsLoading}
           >
             <option value="">All Sports</option>
             {sports.map((sport) => (
-              <option key={sport} value={sport}>
-                {sport}
-              </option>
+              <option key={sport} value={sport}>{sport}</option>
             ))}
           </select>
         </div>
 
+        {/* Gender */}
         <div className="flex flex-col gap-2">
           <label
             htmlFor="gender"
-            className="text-xs font-semibold uppercase tracking-wide text-gray-300"
+            className="text-2xs font-semibold uppercase tracking-label"
+            style={{ color: '#8888a8' }}
           >
             Gender
           </label>
@@ -72,7 +94,7 @@ export const SportsFilters: React.FC<SportsFiltersProps> = ({ filters, onFilterC
             id="gender"
             value={filters.gender}
             onChange={(e) => handleChange('gender', e.target.value)}
-            className="w-full rounded-lg border-2 border-yellow-500/30 bg-black/40 px-4 py-3 text-sm font-semibold uppercase tracking-wider text-white shadow-inner focus:border-yellow-500 focus:outline-none focus:ring-4 focus:ring-yellow-500/20"
+            style={selectStyle}
           >
             <option value="">All Genders</option>
             <option value="Men">Men</option>
@@ -81,10 +103,12 @@ export const SportsFilters: React.FC<SportsFiltersProps> = ({ filters, onFilterC
           </select>
         </div>
 
+        {/* State */}
         <div className="flex flex-col gap-2">
           <label
             htmlFor="state"
-            className="text-xs font-semibold uppercase tracking-wide text-gray-300"
+            className="text-2xs font-semibold uppercase tracking-label"
+            style={{ color: '#8888a8' }}
           >
             State
           </label>
@@ -92,28 +116,40 @@ export const SportsFilters: React.FC<SportsFiltersProps> = ({ filters, onFilterC
             id="state"
             value={filters.state_cd}
             onChange={(e) => handleChange('state_cd', e.target.value)}
-            className="w-full rounded-lg border-2 border-yellow-500/30 bg-black/40 px-4 py-3 text-sm font-semibold uppercase tracking-wider text-white shadow-inner focus:border-yellow-500 focus:outline-none focus:ring-4 focus:ring-yellow-500/20"
+            style={selectStyle}
             disabled={statesLoading}
           >
             <option value="">All States</option>
             {states.map((state) => (
-              <option key={state} value={state}>
-                {state}
-              </option>
+              <option key={state} value={state}>{state}</option>
             ))}
           </select>
         </div>
       </div>
 
-      <div className="mt-6 flex justify-end">
-        <Button
-          variant="outline"
-          className="border-2 border-yellow-500 bg-yellow-500/10 px-6 py-2 text-xs font-black uppercase tracking-[0.3em] text-yellow-400 hover:bg-yellow-500/20"
-          onClick={() => onFilterChange({ sport: '', gender: '', state_cd: '' })}
-        >
-          Clear Filters
-        </Button>
-      </div>
+      {hasActiveFilters && (
+        <div className="mt-5 flex justify-end">
+          <button
+            className="rounded-lg px-5 py-2 text-2xs font-black uppercase tracking-widest transition-colors"
+            style={{
+              border: '1px solid #3a3a5c',
+              backgroundColor: 'transparent',
+              color: '#8888a8',
+            }}
+            onClick={() => onFilterChange({ sport: '', gender: '', state_cd: '' })}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLButtonElement).style.borderColor = '#7c7eb8'
+              ;(e.currentTarget as HTMLButtonElement).style.color = '#9496cc'
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLButtonElement).style.borderColor = '#3a3a5c'
+              ;(e.currentTarget as HTMLButtonElement).style.color = '#8888a8'
+            }}
+          >
+            Clear Filters
+          </button>
+        </div>
+      )}
     </div>
   )
 }

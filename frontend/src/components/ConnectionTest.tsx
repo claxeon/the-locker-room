@@ -55,16 +55,16 @@ export const ConnectionTest: React.FC = () => {
   }, [])
 
   const Icon = isSuccess ? Wifi : WifiOff
-  const borderClass = isSuccess === null ? 'border-yellow-500/30' : isSuccess ? 'border-emerald-400/40' : 'border-red-400/40'
-  const glowClass = isSuccess === null ? 'from-yellow-500/20' : isSuccess ? 'from-emerald-400/30' : 'from-red-400/30'
+  const borderClass = isSuccess === null ? 'border-[rgba(124,126,184,0.30)]' : isSuccess ? 'border-emerald-400/40' : 'border-red-400/40'
+  const glowClass = isSuccess === null ? 'from-[rgba(124,126,184,0.15)]' : isSuccess ? 'from-emerald-400/30' : 'from-red-400/30'
 
   return (
-    <div className={`relative overflow-hidden rounded-xl border ${borderClass} bg-black/70 p-6`}> 
+    <div className={`relative overflow-hidden rounded-xl border ${borderClass} bg-[rgba(15,15,26,0.70)] p-6`}> 
       <div className={`absolute inset-0 bg-gradient-to-br ${glowClass} via-transparent to-purple-500/20 opacity-40`} />
       <div className="relative flex flex-col gap-3">
         <div className="flex items-center gap-3">
-          <span className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-yellow-500/30 bg-yellow-500/10">
-            <Icon className="h-6 w-6 text-yellow-300" />
+          <span className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-[rgba(124,126,184,0.30)] bg-[rgba(124,126,184,0.10)]">
+            <Icon className="h-6 w-6 text-[#a8a8c0]" />
           </span>
           <div>
             <h3 className="text-lg font-black uppercase tracking-wide text-white">

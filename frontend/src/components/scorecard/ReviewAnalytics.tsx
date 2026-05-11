@@ -65,7 +65,7 @@ function cleanSport(sport: string): string {
 
 function barColor(score: number): string {
   if (score >= 4.5) return 'bg-green-500'
-  if (score >= 3.5) return 'bg-yellow-500'
+  if (score >= 3.5) return 'bg-[#7c7eb8]'
   if (score >= 2.5) return 'bg-orange-500'
   return 'bg-red-500'
 }
@@ -94,8 +94,8 @@ function SectionHeader({
 }) {
   return (
     <div className="mb-4 flex items-center gap-2">
-      <span className="text-zinc-500">{icon}</span>
-      <span className="text-xs font-semibold uppercase tracking-widest text-zinc-500">
+      <span className="text-[#555570]">{icon}</span>
+      <span className="text-xs font-semibold uppercase tracking-widest text-[#555570]">
         {label}
       </span>
     </div>
@@ -150,7 +150,7 @@ function GenderEquitySection({ reviews }: { reviews: ReviewRow[] }) {
       gapClass = 'text-green-400 bg-green-500/10 border-green-500/30'
     } else if (gap <= 0.7) {
       gapLabel = "Moderate gap — some difference between Men's and Women's experiences"
-      gapClass = 'text-yellow-400 bg-yellow-500/10 border-yellow-500/30'
+      gapClass = 'text-[#9496cc] bg-[rgba(124,126,184,0.10)] border-[rgba(124,126,184,0.30)]'
     } else {
       gapLabel = 'Significant gap — notable difference in athlete experiences by gender'
       gapClass = 'text-red-400 bg-red-500/10 border-red-500/30'
@@ -179,17 +179,17 @@ function GenderEquitySection({ reviews }: { reviews: ReviewRow[] }) {
     <div>
       <SectionHeader icon={<Users className="h-4 w-4" />} label="Gender Equity Scoring" />
       {!hasAny ? (
-        <p className="text-sm text-zinc-500">No gender data yet</p>
+        <p className="text-sm text-[#555570]">No gender data yet</p>
       ) : (
         <div className="space-y-3">
           {bars.map((bar) => (
             <div key={bar.label} className="flex items-center gap-3">
-              <span className="w-36 shrink-0 text-xs text-zinc-400">{bar.label}</span>
+              <span className="w-36 shrink-0 text-xs text-[#8888a8]">{bar.label}</span>
               {bar.missing ? (
-                <span className="text-xs italic text-zinc-600">{bar.missingLabel}</span>
+                <span className="text-xs italic text-[#555570]">{bar.missingLabel}</span>
               ) : (
                 <>
-                  <div className="relative h-2.5 flex-1 overflow-hidden rounded-full bg-zinc-800">
+                  <div className="relative h-2.5 flex-1 overflow-hidden rounded-full bg-[#252540]">
                     <motion.div
                       className={`absolute left-0 top-0 h-full rounded-full ${bar.barClass}`}
                       initial={{ width: 0 }}
@@ -240,7 +240,7 @@ function SportBreakdownSection({ aggs }: { aggs: ProgramAgg[] }) {
     <div>
       <SectionHeader icon={<BarChart3 className="h-4 w-4" />} label="Sport Breakdown" />
       {sorted.length === 0 ? (
-        <p className="text-sm text-zinc-500">No sport breakdown yet</p>
+        <p className="text-sm text-[#555570]">No sport breakdown yet</p>
       ) : (
         <div className="space-y-2.5">
           {sorted.map((agg, index) => {
@@ -257,10 +257,10 @@ function SportBreakdownSection({ aggs }: { aggs: ProgramAgg[] }) {
                 className="flex items-center gap-3"
               >
                 <div className="flex w-40 shrink-0 items-center gap-1.5">
-                  <span className="truncate text-xs font-medium text-zinc-300">{displayName}</span>
+                  <span className="truncate text-xs font-medium text-[#a8a8c0]">{displayName}</span>
                   <GenderChip gender={gender} />
                 </div>
-                <div className="relative h-2.5 flex-1 overflow-hidden rounded-full bg-zinc-800">
+                <div className="relative h-2.5 flex-1 overflow-hidden rounded-full bg-[#252540]">
                   <motion.div
                     className={`absolute left-0 top-0 h-full rounded-full ${barColor(comp)}`}
                     initial={{ width: 0 }}
@@ -271,7 +271,7 @@ function SportBreakdownSection({ aggs }: { aggs: ProgramAgg[] }) {
                 <span className="w-8 shrink-0 text-right text-xs font-semibold text-white">
                   {comp.toFixed(1)}
                 </span>
-                <span className="w-16 shrink-0 text-right text-[10px] text-zinc-500">
+                <span className="w-16 shrink-0 text-right text-[10px] text-[#555570]">
                   {agg.review_count} reviews
                 </span>
               </motion.div>
@@ -304,7 +304,7 @@ function ActivityTimelineSection({ reviews }: { reviews: ReviewRow[] }) {
     <div>
       <SectionHeader icon={<TrendingUp className="h-4 w-4" />} label="Review Activity — Last 6 Months" />
       {allZero ? (
-        <p className="text-sm text-zinc-500">No review activity yet</p>
+        <p className="text-sm text-[#555570]">No review activity yet</p>
       ) : (
         <div className="flex h-20 items-end gap-2">
           {months.map((m, i) => {
@@ -313,14 +313,14 @@ function ActivityTimelineSection({ reviews }: { reviews: ReviewRow[] }) {
             return (
               <div key={m.key} className="flex flex-1 flex-col items-center gap-1">
                 <motion.div
-                  className="w-full rounded-t bg-yellow-500"
+                  className="w-full rounded-t bg-[#7c7eb8]"
                   style={{ height: `${Math.max(heightPct, count > 0 ? 8 : 2)}%` }}
                   initial={{ scaleY: 0, originY: '100%' }}
                   animate={{ scaleY: 1 }}
                   transition={{ delay: i * 0.06, duration: 0.4, ease: 'easeOut' }}
                   title={`${count} review${count !== 1 ? 's' : ''}`}
                 />
-                <span className="text-[10px] text-zinc-500">{m.month}</span>
+                <span className="text-[10px] text-[#555570]">{m.month}</span>
               </div>
             )
           })}
@@ -334,7 +334,7 @@ function ActivityTimelineSection({ reviews }: { reviews: ReviewRow[] }) {
 
 function SkeletonPulse() {
   return (
-    <div className="h-32 animate-pulse rounded-xl bg-zinc-800" />
+    <div className="h-32 animate-pulse rounded-xl bg-[#252540]" />
   )
 }
 
@@ -415,11 +415,11 @@ export function ReviewAnalytics({ schoolId }: ReviewAnalyticsProps) {
   }
 
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 md:p-8">
+    <div className="bg-[#1a1a2e] border border-[#3a3a5c] rounded-2xl p-6 md:p-8">
       {/* Header */}
       <div className="mb-6 flex items-center gap-2">
-        <Shield className="h-5 w-5 text-yellow-500" />
-        <h2 className="text-xs font-semibold uppercase tracking-widest text-zinc-400">
+        <Shield className="h-5 w-5 text-[#7c7eb8]" />
+        <h2 className="text-xs font-semibold uppercase tracking-widest text-[#8888a8]">
           Review Analytics
         </h2>
       </div>
@@ -431,7 +431,7 @@ export function ReviewAnalytics({ schoolId }: ReviewAnalyticsProps) {
       </div>
 
       {/* Row 2: full-width timeline */}
-      <div className="border-t border-zinc-800 pt-6 mt-6">
+      <div className="border-t border-[#3a3a5c] pt-6 mt-6">
         <ActivityTimelineSection reviews={reviews} />
       </div>
     </div>

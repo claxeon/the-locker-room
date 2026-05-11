@@ -153,7 +153,7 @@ function StarRow({ score }: { score: number }) {
           <div key={i} className="relative w-3.5 h-3.5">
             <Star
               size={14}
-              className="absolute inset-0 text-zinc-700"
+              className="absolute inset-0 text-[#4a4a70]"
               fill="currentColor"
             />
             {fill > 0 && (
@@ -161,7 +161,7 @@ function StarRow({ score }: { score: number }) {
                 className="absolute inset-0 overflow-hidden"
                 style={{ width: `${fill * 100}%` }}
               >
-                <Star size={14} className="text-yellow-500" fill="currentColor" />
+                <Star size={14} className="text-[#7c7eb8]" fill="currentColor" />
               </div>
             )}
           </div>
@@ -198,10 +198,10 @@ function TopRatedCard({ school, onClick }: TopRatedCardProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: (school.rank - 1) * 0.05 }}
       onClick={onClick}
-      className="relative bg-zinc-900 border border-zinc-800 rounded-2xl p-5 cursor-pointer hover:border-yellow-500/30 hover:bg-zinc-800/60 transition-all duration-200 group"
+      className="relative bg-[#1a1a2e] border border-[#3a3a5c] rounded-2xl p-5 cursor-pointer hover:border-[rgba(124,126,184,0.30)] hover:bg-[rgba(37,37,64,0.60)] transition-all duration-200 group"
     >
       {/* Rank badge */}
-      <div className="absolute -top-3 -left-3 w-7 h-7 rounded-full bg-yellow-500 flex items-center justify-center shadow-lg shadow-yellow-500/20">
+      <div className="absolute -top-3 -left-3 w-7 h-7 rounded-full bg-[#7c7eb8] flex items-center justify-center shadow-lg shadow-[rgba(124,126,184,0.20)]">
         <span className="text-black text-xs font-black">#{school.rank}</span>
       </div>
 
@@ -211,18 +211,18 @@ function TopRatedCard({ school, onClick }: TopRatedCardProps) {
           <img
             src={school.logo_url}
             alt={school.institution_name}
-            className="w-10 h-10 rounded-lg object-contain bg-zinc-800 flex-shrink-0"
+            className="w-10 h-10 rounded-lg object-contain bg-[#252540] flex-shrink-0"
           />
         ) : (
-          <div className="w-10 h-10 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center flex-shrink-0">
-            <Trophy size={18} className="text-zinc-500" />
+          <div className="w-10 h-10 rounded-lg bg-[#252540] border border-[#3a3a5c] flex items-center justify-center flex-shrink-0">
+            <Trophy size={18} className="text-[#555570]" />
           </div>
         )}
         <div className="min-w-0">
-          <p className="text-white font-bold text-sm uppercase tracking-wide leading-tight group-hover:text-yellow-400 transition-colors">
+          <p className="text-white font-bold text-sm uppercase tracking-wide leading-tight group-hover:text-[#9496cc] transition-colors">
             {school.institution_name}
           </p>
-          <p className="text-zinc-500 text-xs mt-0.5">
+          <p className="text-[#555570] text-xs mt-0.5">
             {school.state_cd} · {school.classification_name}
           </p>
         </div>
@@ -230,19 +230,19 @@ function TopRatedCard({ school, onClick }: TopRatedCardProps) {
 
       {/* Composite score */}
       <div className="flex items-baseline gap-1 mb-3">
-        <span className="text-yellow-500 text-3xl font-black">
+        <span className="text-[#7c7eb8] text-3xl font-black">
           {school.composite.toFixed(1)}
         </span>
-        <span className="text-zinc-500 text-sm">/5</span>
+        <span className="text-[#555570] text-sm">/5</span>
       </div>
 
       {/* Dimension bars */}
       <div className="flex flex-col gap-1 mb-3">
         {dims.map((v, i) => (
           <div key={i} className="flex items-center gap-1.5">
-            <div className="flex-1 h-1 bg-zinc-800 rounded-full overflow-hidden">
+            <div className="flex-1 h-1 bg-[#252540] rounded-full overflow-hidden">
               <div
-                className="h-full bg-yellow-500/60 rounded-full"
+                className="h-full bg-[#7c7eb8]/60 rounded-full"
                 style={{ width: `${(v / maxDim) * 100}%` }}
               />
             </div>
@@ -252,12 +252,12 @@ function TopRatedCard({ school, onClick }: TopRatedCardProps) {
 
       {/* Review count + arrow */}
       <div className="flex items-center justify-between">
-        <span className="text-zinc-500 text-xs">
+        <span className="text-[#555570] text-xs">
           {school.review_count} {school.review_count === 1 ? 'review' : 'reviews'}
         </span>
         <ChevronRight
           size={14}
-          className="text-zinc-600 group-hover:text-yellow-500 transition-colors"
+          className="text-[#555570] group-hover:text-[#7c7eb8] transition-colors"
         />
       </div>
     </motion.div>
@@ -280,14 +280,14 @@ function RecentReviewCard({ review, index, onClick }: RecentReviewCardProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
       onClick={onClick}
-      className="flex-none w-72 snap-start bg-zinc-900 border border-zinc-800 rounded-2xl p-5 cursor-pointer hover:border-yellow-500/30 hover:bg-zinc-800/60 transition-all duration-200 group"
+      className="flex-none w-72 snap-start bg-[#1a1a2e] border border-[#3a3a5c] rounded-2xl p-5 cursor-pointer hover:border-[rgba(124,126,184,0.30)] hover:bg-[rgba(37,37,64,0.60)] transition-all duration-200 group"
     >
       {/* School + sport */}
       <div className="flex items-start justify-between gap-2 mb-3">
-        <p className="text-white font-bold text-sm uppercase tracking-wide leading-tight group-hover:text-yellow-400 transition-colors flex-1 min-w-0">
+        <p className="text-white font-bold text-sm uppercase tracking-wide leading-tight group-hover:text-[#9496cc] transition-colors flex-1 min-w-0">
           {review.institution_name}
         </p>
-        <span className="flex-none bg-zinc-800 border border-zinc-700 text-zinc-400 text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full">
+        <span className="flex-none bg-[#252540] border border-[#3a3a5c] text-[#8888a8] text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full">
           {cleanSport(review.sport)}
         </span>
       </div>
@@ -295,30 +295,30 @@ function RecentReviewCard({ review, index, onClick }: RecentReviewCardProps) {
       {/* Star rating */}
       <div className="flex items-center gap-2 mb-3">
         <StarRow score={composite} />
-        <span className="text-yellow-500 text-xs font-bold">{composite.toFixed(1)}</span>
+        <span className="text-[#7c7eb8] text-xs font-bold">{composite.toFixed(1)}</span>
       </div>
 
       {/* Review text */}
       {review.review_text && (
-        <p className="text-zinc-300 text-sm leading-relaxed mb-2">
+        <p className="text-[#a8a8c0] text-sm leading-relaxed mb-2">
           "{truncate(review.review_text, 140)}"
         </p>
       )}
 
       {/* Pros */}
       {review.pros && (
-        <p className="text-zinc-500 text-xs mb-2">
+        <p className="text-[#555570] text-xs mb-2">
           <span className="text-green-500 font-semibold">+ </span>
           {truncate(review.pros, 80)}
         </p>
       )}
 
       {/* Footer */}
-      <div className="flex items-center justify-between mt-auto pt-2 border-t border-zinc-800">
-        <span className="text-zinc-600 text-xs">
+      <div className="flex items-center justify-between mt-auto pt-2 border-t border-[#3a3a5c]">
+        <span className="text-[#555570] text-xs">
           {review.is_anonymous ? 'Anonymous' : 'Verified Athlete'}
         </span>
-        <span className="text-zinc-600 text-xs">{relativeTime(review.created_at)}</span>
+        <span className="text-[#555570] text-xs">{relativeTime(review.created_at)}</span>
       </div>
     </motion.div>
   )
@@ -341,40 +341,40 @@ function SportTrendChip({ trend, index, maxReviews, onClick }: SportTrendChipPro
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
       onClick={onClick}
-      className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 cursor-pointer hover:border-yellow-500/30 hover:bg-zinc-800/60 transition-all duration-200 group"
+      className="bg-[#1a1a2e] border border-[#3a3a5c] rounded-2xl p-4 cursor-pointer hover:border-[rgba(124,126,184,0.30)] hover:bg-[rgba(37,37,64,0.60)] transition-all duration-200 group"
     >
       <div className="flex items-center justify-between mb-2">
-        <p className="text-white font-bold text-sm uppercase tracking-wide group-hover:text-yellow-400 transition-colors">
+        <p className="text-white font-bold text-sm uppercase tracking-wide group-hover:text-[#9496cc] transition-colors">
           {trend.cleanName}
         </p>
         {trend.totalReviews > 0 && (
-          <span className="bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 text-[10px] font-bold px-2 py-0.5 rounded-full">
+          <span className="bg-[rgba(124,126,184,0.10)] border border-[rgba(124,126,184,0.20)] text-[#7c7eb8] text-[10px] font-bold px-2 py-0.5 rounded-full">
             {trend.totalReviews}
           </span>
         )}
       </div>
 
       {/* Sparkline bar */}
-      <div className="h-1 bg-zinc-800 rounded-full overflow-hidden mb-2">
+      <div className="h-1 bg-[#252540] rounded-full overflow-hidden mb-2">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${barWidth}%` }}
           transition={{ delay: 0.2 + index * 0.03, duration: 0.5, ease: 'easeOut' }}
-          className="h-full bg-yellow-500/70 rounded-full"
+          className="h-full bg-[#7c7eb8]/70 rounded-full"
         />
       </div>
 
       <div className="flex items-center justify-between">
         {trend.composite > 0 ? (
-          <span className="text-zinc-400 text-xs">
+          <span className="text-[#8888a8] text-xs">
             {trend.composite.toFixed(1)} avg
           </span>
         ) : (
-          <span className="text-zinc-600 text-xs">No data yet</span>
+          <span className="text-[#555570] text-xs">No data yet</span>
         )}
         <ChevronRight
           size={12}
-          className="text-zinc-700 group-hover:text-yellow-500 transition-colors"
+          className="text-[#4a4a70] group-hover:text-[#7c7eb8] transition-colors"
         />
       </div>
     </motion.div>
@@ -388,10 +388,10 @@ function SportTrendChip({ trend, index, maxReviews, onClick }: SportTrendChipPro
 function EmptyState({ message }: { message: string }) {
   return (
     <div className="flex flex-col items-center justify-center py-16 text-center">
-      <div className="w-12 h-12 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-4">
-        <Star size={20} className="text-zinc-600" />
+      <div className="w-12 h-12 rounded-full bg-[#1a1a2e] border border-[#3a3a5c] flex items-center justify-center mb-4">
+        <Star size={20} className="text-[#555570]" />
       </div>
-      <p className="text-zinc-500 text-sm">{message}</p>
+      <p className="text-[#555570] text-sm">{message}</p>
     </div>
   )
 }
@@ -712,12 +712,12 @@ export function ExploreReviews() {
         {Array.from({ length: count }).map((_, i) => (
           <div
             key={i}
-            className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 animate-pulse"
+            className="bg-[#1a1a2e] border border-[#3a3a5c] rounded-2xl p-5 animate-pulse"
           >
-            <div className="w-16 h-4 bg-zinc-800 rounded mb-3" />
-            <div className="w-full h-3 bg-zinc-800 rounded mb-2" />
-            <div className="w-2/3 h-3 bg-zinc-800 rounded mb-4" />
-            <div className="w-12 h-8 bg-zinc-800 rounded" />
+            <div className="w-16 h-4 bg-[#252540] rounded mb-3" />
+            <div className="w-full h-3 bg-[#252540] rounded mb-2" />
+            <div className="w-2/3 h-3 bg-[#252540] rounded mb-4" />
+            <div className="w-12 h-8 bg-[#252540] rounded" />
           </div>
         ))}
       </div>
@@ -730,12 +730,12 @@ export function ExploreReviews() {
         {Array.from({ length: count }).map((_, i) => (
           <div
             key={i}
-            className="flex-none w-72 bg-zinc-900 border border-zinc-800 rounded-2xl p-5 animate-pulse"
+            className="flex-none w-72 bg-[#1a1a2e] border border-[#3a3a5c] rounded-2xl p-5 animate-pulse"
           >
-            <div className="w-full h-4 bg-zinc-800 rounded mb-3" />
-            <div className="w-1/2 h-3 bg-zinc-800 rounded mb-4" />
-            <div className="w-full h-3 bg-zinc-800 rounded mb-2" />
-            <div className="w-full h-3 bg-zinc-800 rounded" />
+            <div className="w-full h-4 bg-[#252540] rounded mb-3" />
+            <div className="w-1/2 h-3 bg-[#252540] rounded mb-4" />
+            <div className="w-full h-3 bg-[#252540] rounded mb-2" />
+            <div className="w-full h-3 bg-[#252540] rounded" />
           </div>
         ))}
       </div>
@@ -748,7 +748,7 @@ export function ExploreReviews() {
   // Render
   // ---------------------------------------------------------------------------
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-[#0f0f1a] text-white">
       {/* ── Hero Header ─────────────────────────────────────────────────── */}
       <div className="relative overflow-hidden">
         {/* Gold gradient glow */}
@@ -756,7 +756,7 @@ export function ExploreReviews() {
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              'radial-gradient(ellipse 80% 50% at 50% -10%, rgba(234,179,8,0.12) 0%, transparent 70%)',
+              'radial-gradient(ellipse 80% 50% at 50% -10%, rgba(124,126,184,) 0%, transparent 70%)',
           }}
         />
 
@@ -766,8 +766,8 @@ export function ExploreReviews() {
             animate={{ opacity: 1, y: 0 }}
             className="flex items-center gap-3 mb-4"
           >
-            <Flame size={24} className="text-yellow-500" />
-            <span className="text-yellow-500 text-xs font-black uppercase tracking-[0.25em]">
+            <Flame size={24} className="text-[#7c7eb8]" />
+            <span className="text-[#7c7eb8] text-xs font-black uppercase tracking-[0.25em]">
               Explore Reviews
             </span>
           </motion.div>
@@ -781,14 +781,14 @@ export function ExploreReviews() {
           >
             Discover what athletes
             <br />
-            <span className="text-yellow-500" style={{ fontStyle: 'italic' }}>are saying</span>
+            <span className="text-[#7c7eb8]" style={{ fontStyle: 'italic' }}>are saying</span>
           </motion.h1>
 
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-zinc-400 text-lg max-w-xl mb-8"
+            className="text-[#8888a8] text-lg max-w-xl mb-8"
           >
             Discover what athletes are saying about programs across the nation.
           </motion.p>
@@ -801,8 +801,8 @@ export function ExploreReviews() {
             onSubmit={handleSearchSubmit}
             className="flex items-center gap-2 max-w-xl"
           >
-            <div className="flex-1 flex items-center gap-3 bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 focus-within:border-yellow-500/50 transition-colors">
-              <Search size={16} className="text-zinc-500 flex-none" />
+            <div className="flex-1 flex items-center gap-3 bg-[#1a1a2e] border border-[#3a3a5c] rounded-xl px-4 py-3 focus-within:border-[rgba(124,126,184,0.50)] transition-colors">
+              <Search size={16} className="text-[#555570] flex-none" />
               <input
                 type="text"
                 value={searchQuery}
@@ -813,7 +813,7 @@ export function ExploreReviews() {
             </div>
             <button
               type="submit"
-              className="flex items-center gap-2 bg-yellow-500 hover:bg-yellow-400 text-black text-sm font-bold px-5 py-3 rounded-xl transition-colors"
+              className="flex items-center gap-2 bg-[#7c7eb8] hover:bg-[#9496cc] text-black text-sm font-bold px-5 py-3 rounded-xl transition-colors"
             >
               <Filter size={14} />
               Filter
@@ -828,21 +828,21 @@ export function ExploreReviews() {
         {/* ── Section 1: Top Rated Programs ─────────────────────────────── */}
         <section>
           <div className="flex items-center gap-3 mb-1">
-            <Trophy size={14} className="text-yellow-500" />
-            <h2 className="text-zinc-400 text-[10px] font-semibold uppercase tracking-widest">
+            <Trophy size={14} className="text-[#7c7eb8]" />
+            <h2 className="text-[#8888a8] text-[10px] font-semibold uppercase tracking-widest">
               Top Rated Programs
             </h2>
           </div>
-          <p className="text-zinc-700 text-xs mb-6 ml-[26px]">
+          <p className="text-[#4a4a70] text-xs mb-6 ml-[26px]">
             Ranked by verified athlete reviews
           </p>
 
           {loadingTop ? (
             <CardSkeleton count={6} />
           ) : topRated.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-zinc-800 py-12 text-center">
-              <p className="text-xs font-semibold uppercase tracking-widest text-zinc-600">No ratings yet</p>
-              <p className="mt-1 text-xs text-zinc-700">Be the first athlete to review a program</p>
+            <div className="rounded-2xl border border-dashed border-[#3a3a5c] py-12 text-center">
+              <p className="text-xs font-semibold uppercase tracking-widest text-[#555570]">No ratings yet</p>
+              <p className="mt-1 text-xs text-[#4a4a70]">Be the first athlete to review a program</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -860,21 +860,21 @@ export function ExploreReviews() {
         {/* ── Section 2: Recently Reviewed ──────────────────────────────── */}
         <section>
           <div className="flex items-center gap-3 mb-1">
-            <Clock size={14} className="text-yellow-500" />
-            <h2 className="text-zinc-400 text-[10px] font-semibold uppercase tracking-widest">
+            <Clock size={14} className="text-[#7c7eb8]" />
+            <h2 className="text-[#8888a8] text-[10px] font-semibold uppercase tracking-widest">
               Recently Reviewed
             </h2>
           </div>
-          <p className="text-zinc-700 text-xs mb-6 ml-[26px]">
+          <p className="text-[#4a4a70] text-xs mb-6 ml-[26px]">
             Latest verified athlete reviews
           </p>
 
           {loadingRecent ? (
             <RowSkeleton count={3} />
           ) : recentReviews.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-zinc-800 py-12 text-center">
-              <p className="text-xs font-semibold uppercase tracking-widest text-zinc-600">No reviews yet</p>
-              <p className="mt-1 text-xs text-zinc-700">Be the first athlete to share your experience</p>
+            <div className="rounded-2xl border border-dashed border-[#3a3a5c] py-12 text-center">
+              <p className="text-xs font-semibold uppercase tracking-widest text-[#555570]">No reviews yet</p>
+              <p className="mt-1 text-xs text-[#4a4a70]">Be the first athlete to share your experience</p>
             </div>
           ) : (
             <div className="overflow-x-auto pb-4 -mx-6 px-6">
@@ -897,21 +897,21 @@ export function ExploreReviews() {
         {/* ── Section 3: Trending by Sport ──────────────────────────────── */}
         <section>
           <div className="flex items-center gap-3 mb-1">
-            <TrendingUp size={14} className="text-yellow-500" />
-            <h2 className="text-zinc-400 text-[10px] font-semibold uppercase tracking-widest">
+            <TrendingUp size={14} className="text-[#7c7eb8]" />
+            <h2 className="text-[#8888a8] text-[10px] font-semibold uppercase tracking-widest">
               Trending by Sport
             </h2>
           </div>
-          <p className="text-zinc-700 text-xs mb-6 ml-[26px]">
+          <p className="text-[#4a4a70] text-xs mb-6 ml-[26px]">
             Sports with the most athlete activity
           </p>
 
           {loadingTrends ? (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 animate-pulse">
               {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
-                  <div className="w-24 h-4 bg-zinc-800 rounded mb-2" />
-                  <div className="w-full h-1 bg-zinc-800 rounded" />
+                <div key={i} className="bg-[#1a1a2e] border border-[#3a3a5c] rounded-2xl p-4">
+                  <div className="w-24 h-4 bg-[#252540] rounded mb-2" />
+                  <div className="w-full h-1 bg-[#252540] rounded" />
                 </div>
               ))}
             </div>
@@ -935,21 +935,21 @@ export function ExploreReviews() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-zinc-900 border border-zinc-800 rounded-2xl p-10 text-center"
+          className="bg-[#1a1a2e] border border-[#3a3a5c] rounded-2xl p-10 text-center"
         >
-          <Flame size={20} className="text-yellow-500 mx-auto mb-5" />
+          <Flame size={20} className="text-[#7c7eb8] mx-auto mb-5" />
           <h3
             className="text-white mb-2"
             style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(1.5rem, 3vw, 2rem)' }}
           >
             Share Your Experience
           </h3>
-          <p className="text-zinc-500 text-sm mb-7 max-w-sm mx-auto leading-relaxed">
+          <p className="text-[#555570] text-sm mb-7 max-w-sm mx-auto leading-relaxed">
             Help future athletes make informed decisions. Your honest review matters.
           </p>
           <button
             onClick={() => navigate('/directory')}
-            className="inline-flex items-center gap-2 bg-yellow-500 hover:bg-yellow-400 text-black font-bold text-sm px-6 py-3 rounded-xl transition-colors"
+            className="inline-flex items-center gap-2 bg-[#7c7eb8] hover:bg-[#9496cc] text-black font-bold text-sm px-6 py-3 rounded-xl transition-colors"
           >
             Find Your Program
             <ChevronRight size={14} />

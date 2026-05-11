@@ -114,7 +114,7 @@ function computeStats(aggregates: ProgramAggregate[], totalReviews: number): Sch
 
 function scoreColor(value: number): { text: string; fill: string } {
   if (value >= 4.5) return { text: 'text-green-400',  fill: '#22c55e' }
-  if (value >= 3.5) return { text: 'text-yellow-400', fill: '#EAB308' }
+  if (value >= 3.5) return { text: 'text-[#9496cc]', fill: '#EAB308' }
   if (value >= 2.5) return { text: 'text-orange-400', fill: '#f97316' }
   return              { text: 'text-red-400',    fill: '#ef4444' }
 }
@@ -192,10 +192,10 @@ function DimBar({ label, value, index }: DimBarProps) {
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex items-center justify-between">
-        <span className="text-xs uppercase tracking-widest text-zinc-400">{label}</span>
+        <span className="text-xs uppercase tracking-widest text-[#8888a8]">{label}</span>
         <span className={`text-sm font-black tabular-nums ${text}`}>{value.toFixed(1)}</span>
       </div>
-      <div className="h-2 w-full rounded-full bg-zinc-800">
+      <div className="h-2 w-full rounded-full bg-[#252540]">
         <motion.div
           className="h-full rounded-full"
           style={{ backgroundColor: fill }}
@@ -220,15 +220,15 @@ function SportChip({ item, isTop }: SportChipProps) {
     <div
       className={`flex shrink-0 flex-col gap-1 rounded-xl border px-4 py-3 text-sm ${
         isTop
-          ? 'border-yellow-500/50 bg-yellow-500/10'
-          : 'border-zinc-700 bg-zinc-800'
+          ? 'border-[rgba(124,126,184,0.50)] bg-[rgba(124,126,184,0.10)]'
+          : 'border-[#3a3a5c] bg-[#252540]'
       }`}
     >
       <span className="font-black uppercase tracking-wide text-white">{item.sport}</span>
       <div className="flex items-center gap-1.5">
-        <Star className="h-3 w-3 text-yellow-400" />
+        <Star className="h-3 w-3 text-[#9496cc]" />
         <span className={`font-black ${text}`}>{item.overall.toFixed(1)}</span>
-        <span className="text-xs text-zinc-500">· {item.reviewCount} review{item.reviewCount !== 1 ? 's' : ''}</span>
+        <span className="text-xs text-[#555570]">· {item.reviewCount} review{item.reviewCount !== 1 ? 's' : ''}</span>
       </div>
     </div>
   )
@@ -238,12 +238,12 @@ function SportChip({ item, isTop }: SportChipProps) {
 function LoadingSkeleton() {
   return (
     <div className="flex flex-col gap-4 animate-pulse">
-      <div className="h-6 w-48 rounded-xl bg-zinc-800" />
+      <div className="h-6 w-48 rounded-xl bg-[#252540]" />
       <div className="flex flex-col gap-3 md:flex-row">
-        <div className="h-48 w-full rounded-xl bg-zinc-800 md:w-56" />
+        <div className="h-48 w-full rounded-xl bg-[#252540] md:w-56" />
         <div className="flex flex-1 flex-col gap-3">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-7 w-full rounded-xl bg-zinc-800" />
+            <div key={i} className="h-7 w-full rounded-xl bg-[#252540]" />
           ))}
         </div>
       </div>
@@ -255,11 +255,11 @@ function LoadingSkeleton() {
 function EmptyState() {
   return (
     <div className="flex flex-col items-center gap-3 py-12 text-center">
-      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-zinc-800">
-        <Star className="h-8 w-8 text-zinc-600" />
+      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#252540]">
+        <Star className="h-8 w-8 text-[#555570]" />
       </div>
       <p className="text-lg font-black uppercase tracking-tight text-white">No Ratings Yet</p>
-      <p className="max-w-xs text-sm text-zinc-500">
+      <p className="max-w-xs text-sm text-[#555570]">
         Be the first athlete to review this program. Your insight helps future recruits make informed decisions.
       </p>
     </div>
@@ -338,31 +338,31 @@ export function SchoolScorecard({ schoolId, schoolName }: SchoolScorecardProps) 
     ? computeStats(displayAggregates, totalReviews)
     : null
 
-  const overallColor = stats ? scoreColor(stats.overall) : { text: 'text-yellow-400', fill: '#EAB308' }
+  const overallColor = stats ? scoreColor(stats.overall) : { text: 'text-[#9496cc]', fill: '#EAB308' }
   const topSport = stats && stats.sportBreakdown.length > 0 ? stats.sportBreakdown[0] : null
 
   return (
     <motion.section
-      className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6 md:p-8"
+      className="rounded-2xl border border-[#3a3a5c] bg-[#1a1a2e] p-6 md:p-8"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
       {/* Section header */}
       <div className="mb-6 flex items-center gap-3">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-yellow-500/10">
-          <BarChart3 className="h-4 w-4 text-yellow-500" />
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[rgba(124,126,184,0.10)]">
+          <BarChart3 className="h-4 w-4 text-[#7c7eb8]" />
         </div>
         <h2 className="text-xl font-black uppercase tracking-tight text-white">
           Athlete Scorecard
         </h2>
         {stats && hasRealReviews && (
-          <span className="ml-auto text-xs font-semibold uppercase tracking-widest text-zinc-500">
+          <span className="ml-auto text-xs font-semibold uppercase tracking-widest text-[#555570]">
             {stats.totalReviews} verified review{stats.totalReviews !== 1 ? 's' : ''}
           </span>
         )}
         {stats && !hasRealReviews && (
-          <span className="ml-auto rounded-full border border-zinc-700 bg-zinc-800 px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-widest text-zinc-500">
+          <span className="ml-auto rounded-full border border-[#3a3a5c] bg-[#252540] px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-widest text-[#555570]">
             Estimated
           </span>
         )}
@@ -391,14 +391,14 @@ export function SchoolScorecard({ schoolId, schoolName }: SchoolScorecardProps) 
                   <span className={`text-4xl font-black leading-none ${overallColor.text}`}>
                     {stats!.overall.toFixed(1)}
                   </span>
-                  <span className="text-sm text-zinc-400">/ 5</span>
+                  <span className="text-sm text-[#8888a8]">/ 5</span>
                 </div>
               </div>
               <div className="flex flex-col items-center gap-1">
-                <span className="text-xs font-black uppercase tracking-widest text-zinc-400">
+                <span className="text-xs font-black uppercase tracking-widest text-[#8888a8]">
                   Overall Score
                 </span>
-                <span className="text-xs text-zinc-500">
+                <span className="text-xs text-[#555570]">
                   {stats!.totalReviews} verified review{stats!.totalReviews !== 1 ? 's' : ''}
                 </span>
               </div>
@@ -420,7 +420,7 @@ export function SchoolScorecard({ schoolId, schoolName }: SchoolScorecardProps) 
           {/* Sport breakdown — only if >1 sport */}
           {stats!.sportBreakdown.length > 1 && (
             <div className="flex flex-col gap-3">
-              <span className="text-xs font-black uppercase tracking-widest text-zinc-500">
+              <span className="text-xs font-black uppercase tracking-widest text-[#555570]">
                 By Sport
               </span>
               <div className="flex gap-3 overflow-x-auto pb-2">

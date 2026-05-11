@@ -31,13 +31,13 @@ export const SubmitReviewPage: React.FC = () => {
   const schoolName = schoolNameParam ? decodeURIComponent(schoolNameParam) : ''
 
   return (
-    <div className="relative min-h-screen w-full bg-black text-white">
+    <div className="relative min-h-screen w-full bg-[#0f0f1a] text-white">
       {/* Background glow */}
       <div
         className="pointer-events-none absolute inset-0 -z-10"
         style={{
           background:
-            'radial-gradient(ellipse 60% 35% at 50% -5%, rgba(234,179,8,0.06) 0%, transparent 70%)',
+            'radial-gradient(ellipse 60% 35% at 50% -5%, rgba(124,126,184,) 0%, transparent 70%)',
         }}
       />
 
@@ -51,7 +51,7 @@ export const SubmitReviewPage: React.FC = () => {
           transition={{ duration: 0.5 }}
           className="flex flex-col gap-2"
         >
-          <p className="text-xs font-semibold uppercase tracking-widest text-yellow-500">
+          <p className="text-xs font-semibold uppercase tracking-widest text-[#7c7eb8]">
             Verified Athletes Only
           </p>
           <h1
@@ -72,7 +72,7 @@ export const SubmitReviewPage: React.FC = () => {
               </>
             )}
           </h1>
-          <p className="text-sm text-zinc-500 leading-relaxed max-w-lg">
+          <p className="text-sm text-[#555570] leading-relaxed max-w-lg">
             Your review is anonymous and helps future athletes make better decisions.
             It will be visible after a brief moderation review (usually under 24 hours).
           </p>

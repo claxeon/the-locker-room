@@ -43,7 +43,15 @@ export function NavBar({ items, className }: TubelightNavBarProps) {
         className,
       )}
     >
-      <div className="flex items-center gap-2 rounded-full border border-yellow-500/30 bg-black/50 px-2 py-2 shadow-[0_25px_60px_-25px_rgba(234,179,8,0.45)] backdrop-blur-xl">
+      {/* Nav pill — navy surface, periwinkle border/glow */}
+      <div
+        className="flex items-center gap-1 rounded-full px-2 py-2 backdrop-blur-xl"
+        style={{
+          border: '1px solid rgba(124,126,184,0.28)',
+          backgroundColor: 'rgba(26,26,46,0.85)',
+          boxShadow: '0 20px 60px -15px rgba(124,126,184,0.30)',
+        }}
+      >
         {items.map((item) => {
           const Icon = item.icon
           const isActive = item.name === activeItem.name
@@ -54,9 +62,8 @@ export function NavBar({ items, className }: TubelightNavBarProps) {
               to={item.to}
               className={() =>
                 cn(
-                  "relative flex items-center gap-2 rounded-full px-5 py-2 text-sm font-semibold uppercase tracking-[0.3em] transition-colors",
-                  "text-gray-300 hover:text-yellow-400",
-                  isActive && "text-yellow-200",
+                  "relative flex items-center gap-2 rounded-full px-5 py-2 text-sm font-semibold uppercase tracking-[0.25em] transition-colors",
+                  isActive ? "text-[#f0f0f8]" : "text-[#555570] hover:text-[#a8a8c0]",
                 )
               }
               aria-label={item.name}
@@ -66,14 +73,25 @@ export function NavBar({ items, className }: TubelightNavBarProps) {
                 <Icon size={18} strokeWidth={2.5} />
               </span>
 
-              {(isActive) && (
+              {isActive && (
                 <motion.div
                   layoutId="tubelight"
-                  className="absolute inset-0 -z-10 rounded-full border border-yellow-500/30 bg-yellow-500/15"
+                  className="absolute inset-0 -z-10 rounded-full"
+                  style={{
+                    border: '1px solid rgba(124,126,184,0.30)',
+                    backgroundColor: 'rgba(124,126,184,0.14)',
+                  }}
                   transition={{ type: "spring", stiffness: 260, damping: 26 }}
                 >
-                  <div className="absolute -top-3 left-1/2 h-1 w-8 -translate-x-1/2 rounded-full bg-yellow-400">
-                    <div className="absolute -top-2 left-1/2 h-5 w-12 -translate-x-1/2 rounded-full bg-yellow-400/30 blur" />
+                  {/* Periwinkle tube-light top accent */}
+                  <div
+                    className="absolute -top-3 left-1/2 h-1 w-8 -translate-x-1/2 rounded-full"
+                    style={{ backgroundColor: '#9496cc' }}
+                  >
+                    <div
+                      className="absolute -top-2 left-1/2 h-5 w-12 -translate-x-1/2 rounded-full blur"
+                      style={{ backgroundColor: 'rgba(148,150,204,0.28)' }}
+                    />
                   </div>
                 </motion.div>
               )}

@@ -25,7 +25,7 @@ const Star: React.FC<{
       {fill === 'half' && (
         <defs>
           <linearGradient id={id}>
-            <stop offset="50%" stopColor="#eab308" />
+            <stop offset="50%" stopColor="#7c7eb8" />
             <stop offset="50%" stopColor="transparent" />
           </linearGradient>
         </defs>
@@ -110,7 +110,7 @@ export const StarRating: React.FC<StarRatingProps> = ({
             </span>
           ))}
         </div>
-        <span className="min-w-[2.5rem] text-sm font-black text-yellow-400">
+        <span className="min-w-[2.5rem] text-sm font-black text-[#9496cc]">
           {displayed > 0 ? displayed.toFixed(1) : '—'}
         </span>
       </div>

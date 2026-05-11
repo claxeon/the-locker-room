@@ -189,7 +189,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
   if (authLoading) {
     return (
       <div className="flex min-h-[200px] items-center justify-center">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-yellow-500/30 border-b-yellow-500" />
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-[rgba(124,126,184,0.30)] border-b-[#7c7eb8]" />
       </div>
     )
   }
@@ -200,7 +200,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-8 text-center backdrop-blur"
+        className="rounded-xl border border-[#3a3a5c] bg-[rgba(26,26,46,0.60)] p-8 text-center backdrop-blur"
       >
         <p className="text-base font-semibold text-white">
           Sign in to Leave a Review
@@ -210,7 +210,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
         </p>
         <Link
           to="/login"
-          className="mt-6 inline-block rounded-lg bg-yellow-500 px-8 py-3 text-xs font-bold uppercase tracking-widest text-black hover:bg-yellow-400 transition-colors"
+          className="mt-6 inline-block rounded-lg bg-[#7c7eb8] px-8 py-3 text-xs font-bold uppercase tracking-widest text-black hover:bg-[#9496cc] transition-colors"
         >
           Sign In
         </Link>
@@ -234,10 +234,10 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-8 text-center backdrop-blur"
+        className="rounded-xl border border-[#3a3a5c] bg-[rgba(26,26,46,0.60)] p-8 text-center backdrop-blur"
       >
-        <AlertCircle className="mx-auto mb-4 h-10 w-10 text-yellow-400" />
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-yellow-400">
+        <AlertCircle className="mx-auto mb-4 h-10 w-10 text-[#9496cc]" />
+        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#9496cc]">
           Verification {profile.verification_status === 'pending' ? 'Pending' : 'Required'}
         </p>
         <p className="mt-3 text-sm text-gray-300">
@@ -259,9 +259,9 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-10 text-center backdrop-blur"
+        className="rounded-xl border border-[#3a3a5c] bg-[rgba(26,26,46,0.60)] p-10 text-center backdrop-blur"
       >
-        <CheckCircle className="mx-auto mb-4 h-14 w-14 text-yellow-400" />
+        <CheckCircle className="mx-auto mb-4 h-14 w-14 text-[#9496cc]" />
         <h3 className="text-lg font-semibold text-white">
           Review Submitted!
         </h3>
@@ -279,15 +279,15 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
     <motion.div
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-xl border border-zinc-800 bg-zinc-900/60 backdrop-blur"
+      className="rounded-xl border border-[#3a3a5c] bg-[rgba(26,26,46,0.60)] backdrop-blur"
     >
       {/* Header */}
-      <div className="flex items-start justify-between border-b border-zinc-800 p-6">
+      <div className="flex items-start justify-between border-b border-[#3a3a5c] p-6">
         <div>
           <h2 className="text-xl font-semibold text-white">
             Write a Review
           </h2>
-          <p className="mt-1 text-sm text-yellow-500">
+          <p className="mt-1 text-sm text-[#7c7eb8]">
             {schoolName}
           </p>
         </div>
@@ -303,7 +303,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
       <form onSubmit={handleSubmit} className="p-6 space-y-8">
         {/* Your Program */}
         <section className="space-y-5">
-          <h3 className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">
+          <h3 className="text-[10px] font-semibold uppercase tracking-widest text-[#8888a8]">
             Your Program
           </h3>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -320,7 +320,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
                 value={sport}
                 onChange={(e) => setSport(e.target.value)}
                 disabled={sportsLoading}
-                className="rounded-lg border border-yellow-500/20 bg-black/60 px-4 py-2.5 text-sm text-white focus:border-yellow-500/60 focus:outline-none focus:ring-1 focus:ring-yellow-500/30 transition-colors appearance-none disabled:opacity-50"
+                className="rounded-lg border border-[rgba(124,126,184,0.20)] bg-[rgba(15,15,26,0.60)] px-4 py-2.5 text-sm text-white focus:border-[rgba(124,126,184,0.60)] focus:outline-none focus:ring-1 focus:ring-[rgba(124,126,184,0.30)] transition-colors appearance-none disabled:opacity-50"
               >
                 <option value="">
                   {sportsLoading ? 'Loading sports…' : 'Select sport…'}
@@ -346,7 +346,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
                 value={gender}
                 onChange={(e) => setGender(e.target.value)}
                 disabled={!sport}
-                className="rounded-lg border border-yellow-500/20 bg-black/60 px-4 py-2.5 text-sm text-white focus:border-yellow-500/60 focus:outline-none focus:ring-1 focus:ring-yellow-500/30 transition-colors appearance-none disabled:opacity-50"
+                className="rounded-lg border border-[rgba(124,126,184,0.20)] bg-[rgba(15,15,26,0.60)] px-4 py-2.5 text-sm text-white focus:border-[rgba(124,126,184,0.60)] focus:outline-none focus:ring-1 focus:ring-[rgba(124,126,184,0.30)] transition-colors appearance-none disabled:opacity-50"
               >
                 <option value="">Select…</option>
                 {genderOptions.map((g) => (
@@ -377,7 +377,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
                   setYearStart(e.target.value === '' ? '' : Number(e.target.value))
                 }
                 placeholder="e.g. 2020"
-                className="rounded-lg border border-yellow-500/20 bg-black/60 px-4 py-2.5 text-sm text-white placeholder-gray-600 focus:border-yellow-500/60 focus:outline-none focus:ring-1 focus:ring-yellow-500/30 transition-colors"
+                className="rounded-lg border border-[rgba(124,126,184,0.20)] bg-[rgba(15,15,26,0.60)] px-4 py-2.5 text-sm text-white placeholder-gray-600 focus:border-[rgba(124,126,184,0.60)] focus:outline-none focus:ring-1 focus:ring-[rgba(124,126,184,0.30)] transition-colors"
               />
             </div>
             <div className="flex flex-col gap-1.5">
@@ -397,7 +397,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
                   setYearEnd(e.target.value === '' ? '' : Number(e.target.value))
                 }
                 placeholder="e.g. 2024"
-                className="rounded-lg border border-yellow-500/20 bg-black/60 px-4 py-2.5 text-sm text-white placeholder-gray-600 focus:border-yellow-500/60 focus:outline-none focus:ring-1 focus:ring-yellow-500/30 transition-colors"
+                className="rounded-lg border border-[rgba(124,126,184,0.20)] bg-[rgba(15,15,26,0.60)] px-4 py-2.5 text-sm text-white placeholder-gray-600 focus:border-[rgba(124,126,184,0.60)] focus:outline-none focus:ring-1 focus:ring-[rgba(124,126,184,0.30)] transition-colors"
               />
             </div>
           </div>
@@ -405,7 +405,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
 
         {/* Star ratings */}
         <section className="space-y-5">
-          <h3 className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">
+          <h3 className="text-[10px] font-semibold uppercase tracking-widest text-[#8888a8]">
             Rate Your Experience
           </h3>
           <div className="grid gap-5 sm:grid-cols-2">
@@ -429,7 +429,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
             >
               Pros <span className="normal-case text-gray-600">(optional)</span>
             </label>
-            <span className={`text-xs tabular-nums ${pros.length > 450 ? 'text-yellow-400' : 'text-gray-600'}`}>
+            <span className={`text-xs tabular-nums ${pros.length > 450 ? 'text-[#9496cc]' : 'text-gray-600'}`}>
               {pros.length}/500
             </span>
           </div>
@@ -439,7 +439,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
             onChange={(e) => { if (e.target.value.length <= 500) setPros(e.target.value) }}
             rows={3}
             placeholder="What did you like? (facilities, culture, coaching quality…)"
-            className="w-full rounded-lg border border-green-500/20 bg-black/60 px-4 py-3 text-sm text-white placeholder-gray-600 focus:border-green-500/40 focus:outline-none focus:ring-1 focus:ring-green-500/20 transition-colors resize-none"
+            className="w-full rounded-lg border border-green-500/20 bg-[rgba(15,15,26,0.60)] px-4 py-3 text-sm text-white placeholder-gray-600 focus:border-green-500/40 focus:outline-none focus:ring-1 focus:ring-green-500/20 transition-colors resize-none"
           />
         </section>
 
@@ -452,7 +452,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
             >
               Cons <span className="normal-case text-gray-600">(optional)</span>
             </label>
-            <span className={`text-xs tabular-nums ${cons.length > 450 ? 'text-yellow-400' : 'text-gray-600'}`}>
+            <span className={`text-xs tabular-nums ${cons.length > 450 ? 'text-[#9496cc]' : 'text-gray-600'}`}>
               {cons.length}/500
             </span>
           </div>
@@ -462,7 +462,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
             onChange={(e) => { if (e.target.value.length <= 500) setCons(e.target.value) }}
             rows={3}
             placeholder="What could be improved?"
-            className="w-full rounded-lg border border-red-500/20 bg-black/60 px-4 py-3 text-sm text-white placeholder-gray-600 focus:border-red-500/40 focus:outline-none focus:ring-1 focus:ring-red-500/20 transition-colors resize-none"
+            className="w-full rounded-lg border border-red-500/20 bg-[rgba(15,15,26,0.60)] px-4 py-3 text-sm text-white placeholder-gray-600 focus:border-red-500/40 focus:outline-none focus:ring-1 focus:ring-red-500/20 transition-colors resize-none"
           />
         </section>
 
@@ -475,7 +475,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
             >
               Written Review <span className="normal-case text-gray-600">(optional)</span>
             </label>
-            <span className={`text-xs tabular-nums ${reviewText.length > 950 ? 'text-yellow-400' : 'text-gray-600'}`}>
+            <span className={`text-xs tabular-nums ${reviewText.length > 950 ? 'text-[#9496cc]' : 'text-gray-600'}`}>
               {reviewText.length}/1000
             </span>
           </div>
@@ -485,7 +485,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
             onChange={(e) => { if (e.target.value.length <= 1000) setReviewText(e.target.value) }}
             rows={5}
             placeholder="Share your overall experience — anything the Pros/Cons didn't cover…"
-            className="w-full rounded-lg border border-yellow-500/20 bg-black/60 px-4 py-3 text-sm text-white placeholder-gray-600 focus:border-yellow-500/60 focus:outline-none focus:ring-1 focus:ring-yellow-500/30 transition-colors resize-none"
+            className="w-full rounded-lg border border-[rgba(124,126,184,0.20)] bg-[rgba(15,15,26,0.60)] px-4 py-3 text-sm text-white placeholder-gray-600 focus:border-[rgba(124,126,184,0.60)] focus:outline-none focus:ring-1 focus:ring-[rgba(124,126,184,0.30)] transition-colors resize-none"
           />
         </section>
 
@@ -493,7 +493,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
         <section className="space-y-2">
           <div className="flex items-center gap-1.5">
             <span className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">Visibility</span>
-            <span className="rounded bg-zinc-800 px-2 py-0.5 text-[10px] text-zinc-500 leading-tight">
+            <span className="rounded bg-[#252540] px-2 py-0.5 text-[10px] text-[#555570] leading-tight">
               {isAnonymous
                 ? 'Your name is hidden. School & sport are still shown.'
                 : 'Your display name will be visible on this review.'}
@@ -508,7 +508,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
           >
             <span
               className={`relative inline-flex h-6 w-11 items-center rounded-full border-2 transition-colors ${
-                isAnonymous ? 'border-yellow-500 bg-yellow-500/20' : 'border-gray-600 bg-gray-800'
+                isAnonymous ? 'border-[#7c7eb8] bg-[rgba(124,126,184,0.20)]' : 'border-gray-600 bg-gray-800'
               }`}
             >
               <span
@@ -520,7 +520,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
             <span className="text-sm text-gray-300 group-hover:text-white transition-colors">
               {isAnonymous ? (
                 <>
-                  <span className="font-semibold text-yellow-400">Anonymous</span>
+                  <span className="font-semibold text-[#9496cc]">Anonymous</span>
                   {' — '}Your username will be hidden
                 </>
               ) : (
@@ -553,14 +553,14 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-lg border border-zinc-800 bg-transparent px-6 py-3 text-xs font-semibold uppercase tracking-widest text-zinc-400 hover:border-zinc-600 hover:text-zinc-200 transition-colors"
+            className="rounded-lg border border-[#3a3a5c] bg-transparent px-6 py-3 text-xs font-semibold uppercase tracking-widest text-[#8888a8] hover:border-[#4a4a70] hover:text-[#c4c4dc] transition-colors"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={submitting}
-            className="rounded-lg bg-yellow-500 px-8 py-3 text-xs font-bold uppercase tracking-widest text-black hover:bg-yellow-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="rounded-lg bg-[#7c7eb8] px-8 py-3 text-xs font-bold uppercase tracking-widest text-black hover:bg-[#9496cc] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {submitting ? 'Submitting…' : 'Submit Review'}
           </button>

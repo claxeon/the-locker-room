@@ -24,10 +24,10 @@ import { supabase } from '../../lib/supabase'
 // ---------------------------------------------------------------------------
 
 const INPUT_BASE =
-  'w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-yellow-500/50 transition-colors text-sm'
+  'w-full bg-[#1a1a2e] border border-[#3a3a5c] rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-[rgba(124,126,184,0.50)] transition-colors text-sm'
 
 const LABEL_BASE =
-  'block text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-2'
+  'block text-xs font-semibold uppercase tracking-widest text-[#8888a8] mb-2'
 
 // ---------------------------------------------------------------------------
 // Component
@@ -156,10 +156,10 @@ export function ResetPasswordPage() {
 
   if (pageState === 'loading') {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-screen bg-[#0f0f1a] flex items-center justify-center">
         <div className="text-center space-y-4">
-          <div className="w-8 h-8 border-2 border-yellow-500 border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-zinc-400 text-sm">Verifying reset link…</p>
+          <div className="w-8 h-8 border-2 border-[#7c7eb8] border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-[#8888a8] text-sm">Verifying reset link…</p>
         </div>
       </div>
     )
@@ -171,11 +171,11 @@ export function ResetPasswordPage() {
 
   if (pageState === 'error') {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center px-4">
+      <div className="min-h-screen bg-[#0f0f1a] flex items-center justify-center px-4">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          className="max-w-md w-full bg-zinc-900 border border-zinc-800 rounded-2xl p-8 text-center space-y-5"
+          className="max-w-md w-full bg-[#1a1a2e] border border-[#3a3a5c] rounded-2xl p-8 text-center space-y-5"
         >
           <div className="w-14 h-14 bg-red-500/20 rounded-full flex items-center justify-center mx-auto">
             <AlertCircle size={28} className="text-red-400" />
@@ -184,13 +184,13 @@ export function ResetPasswordPage() {
             <h1 className="text-2xl font-black uppercase tracking-tight text-white mb-2">
               Link Expired
             </h1>
-            <p className="text-zinc-400 text-sm leading-relaxed">
+            <p className="text-[#8888a8] text-sm leading-relaxed">
               {initError ?? 'This reset link is invalid or has expired.'}
             </p>
           </div>
           <button
             onClick={() => navigate('/login')}
-            className="w-full bg-yellow-500 hover:bg-yellow-400 text-black font-bold rounded-xl py-3 text-sm uppercase tracking-widest transition-colors"
+            className="w-full bg-[#7c7eb8] hover:bg-[#9496cc] text-[#0f0f1a] font-bold rounded-xl py-3 text-sm uppercase tracking-widest transition-colors"
           >
             Back to Sign In
           </button>
@@ -205,11 +205,11 @@ export function ResetPasswordPage() {
 
   if (pageState === 'success') {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center px-4">
+      <div className="min-h-screen bg-[#0f0f1a] flex items-center justify-center px-4">
         <motion.div
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="max-w-md w-full bg-zinc-900 border border-zinc-800 rounded-2xl p-8 text-center space-y-5"
+          className="max-w-md w-full bg-[#1a1a2e] border border-[#3a3a5c] rounded-2xl p-8 text-center space-y-5"
         >
           <div className="w-14 h-14 bg-green-500/20 rounded-full flex items-center justify-center mx-auto">
             <CheckCircle size={28} className="text-green-400" />
@@ -218,16 +218,16 @@ export function ResetPasswordPage() {
             <h1 className="text-2xl font-black uppercase tracking-tight text-white mb-2">
               Password Updated
             </h1>
-            <p className="text-zinc-400 text-sm leading-relaxed">
+            <p className="text-[#8888a8] text-sm leading-relaxed">
               Your password has been changed. Redirecting you to your dashboard…
             </p>
           </div>
-          <div className="w-full bg-zinc-800 rounded-full h-1 overflow-hidden">
+          <div className="w-full bg-[#252540] rounded-full h-1 overflow-hidden">
             <motion.div
               initial={{ width: '0%' }}
               animate={{ width: '100%' }}
               transition={{ duration: 2, ease: 'linear' }}
-              className="h-full bg-yellow-500 rounded-full"
+              className="h-full bg-[#7c7eb8] rounded-full"
             />
           </div>
         </motion.div>
@@ -240,7 +240,7 @@ export function ResetPasswordPage() {
   // ---------------------------------------------------------------------------
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#0f0f1a] flex items-center justify-center px-4">
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
@@ -252,19 +252,19 @@ export function ResetPasswordPage() {
           <h1 className="text-3xl font-black uppercase tracking-tight text-white">
             Set New Password
           </h1>
-          <p className="text-zinc-400 text-sm">
+          <p className="text-[#8888a8] text-sm">
             Choose a strong password for your account.
           </p>
         </div>
 
         {/* Card */}
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 space-y-5">
+        <div className="bg-[#1a1a2e] border border-[#3a3a5c] rounded-2xl p-6 space-y-5">
           <form onSubmit={handleSubmit} noValidate className="space-y-5">
             {/* New Password */}
             <div>
               <label className={LABEL_BASE}>New Password</label>
               <div className="relative">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#555570]">
                   <Lock size={15} />
                 </div>
                 <input
@@ -283,7 +283,7 @@ export function ResetPasswordPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#555570] hover:text-[#a8a8c0] transition-colors"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
@@ -295,7 +295,7 @@ export function ResetPasswordPage() {
             <div>
               <label className={LABEL_BASE}>Confirm Password</label>
               <div className="relative">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#555570]">
                   <Lock size={15} />
                 </div>
                 <input
@@ -313,7 +313,7 @@ export function ResetPasswordPage() {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#555570] hover:text-[#a8a8c0] transition-colors"
                   aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
                 >
                   {showConfirmPassword ? <EyeOff size={15} /> : <Eye size={15} />}
@@ -335,15 +335,15 @@ export function ResetPasswordPage() {
                             ? strength <= 1
                               ? 'bg-red-500'
                               : strength <= 2
-                              ? 'bg-yellow-500'
+                              ? 'bg-[#7c7eb8]'
                               : 'bg-green-500'
-                            : 'bg-zinc-700'
+                            : 'bg-[#3a3a5c]'
                         }`}
                       />
                     )
                   })}
                 </div>
-                <span className="text-xs text-zinc-500">
+                <span className="text-xs text-[#555570]">
                   {password.length < 8
                     ? 'Too short'
                     : password.length < 12
@@ -373,7 +373,7 @@ export function ResetPasswordPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full bg-yellow-500 hover:bg-yellow-400 disabled:bg-yellow-500/40 disabled:cursor-not-allowed text-black font-black uppercase tracking-widest text-sm py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+              className="w-full bg-[#7c7eb8] hover:bg-[#9496cc] disabled:bg-[rgba(124,126,184,0.40)] disabled:cursor-not-allowed text-[#0f0f1a] font-black uppercase tracking-widest text-sm py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
             >
               {submitting ? (
                 <>
@@ -387,11 +387,11 @@ export function ResetPasswordPage() {
           </form>
         </div>
 
-        <p className="text-center text-zinc-500 text-xs">
+        <p className="text-center text-[#555570] text-xs">
           Remember your password?{' '}
           <button
             onClick={() => navigate('/login')}
-            className="text-yellow-500 hover:text-yellow-400 font-semibold transition-colors"
+            className="text-[#7c7eb8] hover:text-[#9496cc] font-semibold transition-colors"
           >
             Sign in
           </button>

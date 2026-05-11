@@ -1,130 +1,119 @@
 /**
  * LoginPage — The Locker Room
- *
- * Features:
- *   - Email + password sign-in via supabase.auth.signInWithPassword
- *   - Inline error display
- *   - "Forgot password?" flow — resets to a small inline state that sends a
- *     reset email via supabase.auth.resetPasswordForEmail
- *   - On success: navigates to /directory
- *   - Link to /signup at the bottom
+ * Redesigned: navy/periwinkle palette
  */
 
 import React, { useState, FormEvent, ChangeEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 
-// ---------------------------------------------------------------------------
-// Shared field styles — mirrors the dark design system used across TLR
-// ---------------------------------------------------------------------------
+// ── Shared input/label styles (navy palette)
+const INPUT_BASE: React.CSSProperties = {
+  width: '100%',
+  backgroundColor: 'rgba(26,26,46,0.80)',
+  border: '1px solid #3a3a5c',
+  borderRadius: '0.625rem',
+  color: '#f0f0f8',
+  padding: '0.75rem 1rem',
+  fontSize: '0.875rem',
+  outline: 'none',
+  transition: 'border-color 0.15s',
+}
 
-const INPUT_BASE =
-  "w-full bg-black border border-white/20 rounded text-white placeholder-white/30 px-4 py-2.5 text-sm focus:outline-none focus:border-yellow-500 transition-colors";
-
-const LABEL_BASE =
-  "block text-xs font-semibold uppercase tracking-widest text-white/60 mb-1.5";
-
-// ---------------------------------------------------------------------------
-// Component
-// ---------------------------------------------------------------------------
+const LABEL_BASE: React.CSSProperties = {
+  display: 'block',
+  fontSize: '0.625rem',
+  fontWeight: 600,
+  textTransform: 'uppercase' as const,
+  letterSpacing: '0.08em',
+  color: '#8888a8',
+  marginBottom: '0.375rem',
+}
 
 type View = "login" | "forgot" | "forgot-sent";
 
 export function LoginPage() {
   const navigate = useNavigate();
-
-  // ── View state (login / forgot password flow)
   const [view, setView] = useState<View>("login");
 
-  // ── Login form
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState<string | null>(null);
   const [loggingIn, setLoggingIn] = useState(false);
 
-  // ── Forgot password
   const [resetEmail, setResetEmail] = useState("");
   const [resetError, setResetError] = useState<string | null>(null);
   const [sendingReset, setSendingReset] = useState(false);
 
-  // ── Login handler
   async function handleLogin(e: FormEvent) {
     e.preventDefault();
     setLoginError(null);
     setLoggingIn(true);
-
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
-        password,
-      });
-
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      // Successful login — navigate to the directory.
+      const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+      if (error) throw new Error(error.message);
       navigate("/directory");
     } catch (err: unknown) {
-      setLoginError(
-        err instanceof Error ? err.message : "An unexpected error occurred."
-      );
+      setLoginError(err instanceof Error ? err.message : "An unexpected error occurred.");
     } finally {
       setLoggingIn(false);
     }
   }
 
-  // ── Forgot password handler
   async function handleForgotPassword(e: FormEvent) {
     e.preventDefault();
     setResetError(null);
     setSendingReset(true);
-
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(
-        resetEmail.trim(),
-        {
-          // Redirect the user back to the app after they click the reset link.
-          // Adjust this URL to match your production domain / Reset Password page.
-          redirectTo: `${window.location.origin}/reset-password`,
-        }
-      );
-
-      if (error) {
-        throw new Error(error.message);
-      }
-
+      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail.trim(), {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw new Error(error.message);
       setView("forgot-sent");
     } catch (err: unknown) {
-      setResetError(
-        err instanceof Error ? err.message : "An unexpected error occurred."
-      );
+      setResetError(err instanceof Error ? err.message : "An unexpected error occurred.");
     } finally {
       setSendingReset(false);
     }
   }
 
-  // ── Forgot-password: success screen
+  const pageWrap = {
+    minHeight: '100vh',
+    backgroundColor: '#0f0f1a',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '1rem',
+  } as React.CSSProperties
+
+  // ── forgot-sent ──
   if (view === "forgot-sent") {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center px-4">
-        <div className="max-w-md w-full text-center space-y-6">
-          <div className="text-yellow-500 text-5xl">✉️</div>
-          <h2 className="text-2xl font-black uppercase tracking-widest text-white">
-            Check your inbox
-          </h2>
-          <p className="text-white/50 text-sm leading-relaxed">
-            If an account exists for{" "}
-            <span className="text-yellow-500">{resetEmail}</span>, we've sent a
-            password reset link. It may take a couple of minutes.
-          </p>
+      <div style={pageWrap}>
+        <div style={{ maxWidth: '28rem', width: '100%', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div
+            className="mx-auto flex h-16 w-16 items-center justify-center rounded-full"
+            style={{ border: '1px solid rgba(124,126,184,0.30)', backgroundColor: 'rgba(124,126,184,0.10)' }}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ width: 28, height: 28, color: '#7c7eb8' }}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+            </svg>
+          </div>
+          <div>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '-0.02em', color: '#f0f0f8', marginBottom: '0.5rem' }}>
+              Check your inbox
+            </h2>
+            <p style={{ color: '#555570', fontSize: '0.875rem', lineHeight: 1.6 }}>
+              If an account exists for{" "}
+              <span style={{ color: '#9496cc' }}>{resetEmail}</span>
+              , we've sent a password reset link. It may take a couple of minutes.
+            </p>
+          </div>
           <button
-            onClick={() => {
-              setView("login");
-              setResetEmail("");
-              setResetError(null);
-            }}
-            className="text-yellow-500 hover:text-yellow-400 text-sm font-semibold transition-colors"
+            onClick={() => { setView("login"); setResetEmail(""); setResetError(null); }}
+            style={{ color: '#7c7eb8', fontSize: '0.875rem', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', transition: 'color 0.15s' }}
+            onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.color = '#9496cc'}
+            onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.color = '#7c7eb8'}
           >
             ← Back to sign in
           </button>
@@ -133,67 +122,74 @@ export function LoginPage() {
     );
   }
 
-  // ── Forgot-password: input screen
+  // ── forgot form ──
   if (view === "forgot") {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center px-4">
-        <div className="max-w-md w-full space-y-8">
-          {/* Header */}
-          <div className="space-y-2">
-            <p className="text-yellow-500 text-xs font-bold uppercase tracking-widest">
+      <div style={pageWrap}>
+        <div style={{ maxWidth: '28rem', width: '100%', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <p style={{ fontSize: '0.625rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.12em', color: '#7c7eb8' }}>
               The Locker Room
             </p>
-            <h1 className="text-3xl font-black uppercase tracking-tight text-white">
+            <h1 style={{ fontSize: '1.875rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '-0.02em', color: '#f0f0f8' }}>
               Reset password
             </h1>
-            <p className="text-white/40 text-sm">
+            <p style={{ color: '#555570', fontSize: '0.875rem' }}>
               Enter your .edu email and we'll send you a reset link.
             </p>
           </div>
 
           {resetError && (
-            <div
-              role="alert"
-              className="bg-red-950/60 border border-red-500/40 text-red-300 rounded px-4 py-3 text-sm"
-            >
+            <div role="alert" style={{ backgroundColor: 'rgba(127,29,29,0.40)', border: '1px solid rgba(239,68,68,0.35)', color: '#fca5a5', borderRadius: '0.5rem', padding: '0.75rem 1rem', fontSize: '0.875rem' }}>
               {resetError}
             </div>
           )}
 
-          <form onSubmit={handleForgotPassword} noValidate className="space-y-5">
+          <form onSubmit={handleForgotPassword} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             <div>
-              <label htmlFor="resetEmail" className={LABEL_BASE}>
-                University email
-              </label>
+              <label htmlFor="resetEmail" style={LABEL_BASE}>University email</label>
               <input
                 id="resetEmail"
                 type="email"
                 autoComplete="email"
                 value={resetEmail}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  setResetEmail(e.target.value)
-                }
+                onChange={(e: ChangeEvent<HTMLInputElement>) => setResetEmail(e.target.value)}
                 placeholder="jsmith@university.edu"
-                className={INPUT_BASE}
+                style={{ ...INPUT_BASE, caretColor: '#9496cc' }}
+                onFocus={e => (e.currentTarget as HTMLInputElement).style.borderColor = 'rgba(124,126,184,0.60)'}
+                onBlur={e => (e.currentTarget as HTMLInputElement).style.borderColor = '#3a3a5c'}
                 required
               />
             </div>
-
             <button
               type="submit"
               disabled={sendingReset}
-              className="w-full bg-yellow-500 hover:bg-yellow-400 disabled:bg-yellow-500/40 disabled:cursor-not-allowed text-black font-black uppercase tracking-widest text-sm py-3 rounded transition-colors"
+              style={{
+                width: '100%',
+                backgroundColor: sendingReset ? 'rgba(124,126,184,0.40)' : '#7c7eb8',
+                color: '#0f0f1a',
+                fontWeight: 900,
+                textTransform: 'uppercase',
+                letterSpacing: '0.12em',
+                fontSize: '0.75rem',
+                padding: '0.875rem',
+                borderRadius: '0.625rem',
+                border: 'none',
+                cursor: sendingReset ? 'not-allowed' : 'pointer',
+                transition: 'background-color 0.15s',
+              }}
+              onMouseEnter={e => { if (!sendingReset) (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#9496cc' }}
+              onMouseLeave={e => { if (!sendingReset) (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#7c7eb8' }}
             >
               {sendingReset ? "Sending link…" : "Send reset link"}
             </button>
           </form>
 
           <button
-            onClick={() => {
-              setView("login");
-              setResetError(null);
-            }}
-            className="w-full text-center text-white/30 hover:text-white/60 text-sm transition-colors"
+            onClick={() => { setView("login"); setResetError(null); }}
+            style={{ width: '100%', textAlign: 'center', color: '#555570', fontSize: '0.875rem', background: 'none', border: 'none', cursor: 'pointer', transition: 'color 0.15s' }}
+            onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.color = '#a8a8c0'}
+            onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.color = '#555570'}
           >
             ← Back to sign in
           </button>
@@ -202,69 +198,52 @@ export function LoginPage() {
     );
   }
 
-  // ── Main login form
+  // ── main login ──
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center px-4">
-      <div className="max-w-md w-full space-y-8">
-        {/* Header */}
-        <div className="space-y-2">
-          <p className="text-yellow-500 text-xs font-bold uppercase tracking-widest">
+    <div style={pageWrap}>
+      <div style={{ maxWidth: '28rem', width: '100%', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <p style={{ fontSize: '0.625rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.12em', color: '#7c7eb8' }}>
             The Locker Room
           </p>
-          <h1 className="text-4xl font-black uppercase tracking-tight text-white">
+          <h1 style={{ fontSize: '2.25rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '-0.02em', color: '#f0f0f8' }}>
             Sign in
           </h1>
-          <p className="text-white/40 text-sm">
-            Welcome back. Athletes only.
-          </p>
+          <p style={{ color: '#555570', fontSize: '0.875rem' }}>Welcome back. Athletes only.</p>
         </div>
 
-        {/* Error banner */}
         {loginError && (
-          <div
-            role="alert"
-            className="bg-red-950/60 border border-red-500/40 text-red-300 rounded px-4 py-3 text-sm"
-          >
+          <div role="alert" style={{ backgroundColor: 'rgba(127,29,29,0.40)', border: '1px solid rgba(239,68,68,0.35)', color: '#fca5a5', borderRadius: '0.5rem', padding: '0.75rem 1rem', fontSize: '0.875rem' }}>
             {loginError}
           </div>
         )}
 
-        {/* Form */}
-        <form onSubmit={handleLogin} noValidate className="space-y-5">
-          {/* Email */}
+        <form onSubmit={handleLogin} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           <div>
-            <label htmlFor="email" className={LABEL_BASE}>
-              Email
-            </label>
+            <label htmlFor="email" style={LABEL_BASE}>Email</label>
             <input
               id="email"
               type="email"
               autoComplete="email"
               value={email}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                setEmail(e.target.value);
-                if (loginError) setLoginError(null);
-              }}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => { setEmail(e.target.value); if (loginError) setLoginError(null); }}
               placeholder="jsmith@university.edu"
-              className={INPUT_BASE}
+              style={{ ...INPUT_BASE, caretColor: '#9496cc' }}
+              onFocus={e => (e.currentTarget as HTMLInputElement).style.borderColor = 'rgba(124,126,184,0.60)'}
+              onBlur={e => (e.currentTarget as HTMLInputElement).style.borderColor = '#3a3a5c'}
               required
             />
           </div>
 
-          {/* Password */}
           <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <label htmlFor="password" className={LABEL_BASE + " mb-0"}>
-                Password
-              </label>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.375rem' }}>
+              <label htmlFor="password" style={{ ...LABEL_BASE, marginBottom: 0 }}>Password</label>
               <button
                 type="button"
-                onClick={() => {
-                  // Pre-fill the reset email with whatever the user typed.
-                  setResetEmail(email);
-                  setView("forgot");
-                }}
-                className="text-xs text-white/30 hover:text-yellow-500 transition-colors"
+                onClick={() => { setResetEmail(email); setView("forgot"); }}
+                style={{ fontSize: '0.75rem', color: '#555570', background: 'none', border: 'none', cursor: 'pointer', transition: 'color 0.15s' }}
+                onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.color = '#9496cc'}
+                onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.color = '#555570'}
               >
                 Forgot password?
               </button>
@@ -274,32 +253,47 @@ export function LoginPage() {
               type="password"
               autoComplete="current-password"
               value={password}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                setPassword(e.target.value);
-                if (loginError) setLoginError(null);
-              }}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => { setPassword(e.target.value); if (loginError) setLoginError(null); }}
               placeholder="••••••••"
-              className={INPUT_BASE}
+              style={{ ...INPUT_BASE, caretColor: '#9496cc' }}
+              onFocus={e => (e.currentTarget as HTMLInputElement).style.borderColor = 'rgba(124,126,184,0.60)'}
+              onBlur={e => (e.currentTarget as HTMLInputElement).style.borderColor = '#3a3a5c'}
               required
             />
           </div>
 
-          {/* Submit */}
           <button
             type="submit"
             disabled={loggingIn}
-            className="w-full bg-yellow-500 hover:bg-yellow-400 disabled:bg-yellow-500/40 disabled:cursor-not-allowed text-black font-black uppercase tracking-widest text-sm py-3 rounded transition-colors"
+            style={{
+              width: '100%',
+              backgroundColor: loggingIn ? 'rgba(124,126,184,0.40)' : '#7c7eb8',
+              color: '#0f0f1a',
+              fontWeight: 900,
+              textTransform: 'uppercase',
+              letterSpacing: '0.12em',
+              fontSize: '0.75rem',
+              padding: '0.875rem',
+              borderRadius: '0.625rem',
+              border: 'none',
+              cursor: loggingIn ? 'not-allowed' : 'pointer',
+              transition: 'background-color 0.15s',
+              boxShadow: loggingIn ? 'none' : '0 0 24px 0 rgba(124,126,184,0.28)',
+            }}
+            onMouseEnter={e => { if (!loggingIn) (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#9496cc' }}
+            onMouseLeave={e => { if (!loggingIn) (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#7c7eb8' }}
           >
             {loggingIn ? "Signing in…" : "Sign in"}
           </button>
         </form>
 
-        {/* Sign up link */}
-        <p className="text-center text-white/30 text-sm">
+        <p style={{ textAlign: 'center', color: '#555570', fontSize: '0.875rem' }}>
           Don't have an account?{" "}
           <Link
             to="/signup"
-            className="text-yellow-500 hover:text-yellow-400 transition-colors font-semibold"
+            style={{ color: '#7c7eb8', fontWeight: 600, textDecoration: 'none', transition: 'color 0.15s' }}
+            onMouseEnter={e => (e.currentTarget as HTMLAnchorElement).style.color = '#9496cc'}
+            onMouseLeave={e => (e.currentTarget as HTMLAnchorElement).style.color = '#7c7eb8'}
           >
             Sign up
           </Link>
