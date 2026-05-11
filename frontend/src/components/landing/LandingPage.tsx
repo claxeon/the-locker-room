@@ -417,39 +417,39 @@ const HeroSection = ({ onGetStarted }: { onGetStarted?: () => void }) => {
       >
         {/* LEFT — Text content */}
         <div className="flex flex-col items-start justify-center">
-          <motion.p
+          <motion.h1
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
             style={{
               fontFamily: "'Instrument Serif', Georgia, serif",
-              fontSize: 'clamp(1.6rem, 3.2vw, 2.6rem)',
+              fontSize: 'clamp(2.4rem, 5vw, 4rem)',
               fontWeight: 700,
               color: ACCENT,
-              letterSpacing: '-0.01em',
-              lineHeight: 1,
+              letterSpacing: '-0.02em',
+              lineHeight: 1.02,
               marginBottom: '20px',
             }}
           >
             Rate. Review. Reform.
-          </motion.p>
+          </motion.h1>
 
-          <motion.h1
+          <motion.h2
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.25 }}
             style={{
-              fontSize: 'clamp(2.4rem, 5vw, 4rem)',
+              fontSize: 'clamp(1.5rem, 3vw, 2.2rem)',
               fontFamily: "'Instrument Serif', Georgia, serif",
               fontWeight: 700,
               color: CREAM,
-              lineHeight: 1.02,
+              lineHeight: 1.1,
               letterSpacing: '-0.02em',
             }}
           >
             Committed to giving athletes a voice,{' '}
             <span style={{ color: CREAM, opacity: 0.38 }}>anonymously</span>
-          </motion.h1>
+          </motion.h2>
 
           <motion.p
             initial={{ opacity: 0, y: 16 }}
