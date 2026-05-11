@@ -251,8 +251,13 @@ const HeroRadarCard = () => {
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      {/* Card header */}
-      <div className="mb-3">
+      {/* Card header — fades in with the same timing as the card entrance (delay 0.3s) */}
+      <motion.div
+        className="mb-3"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.3, ease: 'easeOut' }}
+      >
         <p
           className="text-2xs font-semibold uppercase tracking-widest"
           style={{ color: '#555570', letterSpacing: '0.18em' }}
@@ -293,7 +298,7 @@ const HeroRadarCard = () => {
             {incomingLabel}
           </p>
         </div>
-      </div>
+      </motion.div>
 
       {/* SVG Radar — overflow:visible so axis labels outside the viewBox boundary
            are never clipped by the SVG element itself. The card's border-radius
