@@ -79,13 +79,13 @@ export const CollegeComparison: React.FC = () => {
   const showCompare = selectedSchools.length >= 2
 
   return (
-    <div className="relative min-h-screen w-full bg-black text-white">
+    <div className="relative min-h-screen w-full text-white" style={{ backgroundColor: '#0A0E1A' }}>
       {/* Background glow */}
       <div
         className="pointer-events-none absolute inset-0 -z-10"
         style={{
           background:
-            'radial-gradient(ellipse 70% 40% at 50% -5%, rgba(234,179,8,0.07) 0%, transparent 70%)',
+            'radial-gradient(ellipse 70% 40% at 50% -5%, rgba(20,184,166,0.07) 0%, transparent 70%)',
         }}
       />
 
@@ -100,7 +100,7 @@ export const CollegeComparison: React.FC = () => {
           transition={{ duration: 0.6 }}
           className="flex flex-col gap-3"
         >
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-yellow-500">
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-[#14B8A6]">
             Programs
           </p>
           <h1
@@ -125,7 +125,7 @@ export const CollegeComparison: React.FC = () => {
               value={query}
               onChange={handleQueryChange}
               placeholder="Search any school — e.g. Duke, Ohio State, Alabama…"
-              className="w-full rounded-xl border border-zinc-800 bg-zinc-900/80 py-4 pl-11 pr-4 text-sm text-white placeholder-zinc-600 focus:border-yellow-500/60 focus:outline-none focus:ring-1 focus:ring-yellow-500/20 transition-colors"
+              className="w-full rounded-xl border border-[#2a2a3c] bg-[#14151F]/80 py-4 pl-11 pr-4 text-sm text-white placeholder-zinc-600 focus:border-[#14B8A6]/60 focus:outline-none focus:ring-1 focus:ring-[#14B8A6]/20 transition-colors"
               autoComplete="off"
             />
             {query && (
@@ -145,7 +145,7 @@ export const CollegeComparison: React.FC = () => {
                 Comparing:
               </span>
               {selectedSchools.map((school, idx) => {
-                const colors = ['#eab308', '#22d3ee', '#fb7185', '#a78bfa']
+                const colors = ['#14B8A6', '#22d3ee', '#fb7185', '#a78bfa']
                 return (
                   <span
                     key={school.schoolId}
@@ -172,7 +172,7 @@ export const CollegeComparison: React.FC = () => {
                 Clear all
               </button>
               {selectedSchools.length >= MAX_SELECTIONS && (
-                <span className="text-[10px] font-semibold uppercase tracking-widest text-yellow-500/70">
+                <span className="text-[10px] font-semibold uppercase tracking-widest text-[#14B8A6]/70">
                   Max 4 programs
                 </span>
               )}
@@ -188,10 +188,10 @@ export const CollegeComparison: React.FC = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="flex flex-col items-center gap-5 rounded-xl border border-dashed border-zinc-800 py-20 text-center"
+              className="flex flex-col items-center gap-5 rounded-xl border border-dashed border-[#2a2a3c] py-20 text-center"
             >
-              <div className="flex h-14 w-14 items-center justify-center rounded-full border border-zinc-800 bg-zinc-900">
-                <Search className="h-5 w-5 text-yellow-500" />
+              <div className="flex h-14 w-14 items-center justify-center rounded-full border border-[#2a2a3c] bg-[#14151F]">
+                <Search className="h-5 w-5 text-[#14B8A6]" />
               </div>
               <div>
                 <p className="text-white" style={{ ...serifItalic, fontSize: 'clamp(1.25rem, 3vw, 1.75rem)' }}>
@@ -209,7 +209,7 @@ export const CollegeComparison: React.FC = () => {
                     <button
                       key={name}
                       onClick={() => { setQuery(name); setDebouncedQuery(name) }}
-                      className="rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1 text-xs font-semibold text-zinc-400 hover:border-yellow-500/50 hover:text-white transition-colors"
+                      className="rounded-full border border-[#2a2a3c] bg-[#14151F] px-3 py-1 text-xs font-semibold text-zinc-400 hover:border-[#14B8A6]/50 hover:text-white transition-colors"
                     >
                       {name}
                     </button>
@@ -225,7 +225,7 @@ export const CollegeComparison: React.FC = () => {
               exit={{ opacity: 0 }}
               className="flex justify-center py-16"
             >
-              <div className="h-10 w-10 animate-spin rounded-full border-2 border-zinc-800 border-t-yellow-500" />
+              <div className="h-10 w-10 animate-spin rounded-full border-2 border-[#2a2a3c] border-t-[#14B8A6]" />
             </motion.div>
           ) : results.length === 0 ? (
             <motion.div
@@ -233,7 +233,7 @@ export const CollegeComparison: React.FC = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="rounded-xl border border-dashed border-zinc-800 py-12 text-center"
+              className="rounded-xl border border-dashed border-[#2a2a3c] py-12 text-center"
             >
               <p className="text-sm text-zinc-500">No schools found for &ldquo;{debouncedQuery}&rdquo;</p>
               <p className="mt-1 text-xs text-zinc-700">Try a shorter name or check spelling.</p>
@@ -248,8 +248,8 @@ export const CollegeComparison: React.FC = () => {
             >
               {/* Info banner when results have no reviews */}
               {results.every((r) => !r.hasReviews) && (
-                <div className="flex items-start gap-3 rounded-xl border border-zinc-800 bg-zinc-900/50 px-4 py-3">
-                  <Info className="h-4 w-4 text-yellow-500/70 flex-shrink-0 mt-0.5" />
+                <div className="flex items-start gap-3 rounded-xl border border-[#2a2a3c] bg-[#14151F]/50 px-4 py-3">
+                  <Info className="h-4 w-4 text-[#14B8A6]/70 flex-shrink-0 mt-0.5" />
                   <p className="text-xs text-zinc-500 leading-relaxed">
                     These programs haven't been reviewed yet. You can still add them to your comparison — 
                     their cards will show a placeholder and you can be the first to rate them.
@@ -310,7 +310,7 @@ export const CollegeComparison: React.FC = () => {
                   .getElementById('comparison-table')
                   ?.scrollIntoView({ behavior: 'smooth' })
               }
-              className="rounded-full bg-yellow-500 px-8 py-3 text-sm font-black uppercase tracking-widest text-black shadow-2xl shadow-yellow-500/30 hover:bg-yellow-400 transition-colors"
+              className="rounded-full px-8 py-3 text-sm font-black uppercase tracking-widest shadow-2xl transition-colors" style={{ backgroundColor: '#14B8A6', color: '#0A0E1A', boxShadow: '0 20px 40px -12px rgba(20,184,166,0.35)' }} onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#0d9488' }} onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#14B8A6' }}
             >
               Compare {selectedSchools.length} Programs ↓
             </button>

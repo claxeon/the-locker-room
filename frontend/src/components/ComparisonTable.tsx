@@ -95,7 +95,7 @@ const METRICS = [
 
 // Color palette — yellow accent for first school, then teal, coral, violet
 const SCHOOL_COLORS = [
-  '#eab308',  // yellow-500
+  '#14B8A6',  // teal (TLR accent)
   '#22d3ee',  // cyan-400
   '#fb7185',  // rose-400
   '#a78bfa',  // violet-400
@@ -131,13 +131,13 @@ function MetricRow({ label, icon, schools, columnMaxes }: {
         const val = school[key]
         const isLeader = Math.abs(val - columnMaxes[key]) < EPSILON && school.hasReviews
         const pct = (val / 5) * 100
-        const color = SCHOOL_COLORS[idx] ?? '#eab308'
+        const color = SCHOOL_COLORS[idx] ?? '#14B8A6'
         return (
           <td key={school.schoolId} className="px-4 py-3">
             {school.hasReviews ? (
               <div className="flex flex-col gap-1.5">
                 <div className="flex items-center justify-between">
-                  <div className="h-2 flex-1 mr-3 overflow-hidden rounded-full bg-zinc-800">
+                  <div className="h-2 flex-1 mr-3 overflow-hidden rounded-full bg-[#2a2a3c]">
                     <motion.div
                       className="h-full rounded-full"
                       style={{ backgroundColor: isLeader ? color : `${color}80`, width: `${pct}%` }}
@@ -147,7 +147,7 @@ function MetricRow({ label, icon, schools, columnMaxes }: {
                     />
                   </div>
                   <span
-                    className={`min-w-[2.5rem] text-right text-sm font-black tabular-nums ${isLeader ? 'text-yellow-300' : 'text-zinc-300'}`}
+                    className={`min-w-[2.5rem] text-right text-sm font-black tabular-nums ${isLeader ? '' : 'text-zinc-300'}`}
                     style={{ color: isLeader ? color : undefined }}
                   >
                     {val.toFixed(1)}
@@ -197,12 +197,12 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ schools }) => 
       initial={{ opacity: 0, y: 32 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="flex flex-col gap-8 rounded-2xl border border-zinc-800 bg-zinc-950/80 p-6 backdrop-blur"
+      className="flex flex-col gap-8 rounded-2xl border border-[#2a2a3c] bg-[#0A0E1A]/80 p-6 backdrop-blur"
     >
       {/* Header */}
       <div className="flex items-center gap-3">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-yellow-500/10">
-          <BarChart2 className="h-4 w-4 text-yellow-500" />
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#14B8A6]/10">
+          <BarChart2 className="h-4 w-4 text-[#14B8A6]" />
         </div>
         <div>
           <h3 className="text-lg font-black uppercase tracking-tight text-white">
@@ -218,9 +218,9 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ schools }) => 
       {schoolsWithReviews.length >= 2 ? (
         <div>
           <p className="mb-3 text-[10px] font-semibold uppercase tracking-widest text-zinc-500 flex items-center gap-2">
-            <span className="h-px flex-1 bg-zinc-800" />
+            <span className="h-px flex-1 bg-[#2a2a3c]" />
             Program Profile Overlay
-            <span className="h-px flex-1 bg-zinc-800" />
+            <span className="h-px flex-1 bg-[#2a2a3c]" />
           </p>
           <div className="h-80 w-full">
             <ResponsiveContainer width="100%" height="100%">
@@ -238,8 +238,8 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ schools }) => 
                 />
                 <Tooltip
                   contentStyle={{
-                    background: '#09090b',
-                    border: '1px solid #27272a',
+                    background: '#0A0E1A',
+                    border: '1px solid #2a2a3c',
                     borderRadius: '0.75rem',
                     fontSize: 12,
                     fontWeight: 700,
@@ -254,10 +254,10 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ schools }) => 
                       key={school.schoolId}
                       name={school.name.length > 22 ? `${school.name.slice(0, 22)}…` : school.name}
                       dataKey={school.name}
-                      stroke={SCHOOL_COLORS[idx] ?? '#eab308'}
-                      fill={`${SCHOOL_COLORS[idx] ?? '#eab308'}18`}
+                      stroke={SCHOOL_COLORS[idx] ?? '#14B8A6'}
+                      fill={`${SCHOOL_COLORS[idx] ?? '#14B8A6'}18`}
                       strokeWidth={2}
-                      dot={{ r: 3, fill: SCHOOL_COLORS[idx] ?? '#eab308', strokeWidth: 0 }}
+                      dot={{ r: 3, fill: SCHOOL_COLORS[idx] ?? '#14B8A6', strokeWidth: 0 }}
                     />
                   ) : null
                 )}
@@ -266,13 +266,13 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ schools }) => 
           </div>
         </div>
       ) : schoolsWithReviews.length === 1 ? (
-        <div className="rounded-xl border border-dashed border-zinc-800 px-6 py-4 text-center">
+        <div className="rounded-xl border border-dashed border-[#2a2a3c] px-6 py-4 text-center">
           <p className="text-xs text-zinc-600">
             Overlay chart requires at least 2 programs with reviews. Add another reviewed program to see the comparison radar.
           </p>
         </div>
       ) : (
-        <div className="rounded-xl border border-dashed border-zinc-800 px-6 py-4 text-center">
+        <div className="rounded-xl border border-dashed border-[#2a2a3c] px-6 py-4 text-center">
           <p className="text-xs text-zinc-600">
             None of the selected programs have reviews yet. Be the first athlete to rate these programs.
           </p>
@@ -282,9 +282,9 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ schools }) => 
       {/* Metric-by-metric bar table */}
       <div>
         <p className="mb-3 text-[10px] font-semibold uppercase tracking-widest text-zinc-500 flex items-center gap-2">
-          <span className="h-px flex-1 bg-zinc-800" />
+          <span className="h-px flex-1 bg-[#2a2a3c]" />
           Category Breakdown
-          <span className="h-px flex-1 bg-zinc-800" />
+          <span className="h-px flex-1 bg-[#2a2a3c]" />
         </p>
         <div className="overflow-x-auto">
           <table className="w-full border-separate border-spacing-y-0.5">
@@ -298,7 +298,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ schools }) => 
                     <div className="flex items-center gap-2">
                       <div
                         className="h-2.5 w-2.5 rounded-full flex-shrink-0"
-                        style={{ backgroundColor: SCHOOL_COLORS[idx] ?? '#eab308' }}
+                        style={{ backgroundColor: SCHOOL_COLORS[idx] ?? '#14B8A6' }}
                       />
                       <span className="text-[10px] font-black uppercase tracking-widest text-white truncate max-w-[160px]">
                         {school.name}
@@ -320,17 +320,17 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ schools }) => 
               ))}
 
               {/* Composite row */}
-              <tr className="border-t border-zinc-800">
+              <tr className="border-t border-[#2a2a3c]">
                 <td className="py-4 pl-4 pr-6">
                   <div className="flex items-center gap-2">
-                    <Trophy className="h-4 w-4 text-yellow-500" />
+                    <Trophy className="h-4 w-4 text-[#14B8A6]" />
                     <span className="text-xs font-black uppercase tracking-widest text-zinc-300">Composite</span>
                   </div>
                 </td>
                 {normalized.map((school, idx) => {
                   const comp = composite(school)
                   const isLeader = Math.abs(comp - compositeMax) < EPSILON && school.hasReviews
-                  const color = SCHOOL_COLORS[idx] ?? '#eab308'
+                  const color = SCHOOL_COLORS[idx] ?? '#14B8A6'
                   return (
                     <td key={school.schoolId} className="px-4 py-4">
                       {school.hasReviews ? (
@@ -350,7 +350,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ schools }) => 
               </tr>
 
               {/* Sanction / accreditation row */}
-              <tr className="border-t border-zinc-800/50">
+              <tr className="border-t border-[#2a2a3c]/50">
                 <td className="py-3 pl-4 pr-6">
                   <div className="flex items-center gap-2">
                     <BookOpen className="h-3.5 w-3.5 text-zinc-500" />
@@ -359,7 +359,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ schools }) => 
                 </td>
                 {normalized.map((school) => (
                   <td key={school.schoolId} className="px-4 py-3">
-                    <span className="inline-flex rounded-md bg-zinc-800 px-2 py-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-400">
+                    <span className="inline-flex rounded-md bg-[#1E1F2E] px-2 py-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-400">
                       {school.sanction || school.division || '—'}
                     </span>
                   </td>
@@ -367,7 +367,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ schools }) => 
               </tr>
 
               {/* Review count row */}
-              <tr className="border-t border-zinc-800/50">
+              <tr className="border-t border-[#2a2a3c]/50">
                 <td className="py-3 pl-4 pr-6">
                   <div className="flex items-center gap-2">
                     <Users className="h-3.5 w-3.5 text-zinc-500" />

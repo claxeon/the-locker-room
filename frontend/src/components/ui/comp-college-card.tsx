@@ -58,9 +58,9 @@ function RadarTooltip({ active, payload }: { active?: boolean; payload?: Array<{
   if (!active || !payload?.length) return null
   const d = payload[0].payload
   return (
-    <div className="rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs shadow-xl">
+    <div className="rounded-lg border border-[#2a2a3c] bg-[#0A0E1A] px-3 py-2 text-xs shadow-xl">
       <p className="font-semibold uppercase tracking-widest text-zinc-400">{d.metric}</p>
-      <p className="text-lg font-black text-yellow-400">{d.score.toFixed(1)}<span className="text-xs text-zinc-500"> / 5</span></p>
+      <p className="text-lg font-black" style={{ color: '#14B8A6' }}>{d.score.toFixed(1)}<span className="text-xs text-zinc-500"> / 5</span></p>
     </div>
   )
 }
@@ -93,8 +93,8 @@ export function CollegeCard({ data, isSelected = false, onSelect }: CollegeCardP
       transition={{ type: 'spring', stiffness: 300, damping: 28 }}
       className={`group relative flex h-full flex-col gap-5 rounded-2xl border p-6 shadow-xl backdrop-blur-lg transition-colors cursor-pointer outline-none ${
         isSelected
-          ? 'border-yellow-500 bg-zinc-900/80 shadow-[0_20px_50px_-20px_rgba(234,179,8,0.5)]'
-          : 'border-zinc-800 bg-zinc-900/50 hover:border-yellow-500/50'
+          ? 'border-[#14B8A6] bg-[#14151F]/80 shadow-[0_20px_50px_-20px_rgba(20,184,166,0.35)]'
+          : 'border-[#2a2a3c] bg-[#14151F]/50 hover:border-[#14B8A6]/50'
       }`}
       role="button"
       tabIndex={0}
@@ -106,9 +106,9 @@ export function CollegeCard({ data, isSelected = false, onSelect }: CollegeCardP
     >
       {/* Selection indicator */}
       {isSelected && (
-        <div className="absolute right-4 top-4 flex items-center gap-1.5 rounded-full bg-yellow-500/20 px-2.5 py-1">
-          <CheckCircle2 className="h-3 w-3 text-yellow-400" />
-          <span className="text-[10px] font-bold uppercase tracking-widest text-yellow-400">Selected</span>
+        <div className="absolute right-4 top-4 flex items-center gap-1.5 rounded-full bg-[#14B8A6]/20 px-2.5 py-1">
+          <CheckCircle2 className="h-3 w-3 text-[#14B8A6]" />
+          <span className="text-[10px] font-bold uppercase tracking-widest text-[#14B8A6]">Selected</span>
         </div>
       )}
 
@@ -116,8 +116,8 @@ export function CollegeCard({ data, isSelected = false, onSelect }: CollegeCardP
       <div className="flex items-start gap-4 pr-20">
         {/* Logo */}
         <div
-          className="flex-shrink-0 flex h-14 w-14 items-center justify-center overflow-hidden rounded-xl border border-zinc-700"
-          style={{ background: 'linear-gradient(135deg, #1c1917 0%, #27272a 100%)' }}
+          className="flex-shrink-0 flex h-14 w-14 items-center justify-center overflow-hidden rounded-xl border border-[#2a2a3c]"
+          style={{ background: 'linear-gradient(135deg, #14151F 0%, #1E1F2E 100%)' }}
         >
           {logoUrl ? (
             <>
@@ -134,7 +134,7 @@ export function CollegeCard({ data, isSelected = false, onSelect }: CollegeCardP
               />
               <span
                 className="hidden h-full w-full items-center justify-center text-xl font-black"
-                style={{ color: '#eab308', fontFamily: "'Instrument Serif', Georgia, serif", fontStyle: 'italic' }}
+                style={{ color: '#14B8A6', fontFamily: "'Instrument Serif', Georgia, serif", fontStyle: 'italic' }}
               >
                 {name.charAt(0)}
               </span>
@@ -142,7 +142,7 @@ export function CollegeCard({ data, isSelected = false, onSelect }: CollegeCardP
           ) : (
             <span
               className="flex h-full w-full items-center justify-center text-xl font-black"
-              style={{ color: '#eab308', fontFamily: "'Instrument Serif', Georgia, serif", fontStyle: 'italic' }}
+              style={{ color: '#14B8A6', fontFamily: "'Instrument Serif', Georgia, serif", fontStyle: 'italic' }}
             >
               {name.charAt(0)}
             </span>
@@ -156,13 +156,13 @@ export function CollegeCard({ data, isSelected = false, onSelect }: CollegeCardP
           </h3>
           <div className="flex flex-wrap gap-1.5">
             {division && (
-              <span className="inline-flex items-center gap-1 rounded-md bg-yellow-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-yellow-500">
+              <span className="inline-flex items-center gap-1 rounded-md bg-[#14B8A6]/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-[#14B8A6]">
                 <BookOpen className="h-2.5 w-2.5" />
                 {division}
               </span>
             )}
             {sanction && (
-              <span className="inline-flex rounded-md bg-zinc-800 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-zinc-400">
+              <span className="inline-flex rounded-md bg-[#1E1F2E] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-zinc-400">
                 {sanction}
               </span>
             )}
@@ -177,7 +177,7 @@ export function CollegeCard({ data, isSelected = false, onSelect }: CollegeCardP
       </div>
 
       {/* Composite score strip */}
-      <div className="flex items-center justify-between rounded-xl border border-zinc-800 bg-black/40 px-4 py-2.5">
+      <div className="flex items-center justify-between rounded-xl border border-[#2a2a3c] bg-[#0A0E1A]/60 px-4 py-2.5">
         <div className="flex flex-col">
           <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500">
             Composite Score
@@ -202,7 +202,7 @@ export function CollegeCard({ data, isSelected = false, onSelect }: CollegeCardP
         <div className="h-64 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <RadarChart cx="50%" cy="50%" outerRadius="72%" data={chartData}>
-              <PolarGrid stroke="rgba(250,204,21,0.2)" radialLines={false} />
+              <PolarGrid stroke="rgba(255,255,255,0.06)" radialLines={false} />
               <PolarAngleAxis
                 dataKey="metric"
                 tick={{ fill: '#a1a1aa', fontSize: 10, fontWeight: 600 }}
@@ -217,17 +217,17 @@ export function CollegeCard({ data, isSelected = false, onSelect }: CollegeCardP
               <Radar
                 name={name}
                 dataKey="score"
-                stroke="#eab308"
-                fill="rgba(234,179,8,0.2)"
+                stroke="#9B97B5"
+                fill="rgba(155,151,181,0.18)"
                 strokeWidth={2}
-                dot={{ r: 3, fill: '#eab308', strokeWidth: 0 }}
+                dot={{ r: 3, fill: '#9B97B5', strokeWidth: 0 }}
               />
             </RadarChart>
           </ResponsiveContainer>
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-zinc-800 py-10 text-center">
-          <div className="h-10 w-10 rounded-full border border-zinc-800 bg-zinc-900 flex items-center justify-center">
+        <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-[#2a2a3c] py-10 text-center">
+          <div className="h-10 w-10 rounded-full border border-[#2a2a3c] bg-[#14151F] flex items-center justify-center">
             <BookOpen className="h-4 w-4 text-zinc-600" />
           </div>
           <div>
@@ -249,11 +249,11 @@ export function CollegeCard({ data, isSelected = false, onSelect }: CollegeCardP
               <div key={key} className="flex flex-col gap-0.5">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-600">{short}</span>
-                  <span className="text-[10px] font-black tabular-nums text-yellow-500">{val.toFixed(1)}</span>
+                  <span className="text-[10px] font-black tabular-nums text-[#14B8A6]">{val.toFixed(1)}</span>
                 </div>
-                <div className="h-1 w-full overflow-hidden rounded-full bg-zinc-800">
+                <div className="h-1 w-full overflow-hidden rounded-full bg-[#2a2a3c]">
                   <div
-                    className="h-full rounded-full bg-yellow-500 transition-all duration-700"
+                    className="h-full rounded-full bg-[#14B8A6] transition-all duration-700"
                     style={{ width: `${pct}%` }}
                   />
                 </div>
@@ -265,7 +265,7 @@ export function CollegeCard({ data, isSelected = false, onSelect }: CollegeCardP
 
       {/* Athlete testimonial quote — shown when provided */}
       {testimonial && (
-        <div className="rounded-xl border border-zinc-800 bg-zinc-950/60 px-4 py-3">
+        <div className="rounded-xl border border-[#2a2a3c] bg-[#0A0E1A]/60 px-4 py-3">
           <p className="text-[11px] italic leading-relaxed text-zinc-400">
             &ldquo;{testimonial.quote}&rdquo;
           </p>
