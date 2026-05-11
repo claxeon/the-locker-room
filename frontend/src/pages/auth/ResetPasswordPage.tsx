@@ -24,7 +24,7 @@ import { supabase } from '../../lib/supabase'
 // ---------------------------------------------------------------------------
 
 const INPUT_BASE =
-  'w-full bg-[#1a1a2e] border border-[#3a3a5c] rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-[rgba(124,126,184,0.50)] transition-colors text-sm'
+  'w-full bg-[#14151F] border border-[#2a2a3c] rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-[rgba(20,184,166,0.50)] transition-colors text-sm'
 
 const LABEL_BASE =
   'block text-xs font-semibold uppercase tracking-widest text-[#8888a8] mb-2'
@@ -156,9 +156,9 @@ export function ResetPasswordPage() {
 
   if (pageState === 'loading') {
     return (
-      <div className="min-h-screen bg-[#0f0f1a] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0A0E1A] flex items-center justify-center">
         <div className="text-center space-y-4">
-          <div className="w-8 h-8 border-2 border-[#7c7eb8] border-t-transparent rounded-full animate-spin mx-auto" />
+          <div className="w-8 h-8 border-2 border-[#14B8A6] border-t-transparent rounded-full animate-spin mx-auto" />
           <p className="text-[#8888a8] text-sm">Verifying reset link…</p>
         </div>
       </div>
@@ -171,11 +171,11 @@ export function ResetPasswordPage() {
 
   if (pageState === 'error') {
     return (
-      <div className="min-h-screen bg-[#0f0f1a] flex items-center justify-center px-4">
+      <div className="min-h-screen bg-[#0A0E1A] flex items-center justify-center px-4">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          className="max-w-md w-full bg-[#1a1a2e] border border-[#3a3a5c] rounded-2xl p-8 text-center space-y-5"
+          className="max-w-md w-full bg-[#14151F] border border-[#2a2a3c] rounded-2xl p-8 text-center space-y-5"
         >
           <div className="w-14 h-14 bg-red-500/20 rounded-full flex items-center justify-center mx-auto">
             <AlertCircle size={28} className="text-red-400" />
@@ -190,7 +190,7 @@ export function ResetPasswordPage() {
           </div>
           <button
             onClick={() => navigate('/login')}
-            className="w-full bg-[#7c7eb8] hover:bg-[#9496cc] text-[#0f0f1a] font-bold rounded-xl py-3 text-sm uppercase tracking-widest transition-colors"
+            className="w-full bg-[#14B8A6] hover:bg-[#14B8A6] text-[#0A0E1A] font-bold rounded-xl py-3 text-sm uppercase tracking-widest transition-colors"
           >
             Back to Sign In
           </button>
@@ -205,11 +205,11 @@ export function ResetPasswordPage() {
 
   if (pageState === 'success') {
     return (
-      <div className="min-h-screen bg-[#0f0f1a] flex items-center justify-center px-4">
+      <div className="min-h-screen bg-[#0A0E1A] flex items-center justify-center px-4">
         <motion.div
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="max-w-md w-full bg-[#1a1a2e] border border-[#3a3a5c] rounded-2xl p-8 text-center space-y-5"
+          className="max-w-md w-full bg-[#14151F] border border-[#2a2a3c] rounded-2xl p-8 text-center space-y-5"
         >
           <div className="w-14 h-14 bg-green-500/20 rounded-full flex items-center justify-center mx-auto">
             <CheckCircle size={28} className="text-green-400" />
@@ -222,12 +222,12 @@ export function ResetPasswordPage() {
               Your password has been changed. Redirecting you to your dashboard…
             </p>
           </div>
-          <div className="w-full bg-[#252540] rounded-full h-1 overflow-hidden">
+          <div className="w-full bg-[#1E1F2E] rounded-full h-1 overflow-hidden">
             <motion.div
               initial={{ width: '0%' }}
               animate={{ width: '100%' }}
               transition={{ duration: 2, ease: 'linear' }}
-              className="h-full bg-[#7c7eb8] rounded-full"
+              className="h-full bg-[#14B8A6] rounded-full"
             />
           </div>
         </motion.div>
@@ -240,7 +240,7 @@ export function ResetPasswordPage() {
   // ---------------------------------------------------------------------------
 
   return (
-    <div className="min-h-screen bg-[#0f0f1a] flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#0A0E1A] flex items-center justify-center px-4">
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
@@ -258,7 +258,7 @@ export function ResetPasswordPage() {
         </div>
 
         {/* Card */}
-        <div className="bg-[#1a1a2e] border border-[#3a3a5c] rounded-2xl p-6 space-y-5">
+        <div className="bg-[#14151F] border border-[#2a2a3c] rounded-2xl p-6 space-y-5">
           <form onSubmit={handleSubmit} noValidate className="space-y-5">
             {/* New Password */}
             <div>
@@ -335,9 +335,9 @@ export function ResetPasswordPage() {
                             ? strength <= 1
                               ? 'bg-red-500'
                               : strength <= 2
-                              ? 'bg-[#7c7eb8]'
+                              ? 'bg-[#14B8A6]'
                               : 'bg-green-500'
-                            : 'bg-[#3a3a5c]'
+                            : 'bg-[#2a2a3c]'
                         }`}
                       />
                     )
@@ -373,7 +373,7 @@ export function ResetPasswordPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full bg-[#7c7eb8] hover:bg-[#9496cc] disabled:bg-[rgba(124,126,184,0.40)] disabled:cursor-not-allowed text-[#0f0f1a] font-black uppercase tracking-widest text-sm py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+              className="w-full bg-[#14B8A6] hover:bg-[#14B8A6] disabled:bg-[rgba(20,184,166,0.40)] disabled:cursor-not-allowed text-[#0A0E1A] font-black uppercase tracking-widest text-sm py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
             >
               {submitting ? (
                 <>
@@ -391,7 +391,7 @@ export function ResetPasswordPage() {
           Remember your password?{' '}
           <button
             onClick={() => navigate('/login')}
-            className="text-[#7c7eb8] hover:text-[#9496cc] font-semibold transition-colors"
+            className="text-[#14B8A6] hover:text-[#14B8A6] font-semibold transition-colors"
           >
             Sign in
           </button>

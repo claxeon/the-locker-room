@@ -112,7 +112,7 @@ function formatDate(iso: string): string {
 function SkeletonBlock({ className }: { className?: string }) {
   return (
     <div
-      className={`animate-pulse bg-[#252540] rounded-lg ${className ?? ''}`}
+      className={`animate-pulse bg-[#1E1F2E] rounded-lg ${className ?? ''}`}
     />
   )
 }
@@ -128,7 +128,7 @@ function StarRating({ value }: { value: number }) {
           <Star
             key={i}
             size={14}
-            className={filled ? 'text-[#7c7eb8] fill-[#7c7eb8]' : 'text-[#555570]'}
+            className={filled ? 'text-[#14B8A6] fill-[#14B8A6]' : 'text-[#555570]'}
           />
         )
       })}
@@ -140,7 +140,7 @@ function StarRating({ value }: { value: number }) {
 // Moderation status pill
 function ModerationBadge({ status }: { status: Review['moderation_status'] }) {
   const map = {
-    pending: 'bg-[rgba(124,126,184,0.20)] text-[#9496cc] border-[rgba(124,126,184,0.30)]',
+    pending: 'bg-[rgba(20,184,166,0.20)] text-[#14B8A6] border-[rgba(20,184,166,0.30)]',
     approved: 'bg-green-500/20 text-green-400 border-green-500/30',
     rejected: 'bg-red-500/20 text-red-400 border-red-500/30',
   }
@@ -164,7 +164,7 @@ function ReviewSummaryCard({ review }: { review: Review }) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-[#1a1a2e] border border-[#3a3a5c] rounded-xl p-5 hover:border-[#3a3a5c] transition-colors"
+      className="bg-[#14151F] border border-[#2a2a3c] rounded-xl p-5 hover:border-[#2a2a3c] transition-colors"
     >
       {/* Header row */}
       <div className="flex flex-wrap items-start justify-between gap-2 mb-3">
@@ -193,7 +193,7 @@ function ReviewSummaryCard({ review }: { review: Review }) {
       {(review.pros || review.cons) && (
         <div className="flex flex-col sm:flex-row gap-2 mb-3">
           {review.pros && (
-            <div className="flex-1 bg-[#252540] rounded-lg px-3 py-2">
+            <div className="flex-1 bg-[#1E1F2E] rounded-lg px-3 py-2">
               <p className="text-green-400 text-xs font-semibold uppercase tracking-wide mb-1">
                 Pros
               </p>
@@ -201,7 +201,7 @@ function ReviewSummaryCard({ review }: { review: Review }) {
             </div>
           )}
           {review.cons && (
-            <div className="flex-1 bg-[#252540] rounded-lg px-3 py-2">
+            <div className="flex-1 bg-[#1E1F2E] rounded-lg px-3 py-2">
               <p className="text-red-400 text-xs font-semibold uppercase tracking-wide mb-1">
                 Cons
               </p>
@@ -219,7 +219,7 @@ function ReviewSummaryCard({ review }: { review: Review }) {
         {slug && (
           <Link
             to={`/school/${slug}`}
-            className="flex items-center gap-1 text-[#7c7eb8] hover:text-[#9496cc] text-xs font-medium transition-colors"
+            className="flex items-center gap-1 text-[#14B8A6] hover:text-[#14B8A6] text-xs font-medium transition-colors"
           >
             View School <ChevronRight size={12} />
           </Link>
@@ -307,7 +307,7 @@ function ReviewsTab({ userId }: { userId: string }) {
     return (
       <div className="space-y-4">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="bg-[#1a1a2e] border border-[#3a3a5c] rounded-xl p-5 space-y-3">
+          <div key={i} className="bg-[#14151F] border border-[#2a2a3c] rounded-xl p-5 space-y-3">
             <SkeletonBlock className="h-4 w-48" />
             <SkeletonBlock className="h-3 w-32" />
             <SkeletonBlock className="h-16 w-full" />
@@ -332,7 +332,7 @@ function ReviewsTab({ userId }: { userId: string }) {
   if (reviews.length === 0) {
     return (
       <div className="text-center py-16">
-        <div className="w-16 h-16 bg-[#252540] rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="w-16 h-16 bg-[#1E1F2E] rounded-full flex items-center justify-center mx-auto mb-4">
           <FileText size={28} className="text-[#555570]" />
         </div>
         <h3 className="text-white font-semibold text-lg mb-2">No reviews yet</h3>
@@ -341,7 +341,7 @@ function ReviewsTab({ userId }: { userId: string }) {
         </p>
         <Link
           to="/directory"
-          className="inline-flex items-center gap-2 bg-[#7c7eb8] text-black font-bold px-5 py-2.5 rounded-lg hover:bg-[#9496cc] transition-colors text-sm"
+          className="inline-flex items-center gap-2 bg-[#14B8A6] text-black font-bold px-5 py-2.5 rounded-lg hover:bg-[#14B8A6] transition-colors text-sm"
         >
           <Edit2 size={15} /> Write Your First Review
         </Link>
@@ -375,11 +375,11 @@ function StepIcon({ state }: { state: 'complete' | 'pending' | 'rejected' | 'not
   if (state === 'complete')
     return <CheckCircle size={22} className="text-green-400" />
   if (state === 'pending')
-    return <Clock size={22} className="text-[#9496cc]" />
+    return <Clock size={22} className="text-[#14B8A6]" />
   if (state === 'rejected')
     return <XCircle size={22} className="text-red-400" />
   return (
-    <div className="w-5.5 h-5.5 rounded-full border-2 border-[#4a4a70] bg-transparent" />
+    <div className="w-5.5 h-5.5 rounded-full border-2 border-[#3a3a52] bg-transparent" />
   )
 }
 
@@ -494,7 +494,7 @@ function VerificationTab({
       )}
 
       {/* Step tracker */}
-      <div className="bg-[#1a1a2e] border border-[#3a3a5c] rounded-xl p-6">
+      <div className="bg-[#14151F] border border-[#2a2a3c] rounded-xl p-6">
         <h3 className="text-white font-semibold text-base mb-6">Verification Journey</h3>
         <div className="space-y-0">
           {[
@@ -529,7 +529,7 @@ function VerificationTab({
                   <StepIcon state={item.state} />
                 </div>
                 {idx < 2 && (
-                  <div className="w-px flex-1 bg-[#3a3a5c] my-2" />
+                  <div className="w-px flex-1 bg-[#2a2a3c] my-2" />
                 )}
               </div>
               {/* Content */}
@@ -578,7 +578,7 @@ function VerificationTab({
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-[#1a1a2e] border border-[#3a3a5c] rounded-xl p-6"
+          className="bg-[#14151F] border border-[#2a2a3c] rounded-xl p-6"
         >
           {showResubmit && (
             <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 mb-5 flex items-start gap-3">
@@ -596,7 +596,7 @@ function VerificationTab({
           )}
 
           <h3 className="text-white font-semibold text-base mb-5 flex items-center gap-2">
-            <Upload size={18} className="text-[#7c7eb8]" />
+            <Upload size={18} className="text-[#14B8A6]" />
             Submit Roster Evidence
           </h3>
 
@@ -611,7 +611,7 @@ function VerificationTab({
                 value={formData.roster_url}
                 onChange={(e) => setFormData((p) => ({ ...p, roster_url: e.target.value }))}
                 placeholder="https://example.com/team-roster"
-                className="w-full bg-[#252540] border border-[#3a3a5c] rounded-lg px-4 py-2.5 text-white text-sm placeholder:text-[#555570] focus:outline-none focus:border-[#7c7eb8] transition-colors"
+                className="w-full bg-[#1E1F2E] border border-[#2a2a3c] rounded-lg px-4 py-2.5 text-white text-sm placeholder:text-[#555570] focus:outline-none focus:border-[#14B8A6] transition-colors"
               />
             </div>
 
@@ -625,7 +625,7 @@ function VerificationTab({
                   value={formData.sport}
                   onChange={(e) => setFormData((p) => ({ ...p, sport: e.target.value }))}
                   placeholder="e.g. Basketball"
-                  className="w-full bg-[#252540] border border-[#3a3a5c] rounded-lg px-4 py-2.5 text-white text-sm placeholder:text-[#555570] focus:outline-none focus:border-[#7c7eb8] transition-colors"
+                  className="w-full bg-[#1E1F2E] border border-[#2a2a3c] rounded-lg px-4 py-2.5 text-white text-sm placeholder:text-[#555570] focus:outline-none focus:border-[#14B8A6] transition-colors"
                 />
               </div>
               <div>
@@ -640,7 +640,7 @@ function VerificationTab({
                   onChange={(e) =>
                     setFormData((p) => ({ ...p, graduation_year: parseInt(e.target.value, 10) }))
                   }
-                  className="w-full bg-[#252540] border border-[#3a3a5c] rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[#7c7eb8] transition-colors"
+                  className="w-full bg-[#1E1F2E] border border-[#2a2a3c] rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[#14B8A6] transition-colors"
                 />
               </div>
             </div>
@@ -654,7 +654,7 @@ function VerificationTab({
                 value={formData.notes}
                 onChange={(e) => setFormData((p) => ({ ...p, notes: e.target.value }))}
                 placeholder="Any context that helps verify your roster status…"
-                className="w-full bg-[#252540] border border-[#3a3a5c] rounded-lg px-4 py-2.5 text-white text-sm placeholder:text-[#555570] focus:outline-none focus:border-[#7c7eb8] transition-colors resize-none"
+                className="w-full bg-[#1E1F2E] border border-[#2a2a3c] rounded-lg px-4 py-2.5 text-white text-sm placeholder:text-[#555570] focus:outline-none focus:border-[#14B8A6] transition-colors resize-none"
               />
             </div>
 
@@ -668,7 +668,7 @@ function VerificationTab({
             <button
               type="submit"
               disabled={submitting}
-              className="w-full bg-[#7c7eb8] text-black font-bold py-2.5 rounded-lg hover:bg-[#9496cc] transition-colors text-sm disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full bg-[#14B8A6] text-black font-bold py-2.5 rounded-lg hover:bg-[#14B8A6] transition-colors text-sm disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {submitting ? (
                 <>
@@ -877,7 +877,7 @@ function ProfileTab({ userId, userEmail, initialProfile, onSignOut }: ProfileTab
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-[#1a1a2e] border border-[#3a3a5c] rounded-2xl p-6"
+        className="bg-[#14151F] border border-[#2a2a3c] rounded-2xl p-6"
       >
         <p className="text-xs font-semibold uppercase tracking-widest text-[#8888a8] mb-4">
           Profile Photo
@@ -890,11 +890,11 @@ function ProfileTab({ userId, userEmail, initialProfile, onSignOut }: ProfileTab
               <img
                 src={avatarPreview}
                 alt="Avatar preview"
-                className="w-20 h-20 rounded-full object-cover border-2 border-[rgba(124,126,184,0.40)]"
+                className="w-20 h-20 rounded-full object-cover border-2 border-[rgba(20,184,166,0.40)]"
               />
             ) : (
-              <div className="w-20 h-20 rounded-full bg-[rgba(124,126,184,0.20)] border-2 border-[rgba(124,126,184,0.40)] flex items-center justify-center">
-                <span className="text-[#9496cc] font-bold text-2xl">{avatarInitial}</span>
+              <div className="w-20 h-20 rounded-full bg-[rgba(20,184,166,0.20)] border-2 border-[rgba(20,184,166,0.40)] flex items-center justify-center">
+                <span className="text-[#14B8A6] font-bold text-2xl">{avatarInitial}</span>
               </div>
             )}
           </div>
@@ -905,7 +905,7 @@ function ProfileTab({ userId, userEmail, initialProfile, onSignOut }: ProfileTab
               <button
                 type="button"
                 onClick={() => avatarInputRef.current?.click()}
-                className="flex items-center gap-2 border border-[#4a4a70] text-[#a8a8c0] hover:border-[#7c7eb8]/60 hover:text-[#9496cc] px-4 py-2 rounded-xl text-xs font-medium transition-colors"
+                className="flex items-center gap-2 border border-[#3a3a52] text-[#a8a8c0] hover:border-[#14B8A6]/60 hover:text-[#14B8A6] px-4 py-2 rounded-xl text-xs font-medium transition-colors"
               >
                 <Upload size={13} />
                 Choose Photo
@@ -915,7 +915,7 @@ function ProfileTab({ userId, userEmail, initialProfile, onSignOut }: ProfileTab
                   type="button"
                   onClick={handleAvatarUpload}
                   disabled={uploadingAvatar}
-                  className="flex items-center gap-2 bg-[#7c7eb8] hover:bg-[#9496cc] disabled:bg-[rgba(124,126,184,0.40)] text-black font-bold px-4 py-2 rounded-xl text-xs transition-colors"
+                  className="flex items-center gap-2 bg-[#14B8A6] hover:bg-[#14B8A6] disabled:bg-[rgba(20,184,166,0.40)] text-black font-bold px-4 py-2 rounded-xl text-xs transition-colors"
                 >
                   {uploadingAvatar ? (
                     <>
@@ -970,10 +970,10 @@ function ProfileTab({ userId, userEmail, initialProfile, onSignOut }: ProfileTab
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.05 }}
-        className="bg-[#1a1a2e] border border-[#3a3a5c] rounded-2xl p-6"
+        className="bg-[#14151F] border border-[#2a2a3c] rounded-2xl p-6"
       >
         <p className="text-xs font-semibold uppercase tracking-widest text-[#8888a8] mb-5 flex items-center gap-2">
-          <Edit2 size={13} className="text-[#7c7eb8]" />
+          <Edit2 size={13} className="text-[#14B8A6]" />
           Edit Profile
         </p>
 
@@ -988,7 +988,7 @@ function ProfileTab({ userId, userEmail, initialProfile, onSignOut }: ProfileTab
               value={formData.full_name}
               onChange={(e) => setFormData((p) => ({ ...p, full_name: e.target.value }))}
               placeholder="Your full name"
-              className="w-full bg-[#252540] border border-[#3a3a5c] rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-[rgba(124,126,184,0.50)] transition-colors"
+              className="w-full bg-[#1E1F2E] border border-[#2a2a3c] rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-[rgba(20,184,166,0.50)] transition-colors"
             />
           </div>
 
@@ -1001,7 +1001,7 @@ function ProfileTab({ userId, userEmail, initialProfile, onSignOut }: ProfileTab
               type="email"
               value={userEmail ?? ''}
               readOnly
-              className="w-full bg-[rgba(37,37,64,0.50)] border border-[#3a3a5c]/50 rounded-xl px-4 py-3 text-[#8888a8] text-sm cursor-not-allowed"
+              className="w-full bg-[rgba(37,37,64,0.50)] border border-[#2a2a3c]/50 rounded-xl px-4 py-3 text-[#8888a8] text-sm cursor-not-allowed"
             />
           </div>
 
@@ -1014,7 +1014,7 @@ function ProfileTab({ userId, userEmail, initialProfile, onSignOut }: ProfileTab
               type="text"
               value={schoolName ?? (initialProfile.school_id ? 'Loading…' : 'Not set')}
               readOnly
-              className="w-full bg-[rgba(37,37,64,0.50)] border border-[#3a3a5c]/50 rounded-xl px-4 py-3 text-[#8888a8] text-sm cursor-not-allowed"
+              className="w-full bg-[rgba(37,37,64,0.50)] border border-[#2a2a3c]/50 rounded-xl px-4 py-3 text-[#8888a8] text-sm cursor-not-allowed"
             />
             <p className="text-[#555570] text-xs mt-1">
               Contact support to update your school affiliation.
@@ -1031,7 +1031,7 @@ function ProfileTab({ userId, userEmail, initialProfile, onSignOut }: ProfileTab
               value={formData.sport}
               onChange={(e) => setFormData((p) => ({ ...p, sport: e.target.value }))}
               placeholder="e.g. Basketball, Soccer, Swimming"
-              className="w-full bg-[#252540] border border-[#3a3a5c] rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-[rgba(124,126,184,0.50)] transition-colors"
+              className="w-full bg-[#1E1F2E] border border-[#2a2a3c] rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-[rgba(20,184,166,0.50)] transition-colors"
             />
           </div>
 
@@ -1043,7 +1043,7 @@ function ProfileTab({ userId, userEmail, initialProfile, onSignOut }: ProfileTab
             <select
               value={formData.gender}
               onChange={(e) => setFormData((p) => ({ ...p, gender: e.target.value }))}
-              className="w-full bg-[#252540] border border-[#3a3a5c] rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[rgba(124,126,184,0.50)] transition-colors"
+              className="w-full bg-[#1E1F2E] border border-[#2a2a3c] rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[rgba(20,184,166,0.50)] transition-colors"
             >
               <option value="">Select division</option>
               {genderOptions.map((opt) => (
@@ -1067,7 +1067,7 @@ function ProfileTab({ userId, userEmail, initialProfile, onSignOut }: ProfileTab
               onChange={(e) =>
                 setFormData((p) => ({ ...p, graduation_year: parseInt(e.target.value, 10) }))
               }
-              className="w-full bg-[#252540] border border-[#3a3a5c] rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[rgba(124,126,184,0.50)] transition-colors"
+              className="w-full bg-[#1E1F2E] border border-[#2a2a3c] rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[rgba(20,184,166,0.50)] transition-colors"
             />
           </div>
 
@@ -1084,7 +1084,7 @@ function ProfileTab({ userId, userEmail, initialProfile, onSignOut }: ProfileTab
             <button
               type="submit"
               disabled={saving}
-              className="bg-[#7c7eb8] text-black font-bold px-6 py-2.5 rounded-xl hover:bg-[#9496cc] transition-colors text-sm disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
+              className="bg-[#14B8A6] text-black font-bold px-6 py-2.5 rounded-xl hover:bg-[#14B8A6] transition-colors text-sm disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {saving ? (
                 <>
@@ -1119,14 +1119,14 @@ function ProfileTab({ userId, userEmail, initialProfile, onSignOut }: ProfileTab
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="bg-[#1a1a2e] border border-[#3a3a5c] rounded-2xl p-6"
+        className="bg-[#14151F] border border-[#2a2a3c] rounded-2xl p-6"
       >
         <p className="text-xs font-semibold uppercase tracking-widest text-[#8888a8] mb-4">
           Security
         </p>
         <p className="text-[#a8a8c0] text-sm mb-4">
           To change your password, we'll send a reset link to{' '}
-          <span className="text-[#7c7eb8]">{userEmail}</span>.
+          <span className="text-[#14B8A6]">{userEmail}</span>.
         </p>
 
         <div className="flex flex-wrap items-center gap-4">
@@ -1134,7 +1134,7 @@ function ProfileTab({ userId, userEmail, initialProfile, onSignOut }: ProfileTab
             type="button"
             onClick={handleSendPasswordReset}
             disabled={sendingReset || !userEmail}
-            className="flex items-center gap-2 border border-[#4a4a70] text-[#a8a8c0] hover:border-[#7c7eb8]/60 hover:text-[#9496cc] px-4 py-2.5 rounded-xl text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 border border-[#3a3a52] text-[#a8a8c0] hover:border-[#14B8A6]/60 hover:text-[#14B8A6] px-4 py-2.5 rounded-xl text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {sendingReset ? (
               <>
@@ -1178,14 +1178,14 @@ function ProfileTab({ userId, userEmail, initialProfile, onSignOut }: ProfileTab
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15 }}
-        className="bg-[#1a1a2e] border border-[#3a3a5c] rounded-2xl p-6"
+        className="bg-[#14151F] border border-[#2a2a3c] rounded-2xl p-6"
       >
         <p className="text-xs font-semibold uppercase tracking-widest text-[#8888a8] mb-4">
           Account Actions
         </p>
         <button
           onClick={onSignOut}
-          className="flex items-center gap-2 border border-[#4a4a70] text-[#a8a8c0] hover:border-red-500/60 hover:text-red-400 px-4 py-2.5 rounded-xl text-sm transition-colors"
+          className="flex items-center gap-2 border border-[#3a3a52] text-[#a8a8c0] hover:border-red-500/60 hover:text-red-400 px-4 py-2.5 rounded-xl text-sm transition-colors"
         >
           <LogOut size={16} />
           Sign Out
@@ -1225,8 +1225,8 @@ export function UserDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0f0f1a] flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-[#7c7eb8] border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-[#0A0E1A] flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-[#14B8A6] border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -1237,9 +1237,9 @@ export function UserDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0f0f1a] text-white pb-24 sm:pb-8">
+    <div className="min-h-screen bg-[#0A0E1A] text-white pb-24 sm:pb-8">
       {/* Page header */}
-      <div className="border-b border-[#3a3a5c] bg-[rgba(26,26,46,0.60)] backdrop-blur-sm">
+      <div className="border-b border-[#2a2a3c] bg-[rgba(20,21,31,0.60)] backdrop-blur-sm">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-24 sm:pt-20 pb-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -1251,11 +1251,11 @@ export function UserDashboard() {
               <img
                 src={profile.avatar_url}
                 alt={displayName}
-                className="w-14 h-14 rounded-full object-cover border-2 border-[rgba(124,126,184,0.40)]"
+                className="w-14 h-14 rounded-full object-cover border-2 border-[rgba(20,184,166,0.40)]"
               />
             ) : (
-              <div className="w-14 h-14 rounded-full bg-[rgba(124,126,184,0.20)] border-2 border-[rgba(124,126,184,0.40)] flex items-center justify-center shrink-0">
-                <span className="text-[#9496cc] font-bold text-xl">{avatarInitial}</span>
+              <div className="w-14 h-14 rounded-full bg-[rgba(20,184,166,0.20)] border-2 border-[rgba(20,184,166,0.40)] flex items-center justify-center shrink-0">
+                <span className="text-[#14B8A6] font-bold text-xl">{avatarInitial}</span>
               </div>
             )}
 
@@ -1270,7 +1270,7 @@ export function UserDashboard() {
                   </span>
                 )}
                 {profile?.verification_status === 'pending' && (
-                  <span className="inline-flex items-center gap-1 bg-[rgba(124,126,184,0.20)] text-[#9496cc] text-xs font-medium px-2 py-0.5 rounded-full border border-[rgba(124,126,184,0.30)]">
+                  <span className="inline-flex items-center gap-1 bg-[rgba(20,184,166,0.20)] text-[#14B8A6] text-xs font-medium px-2 py-0.5 rounded-full border border-[rgba(20,184,166,0.30)]">
                     <Clock size={11} /> Pending Verification
                   </span>
                 )}
@@ -1279,7 +1279,7 @@ export function UserDashboard() {
           </motion.div>
 
           {/* Tab bar */}
-          <div className="mt-6 flex gap-1 border-b border-[#3a3a5c] -mb-px">
+          <div className="mt-6 flex gap-1 border-b border-[#2a2a3c] -mb-px">
             {tabs.map((tab) => {
               const Icon = tab.icon
               const isActive = activeTab === tab.id
@@ -1288,7 +1288,7 @@ export function UserDashboard() {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={`relative flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium transition-colors ${
-                    isActive ? 'text-[#9496cc]' : 'text-[#8888a8] hover:text-[#c4c4dc]'
+                    isActive ? 'text-[#14B8A6]' : 'text-[#8888a8] hover:text-[#c4c4dc]'
                   }`}
                 >
                   <Icon size={15} />
@@ -1296,7 +1296,7 @@ export function UserDashboard() {
                   {isActive && (
                     <motion.div
                       layoutId="tab-indicator"
-                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#7c7eb8] rounded-full"
+                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#14B8A6] rounded-full"
                       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                     />
                   )}

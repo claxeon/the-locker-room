@@ -102,6 +102,23 @@ const serifStyle: React.CSSProperties = {
   fontStyle: "italic",
 }
 
+// ─── Palette constants ────────────────────────────────────────────────────────
+const BG          = '#0A0E1A'
+const SURFACE     = '#14151F'
+const SURFACE2    = '#1E1F2E'
+const BORDER      = '#2a2a3c'
+const ACCENT      = '#14B8A6'
+const ACCENT_DIM  = 'rgba(20,184,166,0.10)'
+const ACCENT_RING = 'rgba(20,184,166,0.20)'
+const ACCENT_GLOW = 'rgba(20,184,166,0.28)'
+const ACCENT_HOVER= '#0d9488'
+const CREAM       = '#F5EFE0'
+const LAV         = '#9B97B5'   // lavender-quiet — charts ONLY
+const LAV_FILL    = 'rgba(155,151,181,0.18)'
+const TEXT        = '#f0f0f8'
+const MUTED       = '#8888a8'
+const DIM         = '#555570'
+
 // ─── Radar Chart ──────────────────────────────────────────────────────────────
 
 const RADAR_AXES = [
@@ -119,11 +136,6 @@ const RADAR_PROFILES: { label: string; scores: number[] }[] = [
   { label: "STRONG CULTURE, MODEST RESOURCES", scores: [55, 90, 88, 75, 95, 85] },
 ]
 
-/**
- * Convert (angleDeg, value, cx, cy, r) → {x, y} on the SVG canvas.
- * angleDeg is a raw SVG angle where 0° = 3 o’clock, -90° = 12 o’clock.
- * Callers are responsible for subtracting 90 so that axis 0 is at the top.
- */
 function polarPoint(
   angleDeg: number,
   value: number,
@@ -136,12 +148,10 @@ function polarPoint(
   return { x: cx + d * Math.cos(rad), y: cy + d * Math.sin(rad) }
 }
 
-/** Angle in SVG degrees for axis index i out of n total axes, starting at 12 o’clock. */
 function axisAngle(i: number, n: number): number {
   return -90 + (360 / n) * i
 }
 
-/** Build an SVG polygon points string from scores, axis 0 at 12 o’clock. */
 function buildPoints(scores: number[], cx: number, cy: number, r: number): string {
   const n = scores.length
   return scores
@@ -152,30 +162,25 @@ function buildPoints(scores: number[], cx: number, cy: number, r: number): strin
     .join(" ")
 }
 
-/** Linear interpolation between two score arrays */
 function lerpScores(a: number[], b: number[], t: number): number[] {
   return a.map((v, i) => v + (b[i] - v) * t)
 }
 
-const CYCLE_HOLD = 4000   // ms to hold each profile
-const MORPH_DURATION = 800 // ms for morph transition
-const MORPH_STEPS = 40     // animation frames
-const LABEL_FADE = 200     // ms for label fade each direction
+const CYCLE_HOLD = 4000
+const MORPH_DURATION = 800
+const MORPH_STEPS = 40
+const LABEL_FADE = 200
 
 const HeroRadarCard = () => {
   const n = RADAR_AXES.length
-  // ViewBox 340×340, centre at (170,170).
-  // r=88: outer ring at ~52% of half-width; labelR=114 places labels 26px beyond.
-  // overflow="visible" on <svg> so long labels never clip against the SVG boundary.
   const cx = 170
   const cy = 170
-  const r = 88       // polygon outer radius
-  const labelR = 114 // label anchor radius
+  const r = 88
+  const labelR = 114
   const gridLevels = [20, 40, 60, 80, 100]
 
   const [profileIdx, setProfileIdx] = useState(0)
   const [displayScores, setDisplayScores] = useState(RADAR_PROFILES[0].scores)
-  // Crossfade label: track outgoing (fading out) and incoming (fading in) separately
   const [outgoingLabel, setOutgoingLabel] = useState<string | null>(null)
   const [incomingLabel, setIncomingLabel] = useState(RADAR_PROFILES[0].label)
   const [crossfading, setCrossfading] = useState(false)
@@ -215,12 +220,10 @@ const HeroRadarCard = () => {
         const fromIdx = profileIdxRef.current
         const nextIdx = (fromIdx + 1) % RADAR_PROFILES.length
 
-        // Begin crossfade: show both labels, start fading outgoing out
         setOutgoingLabel(RADAR_PROFILES[fromIdx].label)
         setIncomingLabel(RADAR_PROFILES[nextIdx].label)
         setCrossfading(true)
 
-        // After crossfade duration, finish: outgoing gone, morph polygon
         frameId = setTimeout(() => {
           setCrossfading(false)
           setOutgoingLabel(null)
@@ -243,7 +246,7 @@ const HeroRadarCard = () => {
       style={{
         width: 'clamp(280px, 38vw, 400px)',
         aspectRatio: '1 / 1',
-        backgroundColor: '#1a1a2e',
+        backgroundColor: SURFACE,
         border: '1px solid rgba(255,255,255,0.08)',
         padding: 'clamp(20px, 4vw, 32px)',
         boxSizing: 'border-box',
@@ -251,7 +254,6 @@ const HeroRadarCard = () => {
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      {/* Card header — fades in with the same timing as the card entrance (delay 0.3s) */}
       <motion.div
         className="mb-3"
         initial={{ opacity: 0, y: 10 }}
@@ -260,21 +262,17 @@ const HeroRadarCard = () => {
       >
         <p
           className="text-2xs font-semibold uppercase tracking-widest"
-          style={{ color: '#555570', letterSpacing: '0.18em' }}
+          style={{ color: DIM, letterSpacing: '0.18em' }}
         >
           Sample Scorecard
         </p>
-        {/* Crossfade label: outgoing fades out while incoming fades in.
-             Both are absolutely positioned in the same slot so there is
-             no jump and the label is never fully invisible. */}
         <div className="relative mt-1" style={{ minHeight: '24px' }}>
-          {/* Outgoing label — fades out when crossfading starts */}
           {outgoingLabel !== null && (
             <p
               className="absolute inset-0 font-semibold"
               style={{
                 fontSize: '16px',
-                color: '#f0f0f8',
+                color: CREAM,
                 fontFamily: 'Satoshi, Inter, sans-serif',
                 opacity: crossfading ? 0 : 1,
                 transition: `opacity ${LABEL_FADE}ms ease`,
@@ -284,12 +282,11 @@ const HeroRadarCard = () => {
               {outgoingLabel}
             </p>
           )}
-          {/* Incoming label — fades in as crossfade begins */}
           <p
             className="font-semibold"
             style={{
               fontSize: '16px',
-              color: '#f0f0f8',
+              color: CREAM,
               fontFamily: 'Satoshi, Inter, sans-serif',
               opacity: crossfading ? 1 : (outgoingLabel !== null ? 0 : 1),
               transition: `opacity ${LABEL_FADE}ms ease`,
@@ -300,9 +297,6 @@ const HeroRadarCard = () => {
         </div>
       </motion.div>
 
-      {/* SVG Radar — overflow:visible so axis labels outside the viewBox boundary
-           are never clipped by the SVG element itself. The card's border-radius
-           / overflow:hidden is the outer clip boundary. */}
       <svg
         viewBox="0 0 340 340"
         className="w-full"
@@ -310,7 +304,6 @@ const HeroRadarCard = () => {
         overflow="visible"
         aria-hidden="true"
       >
-        {/* Concentric gridlines — axis 0 at 12 o'clock via axisAngle() */}
         {gridLevels.map((level) => {
           const pts = Array.from({ length: n }, (_, i) => {
             const { x, y } = polarPoint(axisAngle(i, n), level, cx, cy, r)
@@ -327,7 +320,6 @@ const HeroRadarCard = () => {
           )
         })}
 
-        {/* Axis spokes */}
         {Array.from({ length: n }, (_, i) => {
           const { x, y } = polarPoint(axisAngle(i, n), 100, cx, cy, r)
           return (
@@ -343,16 +335,16 @@ const HeroRadarCard = () => {
           )
         })}
 
-        {/* Data polygon — filled */}
+        {/* Data polygon — lavender-quiet fill + stroke (charts ONLY) */}
         <polygon
           points={points}
-          fill="rgba(124,126,184,0.18)"
-          stroke="#7c7eb8"
+          fill={LAV_FILL}
+          stroke={LAV}
           strokeWidth="2"
           strokeLinejoin="round"
         />
 
-        {/* Vertex dots */}
+        {/* Vertex dots — lavender-quiet */}
         {displayScores.map((score, i) => {
           const { x, y } = polarPoint(axisAngle(i, n), score, cx, cy, r)
           return (
@@ -361,12 +353,11 @@ const HeroRadarCard = () => {
               cx={x}
               cy={y}
               r={3.5}
-              fill="#7c7eb8"
+              fill={LAV}
             />
           )
         })}
 
-        {/* Axis labels — same axisAngle() so labels and polygon vertices are identical */}
         {RADAR_AXES.map((label, i) => {
           const { x, y } = polarPoint(axisAngle(i, n), 100, cx, cy, labelR)
           const isLeft  = x < cx - 10
@@ -379,7 +370,7 @@ const HeroRadarCard = () => {
               x={x}
               y={y + dy}
               textAnchor={anchor}
-              fill="#555570"
+              fill={DIM}
               fontSize="9"
               fontFamily="Satoshi, Inter, sans-serif"
               fontWeight="600"
@@ -392,12 +383,11 @@ const HeroRadarCard = () => {
         })}
       </svg>
 
-      {/* Caption */}
       <p
         className="mt-2 text-center"
         style={{
           fontSize: '11px',
-          color: '#555570',
+          color: DIM,
           fontFamily: 'Satoshi, Inter, sans-serif',
           letterSpacing: '0.08em',
           textTransform: 'uppercase' as const,
@@ -431,44 +421,40 @@ const HeroSection = ({ onGetStarted }: { onGetStarted?: () => void }) => {
       id="hero-section"
       className="relative flex min-h-screen w-full items-center overflow-hidden"
       style={{
-        backgroundColor: '#0f0f1a',
+        backgroundColor: BG,
         paddingLeft:  'clamp(24px, 8vw, 80px)',
         paddingRight: 'clamp(24px, 8vw, 80px)',
-        paddingTop: '96px',    // clear fixed header
+        paddingTop: '96px',
         paddingBottom: '64px',
       }}
     >
-      {/* Periwinkle radial glow — top center */}
+      {/* Teal radial glow — top center */}
       <div
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 70% 45% at 50% -5%, rgba(124,126,184,0.13) 0%, transparent 70%)",
+            "radial-gradient(ellipse 70% 45% at 50% -5%, rgba(20,184,166,0.09) 0%, transparent 70%)",
         }}
       />
-      {/* Subtle bottom vignette */}
       <div
         className="pointer-events-none absolute bottom-0 left-0 right-0 h-40"
         style={{
-          background: "linear-gradient(to bottom, transparent, rgba(15,15,26,0.85))",
+          background: `linear-gradient(to bottom, transparent, rgba(10,14,26,0.85))`,
         }}
       />
-      {/* Mouse-follow glow */}
       <motion.div
         className="pointer-events-none absolute h-72 w-72 rounded-full blur-3xl"
-        style={{ backgroundColor: 'rgba(124,126,184,0.08)' }}
+        style={{ backgroundColor: 'rgba(20,184,166,0.06)' }}
         animate={{ x: x - 144, y: y - 144 }}
         transition={{ type: "spring", damping: 35, stiffness: 180 }}
       />
 
-      {/* Two-column layout */}
       <div
         className="relative z-10 mx-auto grid w-full max-w-7xl grid-cols-1 items-center lg:grid-cols-2 lg:items-center"
         style={{ gap: '64px' }}
       >
-        {/* ── LEFT COLUMN — Text content ── */}
+        {/* LEFT — Text content */}
         <div className="flex flex-col items-start justify-center">
-          {/* Primary headline */}
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -477,7 +463,7 @@ const HeroSection = ({ onGetStarted }: { onGetStarted?: () => void }) => {
               fontSize: 'clamp(2.4rem, 5vw, 4rem)',
               fontFamily: "'Instrument Serif', Georgia, serif",
               fontWeight: 700,
-              color: '#f0f0f8',
+              color: CREAM,
               lineHeight: 1.02,
               letterSpacing: '-0.02em',
             }}
@@ -485,24 +471,22 @@ const HeroSection = ({ onGetStarted }: { onGetStarted?: () => void }) => {
             Giving athletes a voice.
           </motion.h1>
 
-          {/* Tagline */}
           <motion.p
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
             className="font-medium uppercase tracking-[0.2em]"
-            style={{ color: '#555570', fontSize: '13px', marginTop: '24px' }}
+            style={{ color: DIM, fontSize: '13px', marginTop: '24px' }}
           >
             Rate.&nbsp;&nbsp;Review.&nbsp;&nbsp;Reform.
           </motion.p>
 
-          {/* Supporting paragraph */}
           <motion.p
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.42 }}
             style={{
-              color: '#8888a8',
+              color: MUTED,
               fontSize: '18px',
               lineHeight: 1.5,
               marginTop: '32px',
@@ -513,7 +497,6 @@ const HeroSection = ({ onGetStarted }: { onGetStarted?: () => void }) => {
             Six-dimension scorecards. Verified reviews. Anonymous by default.
           </motion.p>
 
-          {/* Primary CTA */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -524,17 +507,17 @@ const HeroSection = ({ onGetStarted }: { onGetStarted?: () => void }) => {
               onClick={onGetStarted}
               className="group inline-flex items-center gap-3 rounded-xl px-8 py-4 text-sm font-bold uppercase tracking-widest transition-all"
               style={{
-                backgroundColor: '#7c7eb8',
-                color: '#0f0f1a',
-                boxShadow: '0 0 32px 0 rgba(124,126,184,0.30)',
+                backgroundColor: ACCENT,
+                color: BG,
+                boxShadow: `0 0 32px 0 ${ACCENT_GLOW}`,
               }}
               onMouseEnter={e => {
-                (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#9496cc'
-                ;(e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 40px 0 rgba(148,150,204,0.40)'
+                (e.currentTarget as HTMLButtonElement).style.backgroundColor = ACCENT_HOVER
+                ;(e.currentTarget as HTMLButtonElement).style.boxShadow = `0 0 40px 0 rgba(20,184,166,0.40)`
               }}
               onMouseLeave={e => {
-                (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#7c7eb8'
-                ;(e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 32px 0 rgba(124,126,184,0.30)'
+                (e.currentTarget as HTMLButtonElement).style.backgroundColor = ACCENT
+                ;(e.currentTarget as HTMLButtonElement).style.boxShadow = `0 0 32px 0 ${ACCENT_GLOW}`
               }}
             >
               Get Started
@@ -543,7 +526,7 @@ const HeroSection = ({ onGetStarted }: { onGetStarted?: () => void }) => {
           </motion.div>
         </div>
 
-        {/* ── RIGHT COLUMN — Radar chart card ── */}
+        {/* RIGHT — Radar chart card */}
         <motion.div
           initial={{ opacity: 0, x: 32 }}
           animate={{ opacity: 1, x: 0 }}
@@ -565,7 +548,7 @@ const SanctioningBodiesSection = () => {
   return (
     <section
       className="relative w-full overflow-hidden py-8"
-      style={{ borderTop: '1px solid #3a3a5c', backgroundColor: '#0f0f1a' }}
+      style={{ borderTop: `1px solid ${BORDER}`, backgroundColor: BG }}
     >
       <motion.div
         className="flex whitespace-nowrap"
@@ -576,7 +559,7 @@ const SanctioningBodiesSection = () => {
           <span
             key={i}
             className="mx-10 text-sm font-semibold uppercase tracking-[0.25em]"
-            style={{ color: i % 6 === 0 ? '#7c7eb8' : '#3a3a5c' }}
+            style={{ color: i % 6 === 0 ? ACCENT : BORDER }}
           >
             {name}
           </span>
@@ -588,27 +571,27 @@ const SanctioningBodiesSection = () => {
 
 // ─── Features ─────────────────────────────────────────────────────────────────
 const FeaturesSection = () => (
-  <section id="features" className="w-full px-6 py-28" style={{ backgroundColor: '#0f0f1a' }}>
+  <section id="features" className="w-full px-6 py-28" style={{ backgroundColor: BG }}>
     <div className="mx-auto max-w-6xl">
       <div className="mb-16">
-        <p className="mb-3 text-xs font-semibold uppercase tracking-widest" style={{ color: '#7c7eb8' }}>
+        {/* Eyebrow — teal */}
+        <p className="mb-3 text-xs font-semibold uppercase tracking-widest" style={{ color: ACCENT }}>
           Platform
         </p>
         <h2
           className="leading-tight"
-          style={{ ...serifStyle, fontSize: "clamp(2.5rem, 6vw, 4rem)", color: '#f0f0f8' }}
+          style={{ ...serifStyle, fontSize: "clamp(2.5rem, 6vw, 4rem)", color: CREAM }}
         >
           Built for{' '}
-          <span style={{ fontStyle: 'normal', fontWeight: 900, letterSpacing: '-0.02em', fontFamily: 'Satoshi, Inter, sans-serif' }}>
+          <span style={{ fontStyle: 'normal', fontWeight: 900, letterSpacing: '-0.02em', fontFamily: 'Satoshi, Inter, sans-serif', color: ACCENT }}>
             Champions
           </span>
         </h2>
       </div>
 
-      {/* Grid with inner border lines — no outer border */}
       <div
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-        style={{ gap: '1px', backgroundColor: '#3a3a5c' }}
+        style={{ gap: '1px', backgroundColor: BORDER }}
       >
         {features.map(({ icon: Icon, title, description }, i) => (
           <motion.div
@@ -618,25 +601,25 @@ const FeaturesSection = () => (
             transition={{ duration: 0.4, delay: i * 0.07 }}
             viewport={{ once: true }}
             className="group flex flex-col gap-4 p-8 transition-colors"
-            style={{ backgroundColor: '#0f0f1a' }}
-            onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.backgroundColor = '#1a1a2e'}
-            onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.backgroundColor = '#0f0f1a'}
+            style={{ backgroundColor: BG }}
+            onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.backgroundColor = SURFACE}
+            onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.backgroundColor = BG}
           >
             <div className="flex items-center gap-3">
               <div
                 className="rounded-lg p-2.5"
                 style={{
-                  border: '1px solid rgba(124,126,184,0.20)',
-                  backgroundColor: 'rgba(124,126,184,0.08)',
+                  border: `1px solid ${ACCENT_RING}`,
+                  backgroundColor: ACCENT_DIM,
                 }}
               >
-                <Icon className="h-5 w-5" style={{ color: '#7c7eb8' }} />
+                <Icon className="h-5 w-5" style={{ color: ACCENT }} />
               </div>
             </div>
-            <h3 className="text-sm font-bold uppercase tracking-wide" style={{ color: '#f0f0f8' }}>
+            <h3 className="text-sm font-bold uppercase tracking-wide" style={{ color: TEXT }}>
               {title}
             </h3>
-            <p className="text-sm leading-relaxed" style={{ color: '#555570' }}>{description}</p>
+            <p className="text-sm leading-relaxed" style={{ color: DIM }}>{description}</p>
           </motion.div>
         ))}
       </div>
@@ -646,24 +629,25 @@ const FeaturesSection = () => (
 
 // ─── Proof ────────────────────────────────────────────────────────────────────
 const ProofSection = () => (
-  <section id="proof" className="w-full px-6 py-28" style={{ backgroundColor: '#1a1a2e' }}>
+  <section id="proof" className="w-full px-6 py-28" style={{ backgroundColor: SURFACE }}>
     <div className="mx-auto max-w-6xl">
       <div className="mb-12">
-        <p className="mb-3 text-xs font-semibold uppercase tracking-widest" style={{ color: '#7c7eb8' }}>
+        {/* Eyebrow — teal */}
+        <p className="mb-3 text-xs font-semibold uppercase tracking-widest" style={{ color: ACCENT }}>
           By the numbers
         </p>
         <h2
           className="leading-tight"
-          style={{ ...serifStyle, fontSize: "clamp(2rem, 5vw, 3.5rem)", color: '#f0f0f8' }}
+          style={{ ...serifStyle, fontSize: "clamp(2rem, 5vw, 3.5rem)", color: CREAM }}
         >
           The numbers{' '}
           <span
-            style={{ fontStyle: 'normal', fontWeight: 900, letterSpacing: '-0.02em', fontFamily: 'Satoshi, Inter, sans-serif', color: '#7c7eb8' }}
+            style={{ fontStyle: 'normal', fontWeight: 900, letterSpacing: '-0.02em', fontFamily: 'Satoshi, Inter, sans-serif', color: ACCENT }}
           >
             don't lie
           </span>
         </h2>
-        <p className="mt-4 max-w-xl text-sm leading-relaxed" style={{ color: '#555570' }}>
+        <p className="mt-4 max-w-xl text-sm leading-relaxed" style={{ color: DIM }}>
           Every number below is real data from our database — 1,086 schools, 19,081 sports programs across 6 sanctioning bodies.
         </p>
       </div>
@@ -673,67 +657,70 @@ const ProofSection = () => (
           <div
             key={stat.label}
             className="rounded-xl p-6"
-            style={{ border: '1px solid #3a3a5c', backgroundColor: '#252540' }}
+            style={{ border: `1px solid ${BORDER}`, backgroundColor: SURFACE2 }}
           >
+            {/* Big numerals — cream */}
             <p
               className="leading-none"
-              style={{ ...serifStyle, fontSize: "clamp(2rem, 4vw, 2.75rem)", color: '#7c7eb8' }}
+              style={{ ...serifStyle, fontSize: "clamp(2rem, 4vw, 2.75rem)", color: CREAM }}
             >
               {stat.value}
             </p>
-            <p className="mt-2 text-2xs font-semibold uppercase tracking-widest" style={{ color: '#555570' }}>
+            <p className="mt-2 text-2xs font-semibold uppercase tracking-widest" style={{ color: DIM }}>
               {stat.label}
             </p>
           </div>
         ))}
       </div>
 
-      {/* Chart */}
+      {/* Area chart */}
       <div
         className="rounded-2xl p-6 md:p-8"
-        style={{ border: '1px solid #3a3a5c', backgroundColor: '#252540' }}
+        style={{ border: `1px solid ${BORDER}`, backgroundColor: SURFACE2 }}
       >
-        <p className="mb-6 text-xs font-semibold uppercase tracking-widest" style={{ color: '#555570' }}>
+        <p className="mb-6 text-xs font-semibold uppercase tracking-widest" style={{ color: DIM }}>
           Programs indexed · by sanctioning body
         </p>
         <div className="h-48 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={proofData} margin={{ top: 4, right: 8, bottom: 0, left: 0 }}>
               <defs>
+                {/* Area chart fill — lavender-quiet (chart data ONLY) */}
                 <linearGradient id="colorAccent" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#7c7eb8" stopOpacity={0.35} />
-                  <stop offset="95%" stopColor="#7c7eb8" stopOpacity={0} />
+                  <stop offset="5%" stopColor={LAV} stopOpacity={0.35} />
+                  <stop offset="95%" stopColor={LAV} stopOpacity={0} />
                 </linearGradient>
               </defs>
               <XAxis
                 dataKey="name"
                 stroke="transparent"
-                tick={{ fill: '#555570', fontSize: 10, fontFamily: "Satoshi, sans-serif" }}
+                tick={{ fill: DIM, fontSize: 10, fontFamily: "Satoshi, sans-serif" }}
                 tickLine={false}
                 axisLine={false}
               />
               <YAxis
                 stroke="transparent"
-                tick={{ fill: '#555570', fontSize: 10, fontFamily: "Satoshi, sans-serif" }}
+                tick={{ fill: DIM, fontSize: 10, fontFamily: "Satoshi, sans-serif" }}
                 tickLine={false}
                 axisLine={false}
                 width={40}
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: '#1a1a2e',
-                  borderColor: '#3a3a5c',
+                  backgroundColor: SURFACE,
+                  borderColor: BORDER,
                   borderRadius: '0.75rem',
-                  color: '#7c7eb8',
+                  color: ACCENT,
                   fontSize: 12,
                   fontFamily: "Satoshi, sans-serif",
                 }}
-                cursor={{ stroke: '#3a3a5c', strokeWidth: 1 }}
+                cursor={{ stroke: BORDER, strokeWidth: 1 }}
               />
+              {/* Area chart stroke + fill — lavender-quiet */}
               <Area
                 type="monotone"
                 dataKey="programs"
-                stroke="#7c7eb8"
+                stroke={LAV}
                 strokeWidth={1.5}
                 fillOpacity={1}
                 fill="url(#colorAccent)"
@@ -760,30 +747,31 @@ const TestimonialsSection = () => {
     <section
       id="athlete-voices"
       className="w-full px-6 py-28"
-      style={{ scrollMarginTop: '80px', backgroundColor: '#0f0f1a' }}
+      style={{ scrollMarginTop: '80px', backgroundColor: BG }}
     >
       <div className="mx-auto max-w-4xl">
         <div className="mb-14 text-center">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-widest" style={{ color: '#7c7eb8' }}>
+          {/* Eyebrow — teal */}
+          <p className="mb-3 text-xs font-semibold uppercase tracking-widest" style={{ color: ACCENT }}>
             Athlete Voices
           </p>
           <h2
             className="leading-tight"
-            style={{ ...serifStyle, fontSize: "clamp(2rem, 5vw, 3.5rem)", color: '#f0f0f8' }}
+            style={{ ...serifStyle, fontSize: "clamp(2rem, 5vw, 3.5rem)", color: CREAM }}
           >
             What athletes are{' '}
-            <span style={{ color: '#7c7eb8' }}>saying</span>
+            {/* Italic word — teal */}
+            <span style={{ color: ACCENT }}>saying</span>
           </h2>
         </div>
 
         <div
           className="relative rounded-2xl px-8 py-12 text-center md:px-16"
-          style={{ border: '1px solid #3a3a5c', backgroundColor: '#1a1a2e' }}
+          style={{ border: `1px solid ${BORDER}`, backgroundColor: SURFACE }}
         >
-          {/* Quote mark */}
           <div
             className="mb-6 text-6xl leading-none"
-            style={{ ...serifStyle, color: 'rgba(124,126,184,0.35)' }}
+            style={{ ...serifStyle, color: 'rgba(20,184,166,0.25)' }}
             aria-hidden="true"
           >
             "
@@ -799,7 +787,7 @@ const TestimonialsSection = () => {
             >
               <p
                 className="mx-auto max-w-2xl text-xl leading-relaxed md:text-2xl"
-                style={{ ...serifStyle, color: '#f0f0f8' }}
+                style={{ ...serifStyle, color: CREAM }}
               >
                 {active.quote}
               </p>
@@ -807,26 +795,25 @@ const TestimonialsSection = () => {
                 <p className="text-sm font-bold uppercase tracking-wide" style={{ color: '#a8a8c0' }}>
                   {active.name}
                 </p>
-                <p className="mt-1 text-xs uppercase tracking-widest" style={{ color: '#555570' }}>
+                <p className="mt-1 text-xs uppercase tracking-widest" style={{ color: DIM }}>
                   {active.designation}
                 </p>
               </div>
             </motion.div>
           </AnimatePresence>
 
-          {/* Controls */}
           <div className="mt-10 flex items-center justify-center gap-6">
             <button
               onClick={() => setActiveIndex((i) => (i - 1 + testimonials.length) % testimonials.length)}
               className="rounded-full p-2.5 transition-colors"
-              style={{ border: '1px solid #3a3a5c', backgroundColor: '#252540', color: '#8888a8' }}
+              style={{ border: `1px solid ${BORDER}`, backgroundColor: SURFACE2, color: MUTED }}
               onMouseEnter={e => {
-                (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(124,126,184,0.50)'
-                ;(e.currentTarget as HTMLButtonElement).style.color = '#9496cc'
+                (e.currentTarget as HTMLButtonElement).style.borderColor = `rgba(20,184,166,0.40)`
+                ;(e.currentTarget as HTMLButtonElement).style.color = ACCENT
               }}
               onMouseLeave={e => {
-                (e.currentTarget as HTMLButtonElement).style.borderColor = '#3a3a5c'
-                ;(e.currentTarget as HTMLButtonElement).style.color = '#8888a8'
+                (e.currentTarget as HTMLButtonElement).style.borderColor = BORDER
+                ;(e.currentTarget as HTMLButtonElement).style.color = MUTED
               }}
               aria-label="Previous"
             >
@@ -840,7 +827,7 @@ const TestimonialsSection = () => {
                   className="h-1.5 rounded-full transition-all"
                   style={{
                     width: i === activeIndex ? '1.5rem' : '0.375rem',
-                    backgroundColor: i === activeIndex ? '#7c7eb8' : '#3a3a5c',
+                    backgroundColor: i === activeIndex ? ACCENT : BORDER,
                   }}
                   aria-label={`Testimonial ${i + 1}`}
                 />
@@ -849,14 +836,14 @@ const TestimonialsSection = () => {
             <button
               onClick={() => setActiveIndex((i) => (i + 1) % testimonials.length)}
               className="rounded-full p-2.5 transition-colors"
-              style={{ border: '1px solid #3a3a5c', backgroundColor: '#252540', color: '#8888a8' }}
+              style={{ border: `1px solid ${BORDER}`, backgroundColor: SURFACE2, color: MUTED }}
               onMouseEnter={e => {
-                (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(124,126,184,0.50)'
-                ;(e.currentTarget as HTMLButtonElement).style.color = '#9496cc'
+                (e.currentTarget as HTMLButtonElement).style.borderColor = `rgba(20,184,166,0.40)`
+                ;(e.currentTarget as HTMLButtonElement).style.color = ACCENT
               }}
               onMouseLeave={e => {
-                (e.currentTarget as HTMLButtonElement).style.borderColor = '#3a3a5c'
-                ;(e.currentTarget as HTMLButtonElement).style.color = '#8888a8'
+                (e.currentTarget as HTMLButtonElement).style.borderColor = BORDER
+                ;(e.currentTarget as HTMLButtonElement).style.color = MUTED
               }}
               aria-label="Next"
             >
@@ -873,27 +860,26 @@ const TestimonialsSection = () => {
 const FooterSection = () => (
   <footer
     className="w-full"
-    style={{ borderTop: '1px solid #3a3a5c', backgroundColor: '#0f0f1a' }}
+    style={{ borderTop: `1px solid ${BORDER}`, backgroundColor: BG }}
   >
     <div className="mx-auto max-w-6xl px-6 py-16">
       <div className="flex flex-col items-center gap-6">
-        {/* Wordmark */}
+        {/* Wordmark — cream */}
         <div className="flex items-center gap-2">
-          <Trophy className="h-5 w-5" style={{ color: '#7c7eb8' }} />
+          <Trophy className="h-5 w-5" style={{ color: ACCENT }} />
           <span
             className="text-2xl"
-            style={{ ...serifStyle, color: '#f0f0f8' }}
+            style={{ ...serifStyle, color: CREAM }}
           >
             The Locker Room
           </span>
         </div>
 
-        <p className="max-w-sm text-center text-xs leading-relaxed" style={{ color: '#555570' }}>
+        <p className="max-w-sm text-center text-xs leading-relaxed" style={{ color: DIM }}>
           Empowering student athletes with transparency, data, and community.
           Your career, your choice.
         </p>
 
-        {/* Social icons */}
         <div className="flex items-center gap-3">
           {socialLinks.map(({ label, href, d }) => (
             <a
@@ -903,14 +889,14 @@ const FooterSection = () => (
               rel="noreferrer"
               aria-label={label}
               className="flex h-9 w-9 items-center justify-center rounded-full transition-colors"
-              style={{ border: '1px solid #3a3a5c', backgroundColor: '#1a1a2e', color: '#555570' }}
+              style={{ border: `1px solid ${BORDER}`, backgroundColor: SURFACE, color: DIM }}
               onMouseEnter={e => {
-                (e.currentTarget as HTMLAnchorElement).style.borderColor = '#4a4a70'
-                ;(e.currentTarget as HTMLAnchorElement).style.color = '#9496cc'
+                (e.currentTarget as HTMLAnchorElement).style.borderColor = `rgba(20,184,166,0.40)`
+                ;(e.currentTarget as HTMLAnchorElement).style.color = ACCENT
               }}
               onMouseLeave={e => {
-                (e.currentTarget as HTMLAnchorElement).style.borderColor = '#3a3a5c'
-                ;(e.currentTarget as HTMLAnchorElement).style.color = '#555570'
+                (e.currentTarget as HTMLAnchorElement).style.borderColor = BORDER
+                ;(e.currentTarget as HTMLAnchorElement).style.color = DIM
               }}
             >
               <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
@@ -922,25 +908,25 @@ const FooterSection = () => (
 
         <div
           className="w-full pt-8 flex flex-col items-center gap-3"
-          style={{ borderTop: '1px solid #1a1a2e' }}
+          style={{ borderTop: `1px solid ${SURFACE}` }}
         >
           <div className="flex items-center gap-6">
-            <a href="/privacy" className="text-2xs font-semibold uppercase tracking-widest transition-colors" style={{ color: '#555570' }}
-              onMouseEnter={e => (e.currentTarget as HTMLAnchorElement).style.color = '#8888a8'}
-              onMouseLeave={e => (e.currentTarget as HTMLAnchorElement).style.color = '#555570'}
+            <a href="/privacy" className="text-2xs font-semibold uppercase tracking-widest transition-colors" style={{ color: DIM }}
+              onMouseEnter={e => (e.currentTarget as HTMLAnchorElement).style.color = MUTED}
+              onMouseLeave={e => (e.currentTarget as HTMLAnchorElement).style.color = DIM}
             >Privacy Policy</a>
-            <span style={{ color: '#3a3a5c' }}>·</span>
-            <a href="/terms" className="text-2xs font-semibold uppercase tracking-widest transition-colors" style={{ color: '#555570' }}
-              onMouseEnter={e => (e.currentTarget as HTMLAnchorElement).style.color = '#8888a8'}
-              onMouseLeave={e => (e.currentTarget as HTMLAnchorElement).style.color = '#555570'}
+            <span style={{ color: BORDER }}>·</span>
+            <a href="/terms" className="text-2xs font-semibold uppercase tracking-widest transition-colors" style={{ color: DIM }}
+              onMouseEnter={e => (e.currentTarget as HTMLAnchorElement).style.color = MUTED}
+              onMouseLeave={e => (e.currentTarget as HTMLAnchorElement).style.color = DIM}
             >Terms of Service</a>
-            <span style={{ color: '#3a3a5c' }}>·</span>
-            <a href="mailto:contact@thelockerroom.app" className="text-2xs font-semibold uppercase tracking-widest transition-colors" style={{ color: '#555570' }}
-              onMouseEnter={e => (e.currentTarget as HTMLAnchorElement).style.color = '#8888a8'}
-              onMouseLeave={e => (e.currentTarget as HTMLAnchorElement).style.color = '#555570'}
+            <span style={{ color: BORDER }}>·</span>
+            <a href="mailto:contact@thelockerroom.app" className="text-2xs font-semibold uppercase tracking-widest transition-colors" style={{ color: DIM }}
+              onMouseEnter={e => (e.currentTarget as HTMLAnchorElement).style.color = MUTED}
+              onMouseLeave={e => (e.currentTarget as HTMLAnchorElement).style.color = DIM}
             >Contact</a>
           </div>
-          <p className="text-2xs font-semibold uppercase tracking-widest" style={{ color: '#3a3a5c' }}>
+          <p className="text-2xs font-semibold uppercase tracking-widest" style={{ color: BORDER }}>
             © 2026 The Locker Room. All rights reserved.
           </p>
         </div>
@@ -951,7 +937,7 @@ const FooterSection = () => (
 
 // ─── Export ───────────────────────────────────────────────────────────────────
 export const LandingPage = ({ onGetStarted }: LandingPageProps) => (
-  <div className="w-full" style={{ backgroundColor: '#0f0f1a', color: '#f0f0f8' }}>
+  <div className="w-full" style={{ backgroundColor: BG, color: TEXT }}>
     <HeroSection onGetStarted={onGetStarted} />
     <SanctioningBodiesSection />
     <FeaturesSection />

@@ -11,7 +11,7 @@ export const NotFoundPage: React.FC = () => {
   const navigate = useNavigate()
 
   return (
-    <div className="relative min-h-screen bg-[#0f0f1a] text-white flex items-center justify-center px-6">
+    <div className="relative min-h-screen bg-[#0A0E1A] text-white flex items-center justify-center px-6">
       <div
         className="pointer-events-none absolute inset-0 -z-10"
         style={{
@@ -26,7 +26,7 @@ export const NotFoundPage: React.FC = () => {
         transition={{ duration: 0.5 }}
         className="flex flex-col items-center text-center gap-6 max-w-md"
       >
-        <p className="text-[10px] font-semibold uppercase tracking-widest text-[#7c7eb8]">
+        <p className="text-[10px] font-semibold uppercase tracking-widest text-[#14B8A6]">
           404
         </p>
         <h1
@@ -41,13 +41,13 @@ export const NotFoundPage: React.FC = () => {
         <div className="flex items-center gap-4 mt-2">
           <button
             onClick={() => navigate('/')}
-            className="rounded-lg bg-[#7c7eb8] px-6 py-3 text-xs font-bold uppercase tracking-widest text-black hover:bg-[#9496cc] transition-colors"
+            className="rounded-lg bg-[#14B8A6] px-6 py-3 text-xs font-bold uppercase tracking-widest text-black hover:bg-[#0d9488] transition-colors"
           >
             Back to Home
           </button>
           <button
             onClick={() => navigate('/directory')}
-            className="rounded-lg border border-[#3a3a5c] bg-[#1a1a2e] px-6 py-3 text-xs font-semibold uppercase tracking-widest text-[#a8a8c0] hover:border-[#4a4a70] hover:text-white transition-colors"
+            className="rounded-lg border border-[#2a2a3c] bg-[#14151F] px-6 py-3 text-xs font-semibold uppercase tracking-widest text-[#a8a8c0] hover:border-[#3a3a52] hover:text-white transition-colors"
           >
             Browse Programs
           </button>

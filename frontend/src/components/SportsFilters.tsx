@@ -14,8 +14,8 @@ interface SportsFiltersProps {
 const selectStyle: React.CSSProperties = {
   width: '100%',
   borderRadius: '0.5rem',
-  border: '1px solid #3a3a5c',
-  backgroundColor: 'rgba(26,26,46,0.80)',
+  border: '1px solid #2a2a3c',
+  backgroundColor: 'rgba(20,21,31,0.80)',
   padding: '0.75rem 1rem',
   fontSize: '0.75rem',
   fontWeight: 600,
@@ -43,9 +43,9 @@ export const SportsFilters: React.FC<SportsFiltersProps> = ({ filters, onFilterC
       id="filters"
       className="rounded-xl p-6"
       style={{
-        border: '1px solid rgba(124,126,184,0.22)',
-        backgroundColor: 'rgba(26,26,46,0.60)',
-        boxShadow: '0 16px 48px -12px rgba(124,126,184,0.12)',
+        border: '1px solid rgba(20,184,166,0.18)',
+        backgroundColor: 'rgba(20,21,31,0.60)',
+        boxShadow: '0 16px 48px -12px rgba(20,184,166,0.10)',
       }}
     >
       <div className="mb-5 flex flex-col gap-1">
@@ -132,17 +132,17 @@ export const SportsFilters: React.FC<SportsFiltersProps> = ({ filters, onFilterC
           <button
             className="rounded-lg px-5 py-2 text-2xs font-black uppercase tracking-widest transition-colors"
             style={{
-              border: '1px solid #3a3a5c',
+              border: '1px solid #2a2a3c',
               backgroundColor: 'transparent',
               color: '#8888a8',
             }}
             onClick={() => onFilterChange({ sport: '', gender: '', state_cd: '' })}
             onMouseEnter={e => {
-              (e.currentTarget as HTMLButtonElement).style.borderColor = '#7c7eb8'
-              ;(e.currentTarget as HTMLButtonElement).style.color = '#9496cc'
+              (e.currentTarget as HTMLButtonElement).style.borderColor = '#14B8A6'
+              ;(e.currentTarget as HTMLButtonElement).style.color = '#14B8A6'
             }}
             onMouseLeave={e => {
-              (e.currentTarget as HTMLButtonElement).style.borderColor = '#3a3a5c'
+              (e.currentTarget as HTMLButtonElement).style.borderColor = '#2a2a3c'
               ;(e.currentTarget as HTMLButtonElement).style.color = '#8888a8'
             }}
           >

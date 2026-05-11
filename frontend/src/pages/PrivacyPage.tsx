@@ -4,7 +4,7 @@ import { ArrowLeft } from "lucide-react";
 
 export function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-[#0f0f1a] text-white">
+    <div className="min-h-screen bg-[#0A0E1A] text-white">
       <div className="mx-auto max-w-3xl px-6 pt-28 pb-24">
         <Link
           to="/"
@@ -13,7 +13,7 @@ export function PrivacyPage() {
           <ArrowLeft className="h-3.5 w-3.5" /> Back
         </Link>
 
-        <p className="text-[10px] font-semibold uppercase tracking-widest text-[#7c7eb8] mb-3">Legal</p>
+        <p className="text-[10px] font-semibold uppercase tracking-widest text-[#14B8A6] mb-3">Legal</p>
         <h1
           className="text-white mb-2"
           style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontStyle: "italic", fontSize: "clamp(2rem, 5vw, 3rem)" }}
@@ -85,7 +85,7 @@ export function PrivacyPage() {
           <section>
             <h2 className="text-white font-bold text-base mb-3">7. Your Rights</h2>
             <p>You have the right to access, correct, or delete your personal data. Contact us at{" "}
-              <a href="mailto:privacy@thelockerroom.app" className="text-[#7c7eb8] hover:text-[#9496cc]">
+              <a href="mailto:privacy@thelockerroom.app" className="text-[#14B8A6] hover:text-[#0d9488]">
                 privacy@thelockerroom.app
               </a>{" "}
               to exercise these rights.
@@ -96,7 +96,7 @@ export function PrivacyPage() {
             <h2 className="text-white font-bold text-base mb-3">8. Contact</h2>
             <p>
               Questions about this Privacy Policy?{" "}
-              <a href="mailto:privacy@thelockerroom.app" className="text-[#7c7eb8] hover:text-[#9496cc]">
+              <a href="mailto:privacy@thelockerroom.app" className="text-[#14B8A6] hover:text-[#0d9488]">
                 privacy@thelockerroom.app
               </a>
             </p>

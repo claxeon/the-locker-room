@@ -34,7 +34,7 @@ export const SportsDirectory: React.FC<SportsDirectoryProps> = ({ onSchoolClick 
 
   if (error) {
     return (
-      <div className="relative min-h-screen py-16" style={{ backgroundColor: '#0f0f1a', color: '#f0f0f8' }}>
+      <div className="relative min-h-screen py-16" style={{ backgroundColor: '#0A0E1A', color: '#f0f0f8' }}>
         <div className="relative mx-auto max-w-lg px-6 pt-32 text-center">
           <div className="flex flex-col items-center gap-5">
             <div
@@ -58,13 +58,13 @@ export const SportsDirectory: React.FC<SportsDirectoryProps> = ({ onSchoolClick 
             <button
               onClick={() => window.location.reload()}
               className="rounded-full px-6 py-2.5 text-xs font-black uppercase tracking-widest transition-colors"
-              style={{ border: '1px solid #3a3a5c', backgroundColor: '#1a1a2e', color: '#f0f0f8' }}
+              style={{ border: '1px solid #2a2a3c', backgroundColor: '#14151F', color: '#f0f0f8' }}
               onMouseEnter={e => {
-                (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(124,126,184,0.40)'
-                ;(e.currentTarget as HTMLButtonElement).style.color = '#9496cc'
+                (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(20,184,166,0.40)'
+                ;(e.currentTarget as HTMLButtonElement).style.color = '#14B8A6'
               }}
               onMouseLeave={e => {
-                (e.currentTarget as HTMLButtonElement).style.borderColor = '#3a3a5c'
+                (e.currentTarget as HTMLButtonElement).style.borderColor = '#2a2a3c'
                 ;(e.currentTarget as HTMLButtonElement).style.color = '#f0f0f8'
               }}
             >
@@ -79,14 +79,14 @@ export const SportsDirectory: React.FC<SportsDirectoryProps> = ({ onSchoolClick 
   return (
     <div
       className="relative min-h-screen"
-      style={{ backgroundColor: '#0f0f1a', color: '#f0f0f8' }}
+      style={{ backgroundColor: '#0A0E1A', color: '#f0f0f8' }}
     >
       {/* Background glow */}
       <div
         className="pointer-events-none absolute inset-0"
         style={{
           backgroundImage:
-            'radial-gradient(ellipse at 20% 20%, rgba(124,126,184,0.07) 0%, transparent 50%), radial-gradient(ellipse at 80% 0%, rgba(124,126,184,0.04) 0%, transparent 40%)',
+            'radial-gradient(ellipse at 20% 20%, rgba(20,184,166,0.06) 0%, transparent 50%), radial-gradient(ellipse at 80% 0%, rgba(20,184,166,0.04) 0%, transparent 40%)',
         }}
       />
 
@@ -98,12 +98,12 @@ export const SportsDirectory: React.FC<SportsDirectoryProps> = ({ onSchoolClick 
           transition={{ duration: 0.6 }}
           className="max-w-3xl"
         >
-          <p className="mb-3 text-xs font-semibold uppercase tracking-widest" style={{ color: '#7c7eb8' }}>
+          <p className="mb-3 text-xs font-semibold uppercase tracking-widest" style={{ color: '#14B8A6' }}>
             Programs
           </p>
           <h1
             className="leading-tight"
-            style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: "clamp(2.5rem, 6vw, 4.5rem)", color: '#f0f0f8' }}
+            style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: "clamp(2.5rem, 6vw, 4.5rem)", color: '#F5EFE0' }}
           >
             Explore the{' '}
             <span style={{ fontStyle: 'italic' }}>Locker Room</span>
@@ -141,18 +141,18 @@ export const SportsDirectory: React.FC<SportsDirectoryProps> = ({ onSchoolClick 
             <div
               key={label}
               className="rounded-xl p-6 text-left"
-              style={{ border: '1px solid #3a3a5c', backgroundColor: '#1a1a2e' }}
+              style={{ border: '1px solid #2a2a3c', backgroundColor: '#14151F' }}
             >
               <span className="text-2xs font-semibold uppercase tracking-widest" style={{ color: '#555570' }}>
                 {label}
               </span>
               <p
                 className="mt-2 leading-none"
-                style={{ ...serifStyle, fontSize: 'clamp(2rem, 4vw, 2.75rem)', color: '#7c7eb8' }}
+                style={{ ...serifStyle, fontSize: 'clamp(2rem, 4vw, 2.75rem)', color: '#14B8A6' }}
               >
                 {value}
               </p>
-              <p className="mt-2 text-xs" style={{ color: '#3a3a5c' }}>{sub}</p>
+              <p className="mt-2 text-xs" style={{ color: '#2a2a3c' }}>{sub}</p>
             </div>
           ))}
         </motion.section>
@@ -163,11 +163,11 @@ export const SportsDirectory: React.FC<SportsDirectoryProps> = ({ onSchoolClick 
         {/* Directory table */}
         <section
           className="overflow-hidden rounded-2xl"
-          style={{ border: '1px solid #3a3a5c', backgroundColor: 'rgba(26,26,46,0.40)' }}
+          style={{ border: '1px solid #2a2a3c', backgroundColor: 'rgba(26,26,46,0.40)' }}
         >
           <header
             className="flex flex-wrap items-center justify-between gap-3 px-6 py-4"
-            style={{ borderBottom: '1px solid #3a3a5c' }}
+            style={{ borderBottom: '1px solid #2a2a3c' }}
           >
             <h2 className="text-xs font-semibold uppercase tracking-widest" style={{ color: '#8888a8' }}>
               Sports Directory
@@ -181,7 +181,7 @@ export const SportsDirectory: React.FC<SportsDirectoryProps> = ({ onSchoolClick 
             <div className="flex items-center justify-center py-16">
               <div
                 className="h-12 w-12 animate-spin rounded-full border-4"
-                style={{ borderColor: 'rgba(124,126,184,0.20)', borderTopColor: '#7c7eb8' }}
+                style={{ borderColor: 'rgba(20,184,166,0.20)', borderTopColor: '#14B8A6' }}
               />
             </div>
           ) : schools.length === 0 ? (
@@ -189,7 +189,7 @@ export const SportsDirectory: React.FC<SportsDirectoryProps> = ({ onSchoolClick 
               <p className="text-sm font-semibold uppercase tracking-widest" style={{ color: '#555570' }}>
                 No programs found
               </p>
-              <p className="mt-2 text-xs" style={{ color: '#3a3a5c' }}>
+              <p className="mt-2 text-xs" style={{ color: '#2a2a3c' }}>
                 Adjust your filters to discover more opportunities.
               </p>
             </div>

@@ -50,13 +50,13 @@ const AggregateBar: React.FC<{ label: string; value: number }> = ({
         <span className="text-xs font-semibold uppercase tracking-[0.12em] text-gray-400">
           {label}
         </span>
-        <span className="text-xs font-black tabular-nums text-[#9496cc]">
+        <span className="text-xs font-black tabular-nums text-[#14B8A6]">
           {value.toFixed(1)}
         </span>
       </div>
       <div className="h-1.5 rounded-full bg-gray-800 overflow-hidden">
         <div
-          className="h-full rounded-full bg-[#7c7eb8] transition-all duration-700"
+          className="h-full rounded-full bg-[#14B8A6] transition-all duration-700"
           style={{ width: `${pct}%` }}
         />
       </div>
@@ -65,7 +65,7 @@ const AggregateBar: React.FC<{ label: string; value: number }> = ({
 }
 
 const SELECT_CLASS =
-  'rounded-lg border border-[rgba(124,126,184,0.20)] bg-[rgba(15,15,26,0.60)] px-3 py-2 text-xs font-semibold uppercase tracking-[0.15em] text-gray-300 focus:border-[rgba(124,126,184,0.40)] focus:outline-none appearance-none cursor-pointer hover:border-[rgba(124,126,184,0.40)] transition-colors'
+  'rounded-lg border border-[rgba(20,184,166,0.20)] bg-[rgba(15,15,26,0.60)] px-3 py-2 text-xs font-semibold uppercase tracking-[0.15em] text-gray-300 focus:border-[rgba(20,184,166,0.40)] focus:outline-none appearance-none cursor-pointer hover:border-[rgba(20,184,166,0.40)] transition-colors'
 
 export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
   schoolId,
@@ -171,7 +171,7 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
   }
 
   return (
-    <section className="rounded-2xl border border-[rgba(124,126,184,0.25)] bg-[rgba(15,15,26,0.60)] p-8 backdrop-blur">
+    <section className="rounded-2xl border border-[rgba(20,184,166,0.25)] bg-[rgba(15,15,26,0.60)] p-8 backdrop-blur">
       {/* Section header */}
       <header className="mb-8 flex flex-wrap items-start justify-between gap-4">
         <div>
@@ -188,7 +188,7 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
         </div>
         <button
           onClick={() => setModalOpen(true)}
-          className="inline-flex items-center gap-2 rounded-lg border-2 border-[#7c7eb8] bg-[rgba(124,126,184,0.10)] px-6 py-3 text-xs font-black uppercase tracking-[0.3em] text-[#9496cc] hover:bg-[rgba(124,126,184,0.20)] transition-colors"
+          className="inline-flex items-center gap-2 rounded-lg border-2 border-[#14B8A6] bg-[rgba(20,184,166,0.10)] px-6 py-3 text-xs font-black uppercase tracking-[0.3em] text-[#14B8A6] hover:bg-[rgba(20,184,166,0.20)] transition-colors"
         >
           <PenLine className="h-4 w-4" />
           Write a Review
@@ -200,13 +200,13 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8 rounded-xl border border-[rgba(124,126,184,0.20)] bg-[rgba(15,15,26,0.40)] p-6"
+          className="mb-8 rounded-xl border border-[rgba(20,184,166,0.20)] bg-[rgba(15,15,26,0.40)] p-6"
         >
           <div className="mb-4 flex items-center justify-between">
             <span className="text-xs font-black uppercase tracking-[0.3em] text-gray-400">
               Overall Score
             </span>
-            <span className="text-4xl font-black tabular-nums text-[#9496cc] leading-none">
+            <span className="text-4xl font-black tabular-nums text-[#14B8A6] leading-none">
               {overallAvg.toFixed(1)}
               <span className="ml-1 text-lg font-semibold text-gray-500">/ 5</span>
             </span>
@@ -230,7 +230,7 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
             {filtersActive && (
               <button
                 onClick={() => { setGenderFilter('all'); setSportFilter('all') }}
-                className="inline-flex items-center gap-1.5 rounded-full border border-[rgba(124,126,184,0.20)] bg-[rgba(124,126,184,0.10)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-[#9496cc] hover:bg-[rgba(124,126,184,0.20)] transition-colors"
+                className="inline-flex items-center gap-1.5 rounded-full border border-[rgba(20,184,166,0.20)] bg-[rgba(20,184,166,0.10)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-[#14B8A6] hover:bg-[rgba(20,184,166,0.20)] transition-colors"
               >
                 <X className="h-3 w-3" />
                 Clear filters
@@ -295,7 +295,7 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
           {[0, 1, 2].map((i) => (
             <div
               key={i}
-              className="h-48 animate-pulse rounded-2xl border border-[#7c7eb8]/10 bg-white/5"
+              className="h-48 animate-pulse rounded-2xl border border-[#14B8A6]/10 bg-white/5"
             />
           ))}
         </div>
@@ -313,9 +313,9 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col items-center gap-6 rounded-xl border border-[#7c7eb8]/10 bg-[#0f0f1a]/20 py-16 text-center"
+          className="flex flex-col items-center gap-6 rounded-xl border border-[#14B8A6]/10 bg-[#0A0E1A]/20 py-16 text-center"
         >
-          <MessageSquarePlus className="h-14 w-14 text-[#7c7eb8]/40" />
+          <MessageSquarePlus className="h-14 w-14 text-[#14B8A6]/40" />
           <div className="space-y-2">
             <p className="text-lg font-black uppercase tracking-tight text-white">
               No Reviews Yet
@@ -326,7 +326,7 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
           </div>
           <button
             onClick={() => setModalOpen(true)}
-            className="inline-flex items-center gap-2 rounded-lg border-2 border-[#7c7eb8] bg-[rgba(124,126,184,0.10)] px-8 py-3 text-xs font-black uppercase tracking-[0.3em] text-[#9496cc] hover:bg-[rgba(124,126,184,0.20)] transition-colors"
+            className="inline-flex items-center gap-2 rounded-lg border-2 border-[#14B8A6] bg-[rgba(20,184,166,0.10)] px-8 py-3 text-xs font-black uppercase tracking-[0.3em] text-[#14B8A6] hover:bg-[rgba(20,184,166,0.20)] transition-colors"
           >
             <PenLine className="h-4 w-4" />
             Write the First Review
@@ -344,11 +344,11 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
               ))}
             </div>
           ) : (
-            <div className="rounded-xl border border-[#7c7eb8]/10 bg-[#0f0f1a]/20 py-12 text-center">
+            <div className="rounded-xl border border-[#14B8A6]/10 bg-[#0A0E1A]/20 py-12 text-center">
               <p className="text-sm text-gray-500">No reviews match your filters.</p>
               <button
                 onClick={() => { setGenderFilter('all'); setSportFilter('all') }}
-                className="mt-3 text-xs text-[#9496cc] hover:text-[#a8a8c0]"
+                className="mt-3 text-xs text-[#14B8A6] hover:text-[#a8a8c0]"
               >
                 Clear filters
               </button>
@@ -370,7 +370,7 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
             }}
           >
             {/* Backdrop */}
-            <div className="absolute inset-0 bg-[rgba(15,15,26,0.80)] backdrop-blur-sm" />
+            <div className="absolute inset-0 bg-[rgba(10,14,26,0.80)] backdrop-blur-sm" />
 
             {/* Modal content */}
             <motion.div

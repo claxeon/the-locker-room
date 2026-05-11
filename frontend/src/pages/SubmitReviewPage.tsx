@@ -31,7 +31,7 @@ export const SubmitReviewPage: React.FC = () => {
   const schoolName = schoolNameParam ? decodeURIComponent(schoolNameParam) : ''
 
   return (
-    <div className="relative min-h-screen w-full bg-[#0f0f1a] text-white">
+    <div className="relative min-h-screen w-full bg-[#0A0E1A] text-white">
       {/* Background glow */}
       <div
         className="pointer-events-none absolute inset-0 -z-10"
@@ -51,7 +51,7 @@ export const SubmitReviewPage: React.FC = () => {
           transition={{ duration: 0.5 }}
           className="flex flex-col gap-2"
         >
-          <p className="text-xs font-semibold uppercase tracking-widest text-[#7c7eb8]">
+          <p className="text-xs font-semibold uppercase tracking-widest text-[#14B8A6]">
             Verified Athletes Only
           </p>
           <h1

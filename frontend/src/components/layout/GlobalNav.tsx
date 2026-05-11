@@ -108,7 +108,7 @@ function AccountMenu({ onSignOut }: { onSignOut: () => void }) {
             className="absolute right-0 top-full mt-3 min-w-[160px] rounded-xl py-1.5"
             style={{
               border: '1px solid rgba(255,255,255,0.08)',
-              backgroundColor: '#1a1a2e',
+              backgroundColor: '#14151F',
               boxShadow: '0 16px 48px 0 rgba(0,0,0,0.60)',
             }}
           >
@@ -208,7 +208,7 @@ export const GlobalNav: React.FC<GlobalNavProps> = () => {
         paddingTop: '20px',
         paddingBottom: '20px',
         // Backdrop fades in on scroll
-        backgroundColor: scrolled ? 'rgba(15,15,26,0.85)' : 'transparent',
+        backgroundColor: scrolled ? 'rgba(10,14,26,0.85)' : 'transparent',
         backdropFilter: scrolled ? 'blur(12px)' : 'none',
         WebkitBackdropFilter: scrolled ? 'blur(12px)' : 'none',
         borderBottom: scrolled ? '1px solid rgba(255,255,255,0.05)' : '1px solid transparent',
@@ -226,14 +226,14 @@ export const GlobalNav: React.FC<GlobalNavProps> = () => {
             fontWeight: 700,
             letterSpacing: '-0.01em',
             textTransform: 'uppercase' as const,
-            color: 'var(--foreground, #f0f0f8)',
+            color: '#F5EFE0',
             textDecoration: 'none',
           }}
           onMouseEnter={(e) =>
-            ((e.currentTarget as HTMLAnchorElement).style.color = 'rgba(255,255,255,0.70)')
+            ((e.currentTarget as HTMLAnchorElement).style.color = 'rgba(245,239,224,0.70)')
           }
           onMouseLeave={(e) =>
-            ((e.currentTarget as HTMLAnchorElement).style.color = 'var(--foreground, #f0f0f8)')
+            ((e.currentTarget as HTMLAnchorElement).style.color = '#F5EFE0')
           }
         >
           The Locker Room

@@ -73,7 +73,7 @@ interface ReviewRow {
 
 const Spinner: React.FC = () => (
   <div className="flex items-center justify-center py-20">
-    <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#7c7eb8] border-t-transparent" />
+    <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#14B8A6] border-t-transparent" />
   </div>
 )
 
@@ -106,7 +106,7 @@ const EmptyState: React.FC<{ message: string; hint?: string }> = ({ message, hin
 
 const StatusBadge: React.FC<{ status: VerificationStatus }> = ({ status }) => {
   const styles: Record<VerificationStatus, string> = {
-    pending: 'bg-[rgba(124,126,184,0.20)] text-[#9496cc] border-[rgba(124,126,184,0.30)]',
+    pending: 'bg-[rgba(20,184,166,0.20)] text-[#14B8A6] border-[rgba(20,184,166,0.30)]',
     approved: 'bg-green-500/20 text-green-400 border-green-500/30',
     rejected: 'bg-red-500/20 text-red-400 border-red-500/30',
   }
@@ -125,7 +125,7 @@ const RatingDot: React.FC<{ label: string; value: number | null }> = ({
 }) => (
   <div className="flex flex-col items-center gap-0.5">
     <span className="text-xs uppercase tracking-wider text-[#8888a8]">{label}</span>
-    <span className="text-lg font-bold text-[#9496cc]">{value ?? '–'}</span>
+    <span className="text-lg font-bold text-[#14B8A6]">{value ?? '–'}</span>
   </div>
 )
 
@@ -315,7 +315,7 @@ const PendingVerificationsTab: React.FC<{ adminUserId: string }> = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.25 }}
-            className="rounded-xl border border-[#3a3a5c] bg-[#1a1a2e] p-6"
+            className="rounded-xl border border-[#2a2a3c] bg-[#14151F] p-6"
           >
             {/* Header row */}
             <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
@@ -337,22 +337,22 @@ const PendingVerificationsTab: React.FC<{ adminUserId: string }> = ({
             {/* Meta pills */}
             <div className="mb-4 flex flex-wrap gap-2 text-xs">
               {sub.school_name && (
-                <span className="rounded-full bg-[#252540] px-3 py-1 text-[#a8a8c0]">
+                <span className="rounded-full bg-[#1E1F2E] px-3 py-1 text-[#a8a8c0]">
                   {sub.school_name}
                 </span>
               )}
               {sub.sport && (
-                <span className="rounded-full bg-[#252540] px-3 py-1 text-[#a8a8c0]">
+                <span className="rounded-full bg-[#1E1F2E] px-3 py-1 text-[#a8a8c0]">
                   {sub.sport}
                 </span>
               )}
               {sub.gender && (
-                <span className="rounded-full bg-[#252540] px-3 py-1 text-[#a8a8c0]">
+                <span className="rounded-full bg-[#1E1F2E] px-3 py-1 text-[#a8a8c0]">
                   {sub.gender}
                 </span>
               )}
               {sub.graduation_year && (
-                <span className="rounded-full bg-[#252540] px-3 py-1 text-[#a8a8c0]">
+                <span className="rounded-full bg-[#1E1F2E] px-3 py-1 text-[#a8a8c0]">
                   Class of {sub.graduation_year}
                 </span>
               )}
@@ -368,7 +368,7 @@ const PendingVerificationsTab: React.FC<{ adminUserId: string }> = ({
                   href={sub.roster_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-[rgba(124,126,184,0.30)] bg-[rgba(124,126,184,0.10)] px-4 py-2 text-sm text-[#9496cc] hover:bg-[rgba(124,126,184,0.20)] transition-colors break-all"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-[rgba(20,184,166,0.30)] bg-[rgba(20,184,166,0.10)] px-4 py-2 text-sm text-[#14B8A6] hover:bg-[rgba(20,184,166,0.20)] transition-colors break-all"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -395,7 +395,7 @@ const PendingVerificationsTab: React.FC<{ adminUserId: string }> = ({
             {sub.notes && (
               <div className="mb-5">
                 <p className="mb-1 text-xs uppercase tracking-widest text-[#555570]">Notes</p>
-                <p className="rounded-lg bg-[rgba(37,37,64,0.60)] px-4 py-3 text-sm leading-relaxed text-[#c4c4dc] whitespace-pre-wrap">
+                <p className="rounded-lg bg-[rgba(30,31,46,0.60)] px-4 py-3 text-sm leading-relaxed text-[#c4c4dc] whitespace-pre-wrap">
                   {sub.notes}
                 </p>
               </div>
@@ -408,7 +408,7 @@ const PendingVerificationsTab: React.FC<{ adminUserId: string }> = ({
                   Rejection Notes (required)
                 </label>
                 <textarea
-                  className="w-full rounded-lg border border-[#3a3a5c] bg-[#252540] px-3 py-2 text-sm text-white placeholder-zinc-500 focus:border-[#7c7eb8] focus:outline-none focus:ring-1 focus:ring-[#7c7eb8]"
+                  className="w-full rounded-lg border border-[#2a2a3c] bg-[#1E1F2E] px-3 py-2 text-sm text-white placeholder-zinc-500 focus:border-[#14B8A6] focus:outline-none focus:ring-1 focus:ring-[#14B8A6]"
                   rows={3}
                   placeholder="Reason for rejection…"
                   value={rejectNotes[sub.id] ?? ''}
@@ -454,7 +454,7 @@ const PendingVerificationsTab: React.FC<{ adminUserId: string }> = ({
                   </button>
                   <button
                     onClick={() => handleRejectCancel(sub.id)}
-                    className="rounded-lg border border-[#3a3a5c] px-5 py-2 text-sm font-bold uppercase tracking-widest text-[#8888a8] transition-colors hover:border-[#4a4a70] hover:text-white"
+                    className="rounded-lg border border-[#2a2a3c] px-5 py-2 text-sm font-bold uppercase tracking-widest text-[#8888a8] transition-colors hover:border-[#3a3a52] hover:text-white"
                   >
                     Cancel
                   </button>
@@ -578,16 +578,16 @@ const AllUsersTab: React.FC = () => {
         placeholder="Search by name or school…"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="w-full max-w-sm rounded-lg border border-[#3a3a5c] bg-[#1a1a2e] px-4 py-2 text-sm text-white placeholder-zinc-500 focus:border-[#7c7eb8] focus:outline-none focus:ring-1 focus:ring-[#7c7eb8]"
+        className="w-full max-w-sm rounded-lg border border-[#2a2a3c] bg-[#14151F] px-4 py-2 text-sm text-white placeholder-zinc-500 focus:border-[#14B8A6] focus:outline-none focus:ring-1 focus:ring-[#14B8A6]"
       />
 
       {filtered.length === 0 ? (
         <EmptyState message="No users found" hint="Try adjusting the search query. All registered athletes and admins appear here once their account is created." />
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-[#3a3a5c]">
+        <div className="overflow-x-auto rounded-xl border border-[#2a2a3c]">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-[#3a3a5c] bg-[rgba(26,26,46,0.80)]">
+              <tr className="border-b border-[#2a2a3c] bg-[rgba(20,21,31,0.80)]">
                 {['Name', 'School', 'Sport', 'Status', 'Joined', 'Actions'].map(
                   (h) => (
                     <th
@@ -607,12 +607,12 @@ const AllUsersTab: React.FC = () => {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: idx * 0.02, duration: 0.2 }}
-                  className="border-b border-[#3a3a5c]/60 bg-[#0f0f1a] transition-colors hover:bg-[#1a1a2e]"
+                  className="border-b border-[#2a2a3c]/60 bg-[#0A0E1A] transition-colors hover:bg-[#14151F]"
                 >
                   <td className="px-4 py-3 font-medium text-white">
                     {u.full_name ?? '—'}
                     {u.is_admin && (
-                      <span className="ml-2 rounded bg-[rgba(124,126,184,0.20)] px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#9496cc]">
+                      <span className="ml-2 rounded bg-[rgba(20,184,166,0.20)] px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#14B8A6]">
                         Admin
                       </span>
                     )}
@@ -635,7 +635,7 @@ const AllUsersTab: React.FC = () => {
                         onClick={() => {
                           void handleRevoke(u.id)
                         }}
-                        className="rounded border border-[#3a3a5c] px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[#8888a8] transition-colors hover:border-red-600 hover:text-red-400"
+                        className="rounded border border-[#2a2a3c] px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[#8888a8] transition-colors hover:border-red-600 hover:text-red-400"
                       >
                         Revoke
                       </button>
@@ -802,7 +802,7 @@ const ReviewModerationTab: React.FC<ReviewModerationTabProps> = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.25 }}
-            className="rounded-xl border border-[#3a3a5c] bg-[#1a1a2e] p-6"
+            className="rounded-xl border border-[#2a2a3c] bg-[#14151F] p-6"
           >
             {/* Header */}
             <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
@@ -822,12 +822,12 @@ const ReviewModerationTab: React.FC<ReviewModerationTabProps> = ({
               </div>
               <div className="flex flex-wrap gap-2 text-xs">
                 {review.sport && (
-                  <span className="rounded-full bg-[#252540] px-3 py-1 text-[#a8a8c0]">
+                  <span className="rounded-full bg-[#1E1F2E] px-3 py-1 text-[#a8a8c0]">
                     {review.sport}
                   </span>
                 )}
                 {review.gender && (
-                  <span className="rounded-full bg-[#252540] px-3 py-1 text-[#a8a8c0]">
+                  <span className="rounded-full bg-[#1E1F2E] px-3 py-1 text-[#a8a8c0]">
                     {review.gender}
                   </span>
                 )}
@@ -850,7 +850,7 @@ const ReviewModerationTab: React.FC<ReviewModerationTabProps> = ({
                 <p className="mb-1 text-xs uppercase tracking-widest text-[#555570]">
                   Review
                 </p>
-                <p className="rounded-lg bg-[rgba(37,37,64,0.60)] px-4 py-3 text-sm leading-relaxed text-[#c4c4dc]">
+                <p className="rounded-lg bg-[rgba(30,31,46,0.60)] px-4 py-3 text-sm leading-relaxed text-[#c4c4dc]">
                   {review.review_text}
                 </p>
               </div>
@@ -862,7 +862,7 @@ const ReviewModerationTab: React.FC<ReviewModerationTabProps> = ({
                 {review.pros && (
                   <div>
                     <p className="mb-1 text-xs uppercase tracking-widest text-green-500">Pros</p>
-                    <p className="rounded-lg bg-[rgba(37,37,64,0.60)] px-4 py-3 text-sm leading-relaxed text-[#c4c4dc]">
+                    <p className="rounded-lg bg-[rgba(30,31,46,0.60)] px-4 py-3 text-sm leading-relaxed text-[#c4c4dc]">
                       {review.pros}
                     </p>
                   </div>
@@ -870,7 +870,7 @@ const ReviewModerationTab: React.FC<ReviewModerationTabProps> = ({
                 {review.cons && (
                   <div>
                     <p className="mb-1 text-xs uppercase tracking-widest text-red-400">Cons</p>
-                    <p className="rounded-lg bg-[rgba(37,37,64,0.60)] px-4 py-3 text-sm leading-relaxed text-[#c4c4dc]">
+                    <p className="rounded-lg bg-[rgba(30,31,46,0.60)] px-4 py-3 text-sm leading-relaxed text-[#c4c4dc]">
                       {review.cons}
                     </p>
                   </div>
@@ -915,7 +915,7 @@ const ReviewModerationTab: React.FC<ReviewModerationTabProps> = ({
                   </button>
                   <button
                     onClick={() => handleFlagCancel(review.id)}
-                    className="rounded-lg border border-[#3a3a5c] px-5 py-2 text-sm font-bold uppercase tracking-widest text-[#8888a8] transition-colors hover:border-[#4a4a70] hover:text-white"
+                    className="rounded-lg border border-[#2a2a3c] px-5 py-2 text-sm font-bold uppercase tracking-widest text-[#8888a8] transition-colors hover:border-[#3a3a52] hover:text-white"
                   >
                     Cancel
                   </button>
@@ -951,7 +951,7 @@ export const AdminDashboard: React.FC = () => {
   // Show spinner while auth resolves
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#0f0f1a]">
+      <div className="flex min-h-screen items-center justify-center bg-[#0A0E1A]">
         <Spinner />
       </div>
     )
@@ -977,13 +977,13 @@ export const AdminDashboard: React.FC = () => {
   ]
 
   return (
-    <div className="min-h-screen bg-[#0f0f1a] text-white">
+    <div className="min-h-screen bg-[#0A0E1A] text-white">
       {/* Top bar */}
-      <div className="border-b border-[#3a3a5c] bg-[#0f0f1a]">
+      <div className="border-b border-[#2a2a3c] bg-[#0A0E1A]">
         <div className="mx-auto max-w-6xl px-4 py-5 sm:px-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#7c7eb8]">
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#14B8A6]">
                 The Locker Room
               </p>
               <h1 className="mt-0.5 text-2xl font-black uppercase tracking-tight text-white">
@@ -1001,7 +1001,7 @@ export const AdminDashboard: React.FC = () => {
       </div>
 
       {/* Tab nav */}
-      <div className="sticky top-0 z-10 border-b border-[#3a3a5c] bg-[#0f0f1a]/80 backdrop-blur-sm">
+      <div className="sticky top-0 z-10 border-b border-[#2a2a3c] bg-[#0A0E1A]/80 backdrop-blur-sm">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <nav className="flex gap-0">
             {TABS.map((tab) => (
@@ -1010,20 +1010,20 @@ export const AdminDashboard: React.FC = () => {
                 onClick={() => setActiveTab(tab.id)}
                 className={`relative flex items-center gap-2 px-5 py-4 text-xs font-bold uppercase tracking-widest transition-colors ${
                   activeTab === tab.id
-                    ? 'text-[#9496cc]'
+                    ? 'text-[#14B8A6]'
                     : 'text-[#555570] hover:text-[#a8a8c0]'
                 }`}
               >
                 {tab.label}
                 {tab.badge !== undefined && (
-                  <span className="rounded-full bg-[#7c7eb8] px-1.5 py-0.5 text-[10px] font-black leading-none text-black">
+                  <span className="rounded-full bg-[#14B8A6] px-1.5 py-0.5 text-[10px] font-black leading-none text-black">
                     {tab.badge}
                   </span>
                 )}
                 {activeTab === tab.id && (
                   <motion.div
                     layoutId="tab-indicator"
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#7c7eb8]"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#14B8A6]"
                   />
                 )}
               </button>

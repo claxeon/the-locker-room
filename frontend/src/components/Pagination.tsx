@@ -58,11 +58,11 @@ export const Pagination: React.FC<PaginationProps> = ({
   }
 
   return (
-    <div className="flex flex-col gap-4 border-t border-[rgba(124,126,184,0.25)] bg-[rgba(15,15,26,0.80)] px-4 py-6 text-white sm:flex-row sm:items-center sm:justify-between sm:px-6">
+    <div className="flex flex-col gap-4 border-t border-[rgba(20,184,166,0.25)] bg-[rgba(10,14,26,0.80)] px-4 py-6 text-white sm:flex-row sm:items-center sm:justify-between sm:px-6">
       <div className="flex items-center justify-between gap-3 sm:hidden">
         <Button
           variant="outline"
-          className="border-2 border-[#7c7eb8] bg-[rgba(124,126,184,0.10)] px-4 py-2 text-xs font-black uppercase tracking-[0.3em] text-[#9496cc] disabled:opacity-40"
+          className="border-2 border-[#14B8A6] bg-[rgba(20,184,166,0.10)] px-4 py-2 text-xs font-black uppercase tracking-[0.3em] text-[#14B8A6] disabled:opacity-40"
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
         >
@@ -70,7 +70,7 @@ export const Pagination: React.FC<PaginationProps> = ({
         </Button>
         <Button
           variant="outline"
-          className="border-2 border-[#7c7eb8] bg-[rgba(124,126,184,0.10)] px-4 py-2 text-xs font-black uppercase tracking-[0.3em] text-[#9496cc] disabled:opacity-40"
+          className="border-2 border-[#14B8A6] bg-[rgba(20,184,166,0.10)] px-4 py-2 text-xs font-black uppercase tracking-[0.3em] text-[#14B8A6] disabled:opacity-40"
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
         >
@@ -79,14 +79,14 @@ export const Pagination: React.FC<PaginationProps> = ({
       </div>
       <div className="hidden flex-1 items-center justify-between sm:flex">
         <p className="text-sm font-semibold uppercase tracking-wider text-gray-300">
-          Showing <span className="text-[#9496cc]">{startItem}</span> to{' '}
-          <span className="text-[#9496cc]">{endItem}</span> of{' '}
-          <span className="text-[#9496cc]">{totalItems}</span> programs
+          Showing <span className="text-[#14B8A6]">{startItem}</span> to{' '}
+          <span className="text-[#14B8A6]">{endItem}</span> of{' '}
+          <span className="text-[#14B8A6]">{totalItems}</span> programs
         </p>
         <nav className="flex items-center gap-2" aria-label="Pagination">
           <Button
             variant="outline"
-            className="border-2 border-[#7c7eb8] bg-[rgba(124,126,184,0.10)] px-3 py-2 text-xs font-black uppercase tracking-[0.3em] text-[#9496cc] disabled:opacity-40"
+            className="border-2 border-[#14B8A6] bg-[rgba(20,184,166,0.10)] px-3 py-2 text-xs font-black uppercase tracking-[0.3em] text-[#14B8A6] disabled:opacity-40"
             onClick={() => onPageChange(currentPage - 1)}
             disabled={currentPage === 1}
           >
@@ -105,8 +105,8 @@ export const Pagination: React.FC<PaginationProps> = ({
                   isEllipsis
                     ? 'cursor-default border-transparent text-gray-500'
                     : isActive
-                    ? 'border-[#7c7eb8] bg-[rgba(124,126,184,0.30)] text-black'
-                    : 'border-[rgba(124,126,184,0.30)] bg-[rgba(124,126,184,0.10)] text-[#a8a8c0] hover:border-[#7c7eb8] hover:bg-[rgba(124,126,184,0.20)]'
+                    ? 'border-[#14B8A6] bg-[rgba(20,184,166,0.30)] text-black'
+                    : 'border-[rgba(20,184,166,0.30)] bg-[rgba(20,184,166,0.10)] text-[#a8a8c0] hover:border-[#14B8A6] hover:bg-[rgba(20,184,166,0.20)]'
                 }`}
               >
                 {page}
@@ -115,7 +115,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           })}
           <Button
             variant="outline"
-            className="border-2 border-[#7c7eb8] bg-[rgba(124,126,184,0.10)] px-3 py-2 text-xs font-black uppercase tracking-[0.3em] text-[#9496cc] disabled:opacity-40"
+            className="border-2 border-[#14B8A6] bg-[rgba(20,184,166,0.10)] px-3 py-2 text-xs font-black uppercase tracking-[0.3em] text-[#14B8A6] disabled:opacity-40"
             onClick={() => onPageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
           >

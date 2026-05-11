@@ -68,7 +68,7 @@ const GRAD_YEARS = Array.from({ length: 7 }, (_, i) => CURRENT_YEAR + i - 1).fil
 // ---------------------------------------------------------------------------
 
 const INPUT_BASE =
-  "w-full bg-[#0f0f1a] border border-white/20 rounded text-white placeholder-white/30 px-4 py-2.5 text-sm focus:outline-none focus:border-[#7c7eb8] transition-colors";
+  "w-full bg-[#0A0E1A] border border-white/20 rounded text-white placeholder-white/30 px-4 py-2.5 text-sm focus:outline-none focus:border-[#14B8A6] transition-colors";
 
 const LABEL_BASE =
   "block text-xs font-semibold uppercase tracking-widest text-white/60 mb-1.5";
@@ -254,11 +254,11 @@ export function SignupPage() {
   // ── Success / confirmation screen
   if (success) {
     return (
-      <div className="min-h-screen bg-[#0f0f1a] flex items-center justify-center px-4">
+      <div className="min-h-screen bg-[#0A0E1A] flex items-center justify-center px-4">
         <div className="max-w-lg w-full text-center space-y-6">
           {/* Trophy icon */}
           <div className="flex justify-center">
-            <span className="text-[#7c7eb8] text-6xl">🏆</span>
+            <span className="text-[#14B8A6] text-6xl">🏆</span>
           </div>
 
           <h1 className="text-3xl font-black uppercase tracking-widest text-white">
@@ -267,13 +267,13 @@ export function SignupPage() {
 
           <div className="space-y-4 text-white/60 text-sm leading-relaxed text-left bg-white/5 border border-white/10 rounded-lg p-6">
             <div className="flex gap-3">
-              <span className="text-[#7c7eb8] font-bold text-xs uppercase tracking-widest mt-0.5 shrink-0">
+              <span className="text-[#14B8A6] font-bold text-xs uppercase tracking-widest mt-0.5 shrink-0">
                 Step 1
               </span>
               <p>
                 <span className="text-white font-semibold">Confirm your email.</span>{" "}
                 We've sent a verification link to{" "}
-                <span className="text-[#7c7eb8]">{successEmail}</span>. Click
+                <span className="text-[#14B8A6]">{successEmail}</span>. Click
                 the link to activate your account. Check your spam folder if
                 you don't see it within a few minutes.
               </p>
@@ -282,7 +282,7 @@ export function SignupPage() {
             <div className="border-t border-white/10" />
 
             <div className="flex gap-3">
-              <span className="text-[#7c7eb8] font-bold text-xs uppercase tracking-widest mt-0.5 shrink-0">
+              <span className="text-[#14B8A6] font-bold text-xs uppercase tracking-widest mt-0.5 shrink-0">
                 Step 2
               </span>
               <p>
@@ -301,7 +301,7 @@ export function SignupPage() {
             Already have an account?{" "}
             <Link
               to="/login"
-              className="text-[#7c7eb8] hover:text-[#9496cc] transition-colors"
+              className="text-[#14B8A6] hover:text-[#14B8A6] transition-colors"
             >
               Sign in
             </Link>
@@ -313,11 +313,11 @@ export function SignupPage() {
 
   // ── Signup form
   return (
-    <div className="min-h-screen bg-[#0f0f1a] flex items-start justify-center px-4 pt-24 pb-16">
+    <div className="min-h-screen bg-[#0A0E1A] flex items-start justify-center px-4 pt-24 pb-16">
       <div className="max-w-xl w-full space-y-8">
         {/* Header */}
         <div className="space-y-2">
-          <p className="text-[#7c7eb8] text-xs font-bold uppercase tracking-widest">
+          <p className="text-[#14B8A6] text-xs font-bold uppercase tracking-widest">
             The Locker Room
           </p>
           <h1 className="text-4xl font-black uppercase tracking-tight text-white">
@@ -374,7 +374,7 @@ export function SignupPage() {
               required
             />
             <p className="mt-1.5 text-xs text-white/30">
-              Use your university <span className="text-[#7c7eb8]">.edu</span> email — other domains will be rejected.
+              Use your university <span className="text-[#14B8A6]">.edu</span> email — other domains will be rejected.
             </p>
           </div>
 
@@ -449,7 +449,7 @@ export function SignupPage() {
 
               {/* Dropdown */}
               {schoolDropdownOpen && schoolResults.length > 0 && (
-                <div className="absolute top-full left-0 right-0 z-50 mt-1 rounded-lg border border-[rgba(124,126,184,0.20)] bg-gray-950 shadow-xl overflow-hidden">
+                <div className="absolute top-full left-0 right-0 z-50 mt-1 rounded-lg border border-[rgba(20,184,166,0.20)] bg-gray-950 shadow-xl overflow-hidden">
                   {schoolResults.map((school) => (
                     <button
                       key={school.school_id}
@@ -460,7 +460,7 @@ export function SignupPage() {
                         setSchoolDropdownOpen(false);
                         if (error) setError(null);
                       }}
-                      className="w-full px-4 py-2.5 text-left text-sm text-white hover:bg-[rgba(124,126,184,0.10)] transition-colors"
+                      className="w-full px-4 py-2.5 text-left text-sm text-white hover:bg-[rgba(20,184,166,0.10)] transition-colors"
                     >
                       <span className="font-semibold">{school.institution_name}</span>
                       <span className="ml-2 text-xs text-gray-500">
@@ -472,7 +472,7 @@ export function SignupPage() {
               )}
             </div>
             {selectedSchoolId && (
-              <p className="mt-1.5 text-xs text-[#7c7eb8]/70">
+              <p className="mt-1.5 text-xs text-[#14B8A6]/70">
                 ✓ School matched to database
               </p>
             )}
@@ -517,7 +517,7 @@ export function SignupPage() {
                     key={opt.value}
                     value={opt.value}
                     disabled={opt.value === ""}
-                    className="bg-[#0f0f1a] text-white"
+                    className="bg-[#0A0E1A] text-white"
                   >
                     {opt.label}
                   </option>
@@ -536,11 +536,11 @@ export function SignupPage() {
                 className={`${INPUT_BASE} cursor-pointer`}
                 required
               >
-                <option value="" disabled className="bg-[#0f0f1a] text-white">
+                <option value="" disabled className="bg-[#0A0E1A] text-white">
                   Year…
                 </option>
                 {GRAD_YEARS.map((y) => (
-                  <option key={y} value={String(y)} className="bg-[#0f0f1a] text-white">
+                  <option key={y} value={String(y)} className="bg-[#0A0E1A] text-white">
                     {y}
                   </option>
                 ))}
@@ -572,7 +572,7 @@ export function SignupPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full bg-[#7c7eb8] hover:bg-[#9496cc] disabled:bg-[rgba(124,126,184,0.40)] disabled:cursor-not-allowed text-black font-black uppercase tracking-widest text-sm py-3 rounded transition-colors"
+            className="w-full bg-[#14B8A6] hover:bg-[#14B8A6] disabled:bg-[rgba(20,184,166,0.40)] disabled:cursor-not-allowed text-black font-black uppercase tracking-widest text-sm py-3 rounded transition-colors"
           >
             {submitting ? "Creating account…" : "Create account"}
           </button>
@@ -583,7 +583,7 @@ export function SignupPage() {
           Already have an account?{" "}
           <Link
             to="/login"
-            className="text-[#7c7eb8] hover:text-[#9496cc] transition-colors font-semibold"
+            className="text-[#14B8A6] hover:text-[#14B8A6] transition-colors font-semibold"
           >
             Sign in
           </Link>

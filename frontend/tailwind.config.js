@@ -76,20 +76,24 @@ module.exports = {
         },
 
         /* ── TLR semantic palette — use these in all components ── */
-        /* Periwinkle/slate-purple accent — NOT yellow, NOT school colors     */
+        /* Navy/Teal/Cream palette — NOT school colors                         */
         tlr: {
           /* Backgrounds */
-          bg:       '#0f0f1a',   // deep navy-black
-          surface:  '#1a1a2e',   // dark navy card
-          surface2: '#252540',   // elevated navy
+          bg:       '#0A0E1A',   // deep navy near-black
+          surface:  '#14151F',   // dark navy card
+          surface2: '#1E1F2E',   // elevated navy
           /* Borders */
-          border:   '#3a3a5c',   // navy border
-          border2:  '#4a4a70',   // lighter border (hover state)
-          /* Accent (periwinkle) */
-          accent:   '#7c7eb8',   // primary CTA / highlight
-          'accent-hover': '#9496cc',
-          'accent-dim':   '#2a2a4a',   // dim accent bg for chips/tags
-          'accent-glow':  'rgba(124,126,184,0.18)',
+          border:   '#2a2a3c',   // navy border
+          border2:  '#3a3a52',   // lighter border (hover state)
+          /* Accent (teal) */
+          accent:         '#14B8A6',              // primary CTA / highlight
+          'accent-hover': '#0d9488',              // teal-700 hover
+          'accent-dim':   'rgba(20,184,166,0.10)',// dim accent bg for chips/tags
+          'accent-glow':  'rgba(20,184,166,0.18)',
+          /* Cream — display headlines, big numerals, wordmark */
+          cream:          '#F5EFE0',
+          /* Lavender-quiet — radar/area charts ONLY */
+          'lavender-quiet': '#9B97B5',
           /* Silver/metallic */
           silver:   '#a8a8c0',
           /* Text */
@@ -106,16 +110,16 @@ module.exports = {
       },
       boxShadow: {
         xs: "0 1px 0 0 rgba(0, 0, 0, 0.05)",
-        'accent': '0 0 32px 0 rgba(124,126,184,0.25)',
-        'accent-sm': '0 0 12px 0 rgba(124,126,184,0.20)',
+        'accent': '0 0 32px 0 rgba(20,184,166,0.25)',
+        'accent-sm': '0 0 12px 0 rgba(20,184,166,0.20)',
         'card': '0 4px 24px 0 rgba(0,0,0,0.45)',
       },
       backgroundImage: {
-        'tlr-gradient': 'linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%)',
-        'tlr-surface-gradient': 'linear-gradient(135deg, #1a1a2e 0%, #252540 100%)',
-        'tlr-accent-gradient': 'linear-gradient(135deg, #7c7eb8 0%, #9496cc 100%)',
-        'tlr-radial': 'radial-gradient(ellipse 70% 45% at 50% -5%, rgba(124,126,184,0.12) 0%, transparent 70%)',
-        'tlr-radial-sm': 'radial-gradient(ellipse 50% 40% at 50% 0%, rgba(124,126,184,0.08) 0%, transparent 60%)',
+        'tlr-gradient': 'linear-gradient(135deg, #0A0E1A 0%, #14151F 100%)',
+        'tlr-surface-gradient': 'linear-gradient(135deg, #14151F 0%, #1E1F2E 100%)',
+        'tlr-accent-gradient': 'linear-gradient(135deg, #14B8A6 0%, #0d9488 100%)',
+        'tlr-radial': 'radial-gradient(ellipse 70% 45% at 50% -5%, rgba(20,184,166,0.10) 0%, transparent 70%)',
+        'tlr-radial-sm': 'radial-gradient(ellipse 50% 40% at 50% 0%, rgba(20,184,166,0.07) 0%, transparent 60%)',
       },
     },
   },

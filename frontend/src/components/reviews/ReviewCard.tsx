@@ -86,11 +86,11 @@ const RatingBar: React.FC<{ label: string; value: number }> = ({
       </span>
       <div className="relative flex-1 h-1.5 rounded-full bg-gray-800 overflow-hidden">
         <div
-          className="absolute inset-y-0 left-0 rounded-full bg-[#7c7eb8]"
+          className="absolute inset-y-0 left-0 rounded-full bg-[#14B8A6]"
           style={{ width: `${pct}%` }}
         />
       </div>
-      <span className="w-7 text-right text-xs font-black tabular-nums text-[#9496cc]">
+      <span className="w-7 text-right text-xs font-black tabular-nums text-[#14B8A6]">
         {value.toFixed(1)}
       </span>
     </div>
@@ -227,7 +227,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -4 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-      className="group relative overflow-hidden rounded-xl border border-[#3a3a5c] bg-[#1a1a2e] p-6 transition-colors duration-200 hover:border-[#3a3a5c]"
+      className="group relative overflow-hidden rounded-xl border border-[#2a2a3c] bg-[#14151F] p-6 transition-colors duration-200 hover:border-[#2a2a3c]"
     >
       {/* Subtle hover gradient */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[rgba(124,126,184,0.03)] to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
@@ -236,11 +236,11 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
         {/* Header row */}
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="flex items-center gap-3">
-            <span className="flex h-9 w-9 items-center justify-center rounded-full border border-[#3a3a5c] bg-[#252540]">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full border border-[#2a2a3c] bg-[#1E1F2E]">
               {review.is_anonymous ? (
-                <Shield className="h-4 w-4 text-[#9496cc]" />
+                <Shield className="h-4 w-4 text-[#14B8A6]" />
               ) : (
-                <User className="h-4 w-4 text-[#9496cc]" />
+                <User className="h-4 w-4 text-[#14B8A6]" />
               )}
             </span>
             <div>
@@ -255,7 +255,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
 
           {/* Composite score */}
           <div className="flex flex-col items-end">
-            <span className="text-3xl font-black tabular-nums text-[#9496cc] leading-none">
+            <span className="text-3xl font-black tabular-nums text-[#14B8A6] leading-none">
               {composite.toFixed(1)}
             </span>
             <span className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">
@@ -268,12 +268,12 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
         {(review.sport || review.gender) && (
           <div className="flex flex-wrap gap-2">
             {review.sport && (
-              <span className="inline-flex items-center rounded-full border border-[#3a3a5c] bg-[#252540] px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-[#a8a8c0]">
+              <span className="inline-flex items-center rounded-full border border-[#2a2a3c] bg-[#1E1F2E] px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-[#a8a8c0]">
                 {review.sport}
               </span>
             )}
             {review.gender && (
-              <span className="inline-flex items-center rounded-full border border-[#3a3a5c] bg-[#252540]/50 px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-[#8888a8]">
+              <span className="inline-flex items-center rounded-full border border-[#2a2a3c] bg-[#1E1F2E]/50 px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-[#8888a8]">
                 {review.gender}
               </span>
             )}
@@ -289,7 +289,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
 
         {/* Review text */}
         {review.review_text && (
-          <div className="border-t border-[#3a3a5c] pt-4">
+          <div className="border-t border-[#2a2a3c] pt-4">
             <p className="text-sm leading-relaxed text-gray-300">
               {review.review_text}
             </p>
@@ -338,12 +338,12 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
               aria-label="Mark as helpful"
               className={`flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.15em] transition-colors disabled:opacity-60 ${
                 hasVotedHelpful
-                  ? 'text-[#9496cc]'
-                  : 'text-gray-500 hover:text-[#9496cc]'
+                  ? 'text-[#14B8A6]'
+                  : 'text-gray-500 hover:text-[#14B8A6]'
               } ${!user ? 'cursor-default' : ''}`}
             >
               <ThumbsUp
-                className={`h-3.5 w-3.5 ${hasVotedHelpful ? 'fill-[#9496cc]' : ''}`}
+                className={`h-3.5 w-3.5 ${hasVotedHelpful ? 'fill-[#14B8A6]' : ''}`}
               />
               <span>Helpful ({helpfulCount})</span>
             </button>
@@ -381,7 +381,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
                     transition={{ duration: 0.12 }}
                     className="absolute right-0 bottom-full mb-2 z-50 w-44 rounded-xl border border-gray-700 bg-gray-950 shadow-xl overflow-hidden"
                   >
-                    <p className="px-3 py-2 text-[10px] font-semibold uppercase tracking-widest text-[#555570] border-b border-[#3a3a5c]">
+                    <p className="px-3 py-2 text-[10px] font-semibold uppercase tracking-widest text-[#555570] border-b border-[#2a2a3c]">
                       Reason
                     </p>
                     {FLAG_REASONS.map((reason) => (

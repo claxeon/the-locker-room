@@ -65,7 +65,7 @@ function cleanSport(sport: string): string {
 
 function barColor(score: number): string {
   if (score >= 4.5) return 'bg-green-500'
-  if (score >= 3.5) return 'bg-[#7c7eb8]'
+  if (score >= 3.5) return 'bg-[#14B8A6]'
   if (score >= 2.5) return 'bg-orange-500'
   return 'bg-red-500'
 }
@@ -150,7 +150,7 @@ function GenderEquitySection({ reviews }: { reviews: ReviewRow[] }) {
       gapClass = 'text-green-400 bg-green-500/10 border-green-500/30'
     } else if (gap <= 0.7) {
       gapLabel = "Moderate gap — some difference between Men's and Women's experiences"
-      gapClass = 'text-[#9496cc] bg-[rgba(124,126,184,0.10)] border-[rgba(124,126,184,0.30)]'
+      gapClass = 'text-[#14B8A6] bg-[rgba(20,184,166,0.10)] border-[rgba(20,184,166,0.30)]'
     } else {
       gapLabel = 'Significant gap — notable difference in athlete experiences by gender'
       gapClass = 'text-red-400 bg-red-500/10 border-red-500/30'
@@ -189,7 +189,7 @@ function GenderEquitySection({ reviews }: { reviews: ReviewRow[] }) {
                 <span className="text-xs italic text-[#555570]">{bar.missingLabel}</span>
               ) : (
                 <>
-                  <div className="relative h-2.5 flex-1 overflow-hidden rounded-full bg-[#252540]">
+                  <div className="relative h-2.5 flex-1 overflow-hidden rounded-full bg-[#1E1F2E]">
                     <motion.div
                       className={`absolute left-0 top-0 h-full rounded-full ${bar.barClass}`}
                       initial={{ width: 0 }}
@@ -260,7 +260,7 @@ function SportBreakdownSection({ aggs }: { aggs: ProgramAgg[] }) {
                   <span className="truncate text-xs font-medium text-[#a8a8c0]">{displayName}</span>
                   <GenderChip gender={gender} />
                 </div>
-                <div className="relative h-2.5 flex-1 overflow-hidden rounded-full bg-[#252540]">
+                <div className="relative h-2.5 flex-1 overflow-hidden rounded-full bg-[#1E1F2E]">
                   <motion.div
                     className={`absolute left-0 top-0 h-full rounded-full ${barColor(comp)}`}
                     initial={{ width: 0 }}
@@ -313,7 +313,7 @@ function ActivityTimelineSection({ reviews }: { reviews: ReviewRow[] }) {
             return (
               <div key={m.key} className="flex flex-1 flex-col items-center gap-1">
                 <motion.div
-                  className="w-full rounded-t bg-[#7c7eb8]"
+                  className="w-full rounded-t bg-[#14B8A6]"
                   style={{ height: `${Math.max(heightPct, count > 0 ? 8 : 2)}%` }}
                   initial={{ scaleY: 0, originY: '100%' }}
                   animate={{ scaleY: 1 }}
@@ -334,7 +334,7 @@ function ActivityTimelineSection({ reviews }: { reviews: ReviewRow[] }) {
 
 function SkeletonPulse() {
   return (
-    <div className="h-32 animate-pulse rounded-xl bg-[#252540]" />
+    <div className="h-32 animate-pulse rounded-xl bg-[#1E1F2E]" />
   )
 }
 
@@ -415,10 +415,10 @@ export function ReviewAnalytics({ schoolId }: ReviewAnalyticsProps) {
   }
 
   return (
-    <div className="bg-[#1a1a2e] border border-[#3a3a5c] rounded-2xl p-6 md:p-8">
+    <div className="bg-[#14151F] border border-[#2a2a3c] rounded-2xl p-6 md:p-8">
       {/* Header */}
       <div className="mb-6 flex items-center gap-2">
-        <Shield className="h-5 w-5 text-[#7c7eb8]" />
+        <Shield className="h-5 w-5 text-[#14B8A6]" />
         <h2 className="text-xs font-semibold uppercase tracking-widest text-[#8888a8]">
           Review Analytics
         </h2>
@@ -431,7 +431,7 @@ export function ReviewAnalytics({ schoolId }: ReviewAnalyticsProps) {
       </div>
 
       {/* Row 2: full-width timeline */}
-      <div className="border-t border-[#3a3a5c] pt-6 mt-6">
+      <div className="border-t border-[#2a2a3c] pt-6 mt-6">
         <ActivityTimelineSection reviews={reviews} />
       </div>
     </div>

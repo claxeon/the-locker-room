@@ -45,10 +45,10 @@ export const SchoolProfile: React.FC<SchoolProfileProps> = ({ slug, onBack }) =>
 
   if (loading) {
     return (
-      <div className="relative min-h-screen py-32 flex items-center justify-center" style={{ backgroundColor: '#0f0f1a' }}>
+      <div className="relative min-h-screen py-32 flex items-center justify-center" style={{ backgroundColor: '#0A0E1A' }}>
         <div
           className="h-10 w-10 animate-spin rounded-full border-4"
-          style={{ borderColor: 'rgba(124,126,184,0.20)', borderTopColor: '#7c7eb8' }}
+          style={{ borderColor: 'rgba(20,184,166,0.20)', borderTopColor: '#14B8A6' }}
         />
       </div>
     )
@@ -56,7 +56,7 @@ export const SchoolProfile: React.FC<SchoolProfileProps> = ({ slug, onBack }) =>
 
   if (error || !school) {
     return (
-      <div className="relative min-h-screen pt-32" style={{ backgroundColor: '#0f0f1a', color: '#f0f0f8' }}>
+      <div className="relative min-h-screen pt-32" style={{ backgroundColor: '#0A0E1A', color: '#f0f0f8' }}>
         <div className="mx-auto max-w-3xl px-6">
           <div
             className="rounded-xl p-8"
@@ -84,13 +84,13 @@ export const SchoolProfile: React.FC<SchoolProfileProps> = ({ slug, onBack }) =>
   return (
     <div
       className="relative min-h-screen pb-24"
-      style={{ backgroundColor: '#0f0f1a', color: '#f0f0f8' }}
+      style={{ backgroundColor: '#0A0E1A', color: '#f0f0f8' }}
     >
       {/* Subtle top glow */}
       <div
         className="pointer-events-none absolute inset-0 -z-10"
         style={{
-          background: 'radial-gradient(ellipse 60% 30% at 50% 0%, rgba(124,126,184,0.07) 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse 60% 30% at 50% 0%, rgba(20,184,166,0.06) 0%, transparent 70%)',
         }}
       />
 
@@ -109,13 +109,13 @@ export const SchoolProfile: React.FC<SchoolProfileProps> = ({ slug, onBack }) =>
         {/* School header */}
         <section
           className="rounded-xl p-6 sm:p-8 backdrop-blur"
-          style={{ border: '1px solid #3a3a5c', backgroundColor: 'rgba(26,26,46,0.60)' }}
+          style={{ border: '1px solid #2a2a3c', backgroundColor: 'rgba(20,21,31,0.60)' }}
         >
           <div className="flex items-start gap-6">
             {/* Logo */}
             <div
               className="flex-shrink-0 h-20 w-20 sm:h-24 sm:w-24 rounded-2xl p-2"
-              style={{ border: '1px solid #3a3a5c', backgroundColor: '#0f0f1a', boxShadow: '0 8px 32px 0 rgba(0,0,0,0.60)' }}
+              style={{ border: '1px solid #2a2a3c', backgroundColor: '#0A0E1A', boxShadow: '0 8px 32px 0 rgba(0,0,0,0.60)' }}
             >
               {school.logo_url ? (
                 <div className="relative h-full w-full">
@@ -132,11 +132,11 @@ export const SchoolProfile: React.FC<SchoolProfileProps> = ({ slug, onBack }) =>
                   />
                   <div
                     className="hidden h-full w-full items-center justify-center"
-                    style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #252540 100%)' }}
+                    style={{ background: 'linear-gradient(135deg, #14151F 0%, #1E1F2E 100%)' }}
                   >
                     <span
                       className="text-3xl font-black tracking-tight"
-                      style={{ color: '#7c7eb8', fontFamily: "'Instrument Serif', Georgia, serif", fontStyle: 'italic' }}
+                      style={{ color: '#14B8A6', fontFamily: "'Instrument Serif', Georgia, serif", fontStyle: 'italic' }}
                     >
                       {school.institution_name.charAt(0)}
                     </span>
@@ -145,11 +145,11 @@ export const SchoolProfile: React.FC<SchoolProfileProps> = ({ slug, onBack }) =>
               ) : (
                 <div
                   className="h-full w-full flex items-center justify-center rounded-xl"
-                  style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #252540 100%)' }}
+                  style={{ background: 'linear-gradient(135deg, #14151F 0%, #1E1F2E 100%)' }}
                 >
                   <span
                     className="text-3xl font-black tracking-tight"
-                    style={{ color: '#7c7eb8', fontFamily: "'Instrument Serif', Georgia, serif", fontStyle: 'italic' }}
+                    style={{ color: '#14B8A6', fontFamily: "'Instrument Serif', Georgia, serif", fontStyle: 'italic' }}
                   >
                     {school.institution_name.charAt(0)}
                   </span>
@@ -159,17 +159,17 @@ export const SchoolProfile: React.FC<SchoolProfileProps> = ({ slug, onBack }) =>
 
             {/* Info */}
             <div className="min-w-0 flex-1 space-y-3">
-              <p className="text-2xs font-semibold uppercase tracking-widest" style={{ color: '#7c7eb8' }}>
+              <p className="text-2xs font-semibold uppercase tracking-widest" style={{ color: '#14B8A6' }}>
                 {school.classification_name}
               </p>
               <h1
                 className="leading-[1.05]"
-                style={{ fontSize: 'clamp(1.5rem, 3.5vw, 2.5rem)', ...serifItalic, color: '#f0f0f8' }}
+                style={{ fontSize: 'clamp(1.5rem, 3.5vw, 2.5rem)', ...serifItalic, color: '#F5EFE0' }}
               >
                 {school.institution_name}
               </h1>
               <div className="flex flex-wrap gap-2">
-                <ProfileMeta icon={<MapPin className="h-3.5 w-3.5" style={{ color: '#7c7eb8' }} />} label={school.state_cd} />
+                <ProfileMeta icon={<MapPin className="h-3.5 w-3.5" style={{ color: '#14B8A6' }} />} label={school.state_cd} />
                 <ProfileMeta icon={<Shield className="h-3.5 w-3.5" style={{ color: '#8888a8' }} />} label={school.classification_name} />
                 <ProfileMeta icon={<Shield className="h-3.5 w-3.5" style={{ color: '#8888a8' }} />} label={school.sanction_name} />
               </div>
@@ -187,7 +187,7 @@ export const SchoolProfile: React.FC<SchoolProfileProps> = ({ slug, onBack }) =>
         {/* Sports Programs */}
         <section
           className="rounded-xl p-8 backdrop-blur"
-          style={{ border: '1px solid #3a3a5c', backgroundColor: 'rgba(26,26,46,0.60)' }}
+          style={{ border: '1px solid #2a2a3c', backgroundColor: 'rgba(20,21,31,0.60)' }}
         >
           <header className="mb-6">
             <p className="text-2xs font-semibold uppercase tracking-widest" style={{ color: '#555570' }}>
@@ -195,7 +195,7 @@ export const SchoolProfile: React.FC<SchoolProfileProps> = ({ slug, onBack }) =>
             </p>
             <h2
               className="mt-1"
-              style={{ fontSize: 'clamp(1.25rem, 2.5vw, 1.75rem)', ...serifItalic, color: '#f0f0f8' }}
+              style={{ fontSize: 'clamp(1.25rem, 2.5vw, 1.75rem)', ...serifItalic, color: '#F5EFE0' }}
             >
               Sports Programs
             </h2>
@@ -209,9 +209,9 @@ export const SchoolProfile: React.FC<SchoolProfileProps> = ({ slug, onBack }) =>
               <article
                 key={`${program.sport}-${program.gender}-${index}`}
                 className="flex items-center justify-between rounded-lg px-4 py-3 transition-colors"
-                style={{ border: '1px solid #3a3a5c', backgroundColor: '#1a1a2e' }}
-                onMouseEnter={e => (e.currentTarget as HTMLElement).style.borderColor = '#4a4a70'}
-                onMouseLeave={e => (e.currentTarget as HTMLElement).style.borderColor = '#3a3a5c'}
+                style={{ border: '1px solid #2a2a3c', backgroundColor: '#14151F' }}
+                onMouseEnter={e => (e.currentTarget as HTMLElement).style.borderColor = '#3a3a52'}
+                onMouseLeave={e => (e.currentTarget as HTMLElement).style.borderColor = '#2a2a3c'}
               >
                 <div>
                   <p className="text-sm font-semibold" style={{ color: '#f0f0f8' }}>{program.sport}</p>
@@ -219,7 +219,7 @@ export const SchoolProfile: React.FC<SchoolProfileProps> = ({ slug, onBack }) =>
                 </div>
                 <span
                   className="inline-flex items-center rounded-full px-2.5 py-1 text-2xs font-semibold uppercase tracking-widest"
-                  style={{ border: '1px solid #3a3a5c', backgroundColor: '#252540', color: '#8888a8' }}
+                  style={{ border: '1px solid #2a2a3c', backgroundColor: '#1E1F2E', color: '#8888a8' }}
                 >
                   {program.gender === "Men's" ? "M" : program.gender === "Women's" ? "W" : "Co"}
                 </span>
@@ -231,10 +231,10 @@ export const SchoolProfile: React.FC<SchoolProfileProps> = ({ slug, onBack }) =>
         {/* Write a Review CTA */}
         <section
           className="rounded-xl p-6 flex items-center justify-between gap-4"
-          style={{ border: '1px solid rgba(124,126,184,0.22)', backgroundColor: 'rgba(124,126,184,0.06)' }}
+          style={{ border: '1px solid rgba(20,184,166,0.18)', backgroundColor: 'rgba(124,126,184,0.06)' }}
         >
           <div>
-            <p className="text-2xs font-semibold uppercase tracking-widest mb-1" style={{ color: '#7c7eb8' }}>
+            <p className="text-2xs font-semibold uppercase tracking-widest mb-1" style={{ color: '#14B8A6' }}>
               Verified Athletes Only
             </p>
             <h2 className="text-base font-bold" style={{ color: '#f0f0f8' }}>Played here? Rate this program.</h2>
@@ -245,13 +245,13 @@ export const SchoolProfile: React.FC<SchoolProfileProps> = ({ slug, onBack }) =>
           <Link
             to={`/submit-review?school_id=${school.school_id}&school_name=${encodeURIComponent(school.institution_name)}`}
             className="inline-flex flex-shrink-0 items-center gap-2 rounded-xl px-5 py-2.5 text-xs font-black uppercase tracking-widest transition-colors"
-            style={{ backgroundColor: '#7c7eb8', color: '#0f0f1a', boxShadow: '0 0 24px 0 rgba(124,126,184,0.28)' }}
+            style={{ backgroundColor: '#14B8A6', color: '#0A0E1A', boxShadow: '0 0 24px 0 rgba(124,126,184,0.28)' }}
             onMouseEnter={e => {
-              (e.currentTarget as HTMLAnchorElement).style.backgroundColor = '#9496cc'
+              (e.currentTarget as HTMLAnchorElement).style.backgroundColor = '#14B8A6'
               ;(e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 0 32px 0 rgba(148,150,204,0.38)'
             }}
             onMouseLeave={e => {
-              (e.currentTarget as HTMLAnchorElement).style.backgroundColor = '#7c7eb8'
+              (e.currentTarget as HTMLAnchorElement).style.backgroundColor = '#14B8A6'
               ;(e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 0 24px 0 rgba(124,126,184,0.28)'
             }}
           >
@@ -272,7 +272,7 @@ export const SchoolProfile: React.FC<SchoolProfileProps> = ({ slug, onBack }) =>
 const ProfileMeta = ({ icon, label }: { icon: React.ReactNode; label: string }) => (
   <span
     className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs"
-    style={{ border: '1px solid #3a3a5c', backgroundColor: '#1a1a2e', color: '#a8a8c0' }}
+    style={{ border: '1px solid #2a2a3c', backgroundColor: '#14151F', color: '#a8a8c0' }}
   >
     {icon}
     {label}
