@@ -119,7 +119,11 @@ const RADAR_PROFILES: { label: string; scores: number[] }[] = [
   { label: "STRONG CULTURE, MODEST RESOURCES", scores: [55, 90, 88, 75, 95, 85] },
 ]
 
-/** Convert (angle, value, cx, cy, r) → {x, y} on the SVG canvas */
+/**
+ * Convert (angleDeg, value, cx, cy, r) → {x, y} on the SVG canvas.
+ * angleDeg is a raw SVG angle where 0° = 3 o’clock, -90° = 12 o’clock.
+ * Callers are responsible for subtracting 90 so that axis 0 is at the top.
+ */
 function polarPoint(
   angleDeg: number,
   value: number,
@@ -127,16 +131,22 @@ function polarPoint(
   cy: number,
   r: number,
 ): { x: number; y: number } {
-  const rad = ((angleDeg - 90) * Math.PI) / 180
+  const rad = (angleDeg * Math.PI) / 180
   const d = (value / 100) * r
   return { x: cx + d * Math.cos(rad), y: cy + d * Math.sin(rad) }
 }
 
-/** Build an SVG polygon points string from scores */
+/** Angle in SVG degrees for axis index i out of n total axes, starting at 12 o’clock. */
+function axisAngle(i: number, n: number): number {
+  return -90 + (360 / n) * i
+}
+
+/** Build an SVG polygon points string from scores, axis 0 at 12 o’clock. */
 function buildPoints(scores: number[], cx: number, cy: number, r: number): string {
+  const n = scores.length
   return scores
     .map((s, i) => {
-      const { x, y } = polarPoint((360 / scores.length) * i, s, cx, cy, r)
+      const { x, y } = polarPoint(axisAngle(i, n), s, cx, cy, r)
       return `${x},${y}`
     })
     .join(" ")
@@ -155,26 +165,25 @@ const LABEL_FADE = 200     // ms for label fade each direction
 const HeroRadarCard = () => {
   const n = RADAR_AXES.length
   // ViewBox 340×340, centre at (170,170).
-  // r=88: outer ring sits at 88/170 ≈ 52% of the half-width, leaving ~48% (82px)
-  // on each side for labels. SVG overflow="visible" ensures labels that extend
-  // slightly beyond the viewBox boundary are never clipped by the <svg> element;
-  // the card's overflow:hidden is the only real clip boundary.
+  // r=88: outer ring at ~52% of half-width; labelR=114 places labels 26px beyond.
+  // overflow="visible" on <svg> so long labels never clip against the SVG boundary.
   const cx = 170
   const cy = 170
   const r = 88       // polygon outer radius
-  const labelR = 114 // label anchor radius (26px gap beyond outer ring)
+  const labelR = 114 // label anchor radius
   const gridLevels = [20, 40, 60, 80, 100]
 
   const [profileIdx, setProfileIdx] = useState(0)
   const [displayScores, setDisplayScores] = useState(RADAR_PROFILES[0].scores)
-  const [labelText, setLabelText] = useState(RADAR_PROFILES[0].label)
-  const [labelVisible, setLabelVisible] = useState(true)
+  // Crossfade label: track outgoing (fading out) and incoming (fading in) separately
+  const [outgoingLabel, setOutgoingLabel] = useState<string | null>(null)
+  const [incomingLabel, setIncomingLabel] = useState(RADAR_PROFILES[0].label)
+  const [crossfading, setCrossfading] = useState(false)
   const [paused, setPaused] = useState(false)
 
   const pausedRef = useRef(false)
   const profileIdxRef = useRef(0)
 
-  // Keep refs in sync so the interval closure always has current values
   useEffect(() => { pausedRef.current = paused }, [paused])
   useEffect(() => { profileIdxRef.current = profileIdx }, [profileIdx])
 
@@ -185,11 +194,10 @@ const HeroRadarCard = () => {
       const from = RADAR_PROFILES[fromIdx].scores
       const to   = RADAR_PROFILES[toIdx].scores
       let step = 0
-
       const tick = () => {
         step++
         const t = step / MORPH_STEPS
-        const ease = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t // ease-in-out
+        const ease = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t
         setDisplayScores(lerpScores(from, to, ease))
         if (step < MORPH_STEPS) {
           frameId = setTimeout(tick, MORPH_DURATION / MORPH_STEPS)
@@ -202,27 +210,24 @@ const HeroRadarCard = () => {
 
     const cycle = () => {
       frameId = setTimeout(() => {
-        if (pausedRef.current) {
-          // Re-schedule check
-          cycle()
-          return
-        }
-        const nextIdx = (profileIdxRef.current + 1) % RADAR_PROFILES.length
+        if (pausedRef.current) { cycle(); return }
 
-        // 1. Fade out label
-        setLabelVisible(false)
-
-        // 2. After fade-out, swap text + start morph
         const fromIdx = profileIdxRef.current
+        const nextIdx = (fromIdx + 1) % RADAR_PROFILES.length
+
+        // Begin crossfade: show both labels, start fading outgoing out
+        setOutgoingLabel(RADAR_PROFILES[fromIdx].label)
+        setIncomingLabel(RADAR_PROFILES[nextIdx].label)
+        setCrossfading(true)
+
+        // After crossfade duration, finish: outgoing gone, morph polygon
         frameId = setTimeout(() => {
-          setLabelText(RADAR_PROFILES[nextIdx].label)
-          setLabelVisible(true)
+          setCrossfading(false)
+          setOutgoingLabel(null)
           setProfileIdx(nextIdx)
           startMorph(fromIdx, nextIdx)
-
-          // 3. Schedule next cycle after hold
           cycle()
-        }, LABEL_FADE)
+        }, LABEL_FADE * 2)
       }, CYCLE_HOLD)
     }
 
@@ -254,19 +259,40 @@ const HeroRadarCard = () => {
         >
           Sample Scorecard
         </p>
-        <p
-          className="mt-1 font-semibold"
-          style={{
-            fontSize: '16px',
-            color: '#f0f0f8',
-            fontFamily: 'Satoshi, Inter, sans-serif',
-            opacity: labelVisible ? 1 : 0,
-            transition: `opacity ${LABEL_FADE}ms ease`,
-            minHeight: '24px',
-          }}
-        >
-          {labelText}
-        </p>
+        {/* Crossfade label: outgoing fades out while incoming fades in.
+             Both are absolutely positioned in the same slot so there is
+             no jump and the label is never fully invisible. */}
+        <div className="relative mt-1" style={{ minHeight: '24px' }}>
+          {/* Outgoing label — fades out when crossfading starts */}
+          {outgoingLabel !== null && (
+            <p
+              className="absolute inset-0 font-semibold"
+              style={{
+                fontSize: '16px',
+                color: '#f0f0f8',
+                fontFamily: 'Satoshi, Inter, sans-serif',
+                opacity: crossfading ? 0 : 1,
+                transition: `opacity ${LABEL_FADE}ms ease`,
+                pointerEvents: 'none',
+              }}
+            >
+              {outgoingLabel}
+            </p>
+          )}
+          {/* Incoming label — fades in as crossfade begins */}
+          <p
+            className="font-semibold"
+            style={{
+              fontSize: '16px',
+              color: '#f0f0f8',
+              fontFamily: 'Satoshi, Inter, sans-serif',
+              opacity: crossfading ? 1 : (outgoingLabel !== null ? 0 : 1),
+              transition: `opacity ${LABEL_FADE}ms ease`,
+            }}
+          >
+            {incomingLabel}
+          </p>
+        </div>
       </div>
 
       {/* SVG Radar — overflow:visible so axis labels outside the viewBox boundary
@@ -279,10 +305,10 @@ const HeroRadarCard = () => {
         overflow="visible"
         aria-hidden="true"
       >
-        {/* Concentric gridlines */}
+        {/* Concentric gridlines — axis 0 at 12 o'clock via axisAngle() */}
         {gridLevels.map((level) => {
           const pts = Array.from({ length: n }, (_, i) => {
-            const { x, y } = polarPoint((360 / n) * i, level, cx, cy, r)
+            const { x, y } = polarPoint(axisAngle(i, n), level, cx, cy, r)
             return `${x},${y}`
           }).join(" ")
           return (
@@ -298,7 +324,7 @@ const HeroRadarCard = () => {
 
         {/* Axis spokes */}
         {Array.from({ length: n }, (_, i) => {
-          const { x, y } = polarPoint((360 / n) * i, 100, cx, cy, r)
+          const { x, y } = polarPoint(axisAngle(i, n), 100, cx, cy, r)
           return (
             <line
               key={i}
@@ -323,7 +349,7 @@ const HeroRadarCard = () => {
 
         {/* Vertex dots */}
         {displayScores.map((score, i) => {
-          const { x, y } = polarPoint((360 / n) * i, score, cx, cy, r)
+          const { x, y } = polarPoint(axisAngle(i, n), score, cx, cy, r)
           return (
             <circle
               key={i}
@@ -335,15 +361,12 @@ const HeroRadarCard = () => {
           )
         })}
 
-        {/* Axis labels */}
+        {/* Axis labels — same axisAngle() so labels and polygon vertices are identical */}
         {RADAR_AXES.map((label, i) => {
-          const angle = (360 / n) * i
-          const { x, y } = polarPoint(angle, 100, cx, cy, labelR)
-          // Anchor and offset based on horizontal position
+          const { x, y } = polarPoint(axisAngle(i, n), 100, cx, cy, labelR)
           const isLeft  = x < cx - 10
           const isRight = x > cx + 10
           const anchor = isLeft ? 'end' : isRight ? 'start' : 'middle'
-          // Small vertical nudge for top/bottom labels
           const dy = y < cy - 10 ? -6 : y > cy + 10 ? 14 : 5
           return (
             <text
@@ -435,7 +458,7 @@ const HeroSection = ({ onGetStarted }: { onGetStarted?: () => void }) => {
 
       {/* Two-column layout */}
       <div
-        className="relative z-10 mx-auto grid w-full max-w-7xl grid-cols-1 lg:grid-cols-2"
+        className="relative z-10 mx-auto grid w-full max-w-7xl grid-cols-1 items-center lg:grid-cols-2 lg:items-center"
         style={{ gap: '64px' }}
       >
         {/* ── LEFT COLUMN — Text content ── */}
