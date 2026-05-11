@@ -11,13 +11,8 @@ import {
 import {
   ArrowLeft,
   ArrowRight,
-  Award,
-  BadgeCheck,
   ChevronRight,
-  Target,
   Trophy,
-  TrendingUp,
-  Users,
 } from "lucide-react"
 
 // ─── Social icon paths ────────────────────────────────────────────────────────
@@ -25,39 +20,6 @@ const socialLinks = [
   { label: "Instagram", href: "https://instagram.com",  d: "M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" },
   { label: "Twitter/X",  href: "https://twitter.com",   d: "M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.742l7.738-8.835L1.254 2.25H8.08l4.259 5.635L18.243 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z" },
   { label: "LinkedIn",   href: "https://linkedin.com",  d: "M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" },
-]
-
-const features = [
-  {
-    icon: BadgeCheck,
-    title: "Verified Reviews",
-    description: "Only verified student-athletes can post reviews. Every submission is manually reviewed against roster evidence.",
-  },
-  {
-    icon: Users,
-    title: "Team Culture",
-    description: "Six-dimension scoring: facilities, coaching, life balance, academic support, culture, and gender equity.",
-  },
-  {
-    icon: Trophy,
-    title: "Athlete Scorecard",
-    description: "Every program gets a visual scorecard with category breakdowns so recruits can compare at a glance.",
-  },
-  {
-    icon: Target,
-    title: "College Comparison",
-    description: "Side-by-side radar charts across up to 3 programs. Find the right fit before committing.",
-  },
-  {
-    icon: Award,
-    title: "Gender Equity Ratings",
-    description: "Dedicated equity dimension surfaces how programs treat Men's and Women's teams differently.",
-  },
-  {
-    icon: TrendingUp,
-    title: "Anonymous by Default",
-    description: "All reviews are anonymous. Athletes can speak freely without fear of coaching staff retaliation.",
-  },
 ]
 
 const proofData = [
@@ -570,62 +532,486 @@ const SanctioningBodiesSection = () => {
 }
 
 // ─── Features ─────────────────────────────────────────────────────────────────
-const FeaturesSection = () => (
-  <section id="features" className="w-full px-6 py-28" style={{ backgroundColor: BG }}>
-    <div className="mx-auto max-w-6xl">
-      <div className="mb-16">
-        {/* Eyebrow — teal */}
-        <p className="mb-3 text-xs font-semibold uppercase tracking-widest" style={{ color: ACCENT }}>
-          Platform
-        </p>
-        <h2
-          className="leading-tight"
-          style={{ ...serifStyle, fontSize: "clamp(2.5rem, 6vw, 4rem)", color: CREAM }}
-        >
-          Built for{' '}
-          <span style={{ fontStyle: 'normal', fontWeight: 900, letterSpacing: '-0.02em', fontFamily: 'Satoshi, Inter, sans-serif', color: ACCENT }}>
-            Champions
-          </span>
-        </h2>
-      </div>
+// ─── Feature card UI fragments ───────────────────────────────────────────────
 
-      <div
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-        style={{ gap: '1px', backgroundColor: BORDER }}
-      >
-        {features.map(({ icon: Icon, title, description }, i) => (
-          <motion.div
-            key={title}
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.4, delay: i * 0.07 }}
-            viewport={{ once: true }}
-            className="group flex flex-col gap-4 p-8 transition-colors"
-            style={{ backgroundColor: BG }}
-            onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.backgroundColor = SURFACE}
-            onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.backgroundColor = BG}
-          >
-            <div className="flex items-center gap-3">
-              <div
-                className="rounded-lg p-2.5"
-                style={{
-                  border: `1px solid ${ACCENT_RING}`,
-                  backgroundColor: ACCENT_DIM,
-                }}
+/** Fragment 1 — ATHLETE SCORECARD: mini radar + score + breakdown */
+const ScorecardFragment = () => {
+  const cx = 90, cy = 78, r = 52, labelR = 68
+  const scores = [82, 77, 88, 74, 91, 79]
+  const n = 6
+  const axisAngle = (i: number) => -90 + (360 / n) * i
+  const polar = (angleDeg: number, value: number, radius: number) => {
+    const rad = (angleDeg * Math.PI) / 180
+    const d = (value / 100) * radius
+    return { x: cx + d * Math.cos(rad), y: cy + d * Math.sin(rad) }
+  }
+  const points = scores
+    .map((s, i) => { const p = polar(axisAngle(i), s, r); return `${p.x},${p.y}` })
+    .join(' ')
+  const gridLevels = [25, 50, 75, 100]
+  const categories = ['FACILITIES', 'COACHING', 'BALANCE', 'SUPPORT', 'CULTURE', 'EQUITY']
+  const breakdown = [
+    { label: 'Coaching',   val: '4.6' },
+    { label: 'Culture',    val: '4.4' },
+    { label: 'Facilities', val: '4.1' },
+  ]
+  return (
+    <div
+      className="flex flex-col gap-3 rounded-xl p-4"
+      style={{ backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
+    >
+      <div className="flex items-start gap-4">
+        {/* Mini radar */}
+        <svg
+          viewBox="0 0 180 156"
+          width="140"
+          height="121"
+          overflow="visible"
+          aria-hidden="true"
+          style={{ flexShrink: 0 }}
+        >
+          {/* Grid rings */}
+          {gridLevels.map((level) => {
+            const pts = Array.from({ length: n }, (_, i) => {
+              const p = polar(axisAngle(i), level, r)
+              return `${p.x},${p.y}`
+            }).join(' ')
+            return <polygon key={level} points={pts} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
+          })}
+          {/* Axis spokes */}
+          {Array.from({ length: n }, (_, i) => {
+            const p = polar(axisAngle(i), 100, r)
+            return <line key={i} x1={cx} y1={cy} x2={p.x} y2={p.y} stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
+          })}
+          {/* Polygon — lavender-quiet */}
+          <polygon points={points} fill="rgba(155,151,181,0.18)" stroke="#9B97B5" strokeWidth="1.5" strokeLinejoin="round" />
+          {/* Dots */}
+          {scores.map((s, i) => {
+            const p = polar(axisAngle(i), s, r)
+            return <circle key={i} cx={p.x} cy={p.y} r="2.5" fill="#9B97B5" />
+          })}
+          {/* Axis labels */}
+          {categories.map((label, i) => {
+            const p = polar(axisAngle(i), 100, labelR)
+            const isLeft = p.x < cx - 8, isRight = p.x > cx + 8
+            const anchor = isLeft ? 'end' : isRight ? 'start' : 'middle'
+            const dy = p.y < cy - 8 ? -4 : p.y > cy + 8 ? 10 : 4
+            return (
+              <text
+                key={label}
+                x={p.x}
+                y={p.y + dy}
+                textAnchor={anchor}
+                fill="#555570"
+                fontSize="7"
+                fontFamily="Satoshi, Inter, sans-serif"
+                fontWeight="600"
+                letterSpacing="0.10em"
               >
-                <Icon className="h-5 w-5" style={{ color: ACCENT }} />
+                {label}
+              </text>
+            )
+          })}
+        </svg>
+        {/* Score callout */}
+        <div className="flex flex-col justify-center gap-1 pt-1">
+          <p style={{ fontSize: '32px', fontFamily: "'Instrument Serif', Georgia, serif", color: '#F5EFE0', lineHeight: 1, letterSpacing: '-0.02em' }}>
+            82<span style={{ fontSize: '14px', color: '#555570', fontFamily: 'Satoshi, Inter, sans-serif', fontWeight: 600 }}>/100</span>
+          </p>
+          <p style={{ fontSize: '9px', color: '#555570', fontFamily: 'Satoshi, Inter, sans-serif', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+            Overall
+          </p>
+          {/* Breakdown bars */}
+          <div className="mt-2 flex flex-col gap-1.5">
+            {breakdown.map(({ label, val }) => (
+              <div key={label} className="flex items-center gap-2">
+                <span style={{ width: '52px', fontSize: '9px', color: '#555570', fontFamily: 'Satoshi, Inter, sans-serif', fontWeight: 600, letterSpacing: '0.10em', textTransform: 'uppercase' }}>
+                  {label}
+                </span>
+                <div style={{ flex: 1, height: '4px', borderRadius: '2px', backgroundColor: 'rgba(255,255,255,0.07)' }}>
+                  <div style={{ width: `${(parseFloat(val) / 5) * 100}%`, height: '100%', borderRadius: '2px', backgroundColor: '#14B8A6' }} />
+                </div>
+                <span style={{ fontSize: '10px', color: '#14B8A6', fontFamily: 'Satoshi, Inter, sans-serif', fontWeight: 800, minWidth: '24px', textAlign: 'right' }}>
+                  {val}
+                </span>
               </div>
-            </div>
-            <h3 className="text-sm font-bold uppercase tracking-wide" style={{ color: TEXT }}>
-              {title}
-            </h3>
-            <p className="text-sm leading-relaxed" style={{ color: DIM }}>{description}</p>
-          </motion.div>
-        ))}
+            ))}
+          </div>
+        </div>
       </div>
     </div>
-  </section>
+  )
+}
+
+/** Fragment 2 — VERIFIED REVIEWS: badge + skeleton review + stars */
+const VerifiedReviewFragment = () => (
+  <div
+    className="flex flex-col gap-3 rounded-xl p-3"
+    style={{ backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
+  >
+    {/* Badge */}
+    <div className="flex items-center gap-1.5">
+      <svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true">
+        <path d="M6 0L7.5 4.5H12L8.25 7.5 9.75 12 6 9 2.25 12 3.75 7.5 0 4.5H4.5Z" fill="#14B8A6" />
+      </svg>
+      <span style={{ fontSize: '9px', color: '#14B8A6', fontFamily: 'Satoshi, Inter, sans-serif', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+        Verified Athlete
+      </span>
+    </div>
+    {/* Skeleton text lines */}
+    <div className="flex flex-col gap-1.5">
+      {[100, 88, 72].map((w, i) => (
+        <div key={i} style={{ height: '7px', width: `${w}%`, borderRadius: '3px', backgroundColor: 'rgba(255,255,255,0.08)' }} />
+      ))}
+    </div>
+    {/* Star row */}
+    <div className="flex items-center gap-1 mt-1">
+      {[1,2,3,4,5].map((s) => (
+        <svg key={s} viewBox="0 0 10 10" width="11" height="11" aria-hidden="true">
+          <polygon points="5,0.5 6.5,3.8 10,4.2 7.5,6.5 8.2,10 5,8.2 1.8,10 2.5,6.5 0,4.2 3.5,3.8" fill={s <= 4 ? '#14B8A6' : 'rgba(255,255,255,0.12)'} />
+        </svg>
+      ))}
+      <span style={{ marginLeft: '4px', fontSize: '9px', color: '#555570', fontFamily: 'Satoshi, Inter, sans-serif', fontWeight: 600 }}>4.0</span>
+    </div>
+  </div>
 )
+
+/** Fragment 3 — COLLEGE COMPARISON: two mini radar cards side by side */
+const ComparisonFragment = () => {
+  const makePoints = (scores: number[], cx: number, cy: number, r: number) => {
+    const n = 6
+    return scores.map((s, i) => {
+      const angle = (-90 + (360 / n) * i) * Math.PI / 180
+      return `${cx + (s / 100) * r * Math.cos(angle)},${cy + (s / 100) * r * Math.sin(angle)}`
+    }).join(' ')
+  }
+  const MiniRadar = ({ scores, label }: { scores: number[]; label: string }) => {
+    const cx = 44, cy = 40, r = 28
+    const gls = [33, 66, 100]
+    const n = 6
+    const pts = makePoints(scores, cx, cy, r)
+    return (
+      <div className="flex flex-col items-center gap-1.5">
+        <svg viewBox="0 0 88 80" width="88" height="80" overflow="visible" aria-hidden="true">
+          {gls.map((lvl) => {
+            const ps = Array.from({ length: n }, (_, i) => {
+              const a = (-90 + (360 / n) * i) * Math.PI / 180
+              return `${cx + (lvl / 100) * r * Math.cos(a)},${cy + (lvl / 100) * r * Math.sin(a)}`
+            }).join(' ')
+            return <polygon key={lvl} points={ps} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="0.8" />
+          })}
+          {Array.from({ length: n }, (_, i) => {
+            const a = (-90 + (360 / n) * i) * Math.PI / 180
+            return <line key={i} x1={cx} y1={cy} x2={cx + r * Math.cos(a)} y2={cy + r * Math.sin(a)} stroke="rgba(255,255,255,0.07)" strokeWidth="0.8" />
+          })}
+          <polygon points={pts} fill="rgba(155,151,181,0.18)" stroke="#9B97B5" strokeWidth="1.2" strokeLinejoin="round" />
+          {scores.map((s, i) => {
+            const a = (-90 + (360 / n) * i) * Math.PI / 180
+            const d = (s / 100) * r
+            return <circle key={i} cx={cx + d * Math.cos(a)} cy={cy + d * Math.sin(a)} r="2" fill="#9B97B5" />
+          })}
+        </svg>
+        <span style={{ fontSize: '8px', color: '#555570', fontFamily: 'Satoshi, Inter, sans-serif', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+          {label}
+        </span>
+      </div>
+    )
+  }
+  return (
+    <div
+      className="flex items-stretch gap-2 rounded-xl p-3"
+      style={{ backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
+    >
+      <MiniRadar scores={[85, 78, 72, 80, 88, 65]} label="Program A" />
+      <div style={{ width: '1px', backgroundColor: 'rgba(255,255,255,0.07)', alignSelf: 'stretch' }} />
+      <MiniRadar scores={[65, 88, 90, 75, 70, 82]} label="Program B" />
+    </div>
+  )
+}
+
+/** Fragment 4 — GENDER EQUITY: two horizontal bars M/W */
+const GenderEquityFragment = () => {
+  const bars = [
+    { label: 'M', pct: 58, color: '#14B8A6' },
+    { label: 'W', pct: 82, color: '#F5EFE0' },
+  ]
+  return (
+    <div
+      className="flex flex-col gap-3 rounded-xl px-4 py-3"
+      style={{ backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
+    >
+      {bars.map(({ label, pct, color }) => (
+        <div key={label} className="flex items-center gap-3">
+          <span style={{ width: '14px', fontSize: '10px', fontFamily: 'Satoshi, Inter, sans-serif', fontWeight: 800, color: '#555570', letterSpacing: '0.12em' }}>
+            {label}
+          </span>
+          <div style={{ flex: 1, height: '8px', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.07)' }}>
+            <div style={{ width: `${pct}%`, height: '100%', borderRadius: '4px', backgroundColor: color, transition: 'none' }} />
+          </div>
+          <span style={{ fontSize: '10px', fontFamily: 'Satoshi, Inter, sans-serif', fontWeight: 700, color, minWidth: '28px', textAlign: 'right' }}>
+            {pct}%
+          </span>
+        </div>
+      ))}
+      <p style={{ fontSize: '9px', color: '#555570', fontFamily: 'Satoshi, Inter, sans-serif', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', marginTop: '2px' }}>
+        Equity index
+      </p>
+    </div>
+  )
+}
+
+/** Fragment 5 — TEAM CULTURE: typographic tag cloud */
+const CultureFragment = () => {
+  const tags = [
+    { text: 'INCLUSIVE',    size: '12px', opacity: 0.90, x: '10%',  y: '12%'  },
+    { text: 'INTENSE',      size: '10px', opacity: 0.55, x: '56%',  y: '6%'   },
+    { text: 'SUPPORTIVE',   size: '11px', opacity: 0.75, x: '4%',   y: '54%'  },
+    { text: 'COMPETITIVE',  size: '10px', opacity: 0.50, x: '42%',  y: '46%'  },
+    { text: 'DRIVEN',       size: '9px',  opacity: 0.40, x: '68%',  y: '68%'  },
+    { text: 'TIGHT-KNIT',   size: '9px',  opacity: 0.35, x: '8%',   y: '82%'  },
+  ]
+  return (
+    <div
+      className="relative rounded-xl"
+      style={{
+        height: '80px',
+        backgroundColor: 'rgba(255,255,255,0.03)',
+        border: '1px solid rgba(255,255,255,0.07)',
+        overflow: 'hidden',
+      }}
+    >
+      {tags.map(({ text, size, opacity, x, y }) => (
+        <span
+          key={text}
+          style={{
+            position: 'absolute',
+            left: x,
+            top: y,
+            fontSize: size,
+            fontFamily: 'Satoshi, Inter, sans-serif',
+            fontWeight: 800,
+            letterSpacing: '0.14em',
+            color: '#F5EFE0',
+            opacity,
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {text}
+        </span>
+      ))}
+    </div>
+  )
+}
+
+/** Fragment 6 — ANONYMOUS BY DEFAULT: silhouette + redacted lines */
+const AnonymousFragment = () => (
+  <div
+    className="flex flex-col items-center gap-2.5 rounded-xl py-3 px-4"
+    style={{ backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
+  >
+    {/* Abstract silhouette — head circle + body arc, face replaced with teal block */}
+    <svg viewBox="0 0 60 52" width="60" height="52" aria-hidden="true">
+      {/* Head outline */}
+      <circle cx="30" cy="14" r="12" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.10)" strokeWidth="1" />
+      {/* Face replaced with teal mosaic block */}
+      <rect x="22" y="7" width="16" height="14" rx="2" fill="#14B8A6" opacity="0.85" />
+      {/* Pixelation grid lines over the face */}
+      {[0,1,2,3].map(i => (
+        <line key={`v${i}`} x1={22 + i * 4} y1="7" x2={22 + i * 4} y2="21" stroke="rgba(10,14,26,0.6)" strokeWidth="0.8" />
+      ))}
+      {[0,1,2,3].map(i => (
+        <line key={`h${i}`} x1="22" y1={7 + i * 3.5} x2="38" y2={7 + i * 3.5} stroke="rgba(10,14,26,0.6)" strokeWidth="0.8" />
+      ))}
+      {/* Body arc */}
+      <path d="M10 52 Q10 32 30 30 Q50 32 50 52" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+    </svg>
+    {/* Redacted text lines */}
+    <div className="flex flex-col gap-1.5 w-full">
+      {[100, 80, 62].map((w, i) => (
+        <div key={i} className="relative" style={{ height: '7px', width: `${w}%`, borderRadius: '3px', backgroundColor: 'rgba(255,255,255,0.08)' }}>
+          {/* Redaction overlay on first two lines */}
+          {i < 2 && (
+            <div style={{ position: 'absolute', inset: 0, borderRadius: '3px', backgroundColor: 'rgba(10,14,26,0.7)' }} />
+          )}
+        </div>
+      ))}
+    </div>
+  </div>
+)
+
+// ─── Feature data ─────────────────────────────────────────────────────────────
+const FEATURE_DATA = [
+  {
+    id: 'scorecard',
+    title: 'Athlete Scorecard',
+    description: 'Every program gets a six-dimension score. Recruits compare at a glance.',
+    fragment: <ScorecardFragment />,
+    featured: true,
+  },
+  {
+    id: 'reviews',
+    title: 'Verified Reviews',
+    description: 'Only verified .edu athletes can post. Every submission is checked against roster evidence.',
+    fragment: <VerifiedReviewFragment />,
+  },
+  {
+    id: 'comparison',
+    title: 'College Comparison',
+    description: 'Side-by-side radar charts across up to four programs. Find the right fit before committing.',
+    fragment: <ComparisonFragment />,
+  },
+  {
+    id: 'equity',
+    title: 'Gender Equity Ratings',
+    description: "A dedicated equity dimension surfaces how programs treat men's and women's teams differently.",
+    fragment: <GenderEquityFragment />,
+  },
+  {
+    id: 'culture',
+    title: 'Team Culture',
+    description: 'Six-dimension scoring: facilities, coaching, life balance, academic support, culture, and gender equity.',
+    fragment: <CultureFragment />,
+  },
+  {
+    id: 'anonymous',
+    title: 'Anonymous by Default',
+    description: 'All reviews are anonymous. Athletes can speak freely without fear of staff retaliation.',
+    fragment: <AnonymousFragment />,
+  },
+]
+
+// ─── Shared card style ────────────────────────────────────────────────────────
+const cardBase: React.CSSProperties = {
+  border: '1px solid rgba(255,255,255,0.07)',
+  backgroundColor: 'rgba(255,255,255,0.03)',
+  borderRadius: '16px',
+  padding: '24px',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '16px',
+}
+
+// ─── FeaturesSection ──────────────────────────────────────────────────────────
+const FeaturesSection = () => {
+  const [featured, ...rest] = FEATURE_DATA
+
+  return (
+    <section id="features" className="w-full px-6 py-28" style={{ backgroundColor: BG }}>
+      <div className="mx-auto max-w-6xl">
+
+        {/* Section header */}
+        <div className="mb-14">
+          <p
+            className="mb-3 text-xs font-semibold uppercase tracking-widest"
+            style={{ color: ACCENT }}
+          >
+            Platform
+          </p>
+          <h2
+            style={{
+              fontFamily: "'Instrument Serif', Georgia, serif",
+              fontSize: 'clamp(2.5rem, 6vw, 4rem)',
+              color: CREAM,
+              lineHeight: 1.05,
+              letterSpacing: '-0.01em',
+            }}
+          >
+            What you actually get.
+          </h2>
+        </div>
+
+        {/* ── ROW 1: Featured card — full width ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0 }}
+          viewport={{ once: true }}
+          style={{ ...cardBase, marginBottom: '24px' }}
+        >
+          {/* Featured: two-column — fragment left (wider), text right on large screens */}
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-10">
+            {/* Fragment — takes ~55% on desktop */}
+            <div className="lg:w-[55%] flex-shrink-0">
+              {featured.fragment}
+            </div>
+            {/* Text — right column */}
+            <div className="flex flex-col justify-center gap-3 lg:pt-2">
+              <p
+                style={{
+                  fontSize: '11px',
+                  fontFamily: 'Satoshi, Inter, sans-serif',
+                  fontWeight: 700,
+                  letterSpacing: '0.16em',
+                  textTransform: 'uppercase',
+                  color: CREAM,
+                  fontVariantNumeric: 'tabular-nums',
+                }}
+              >
+                {featured.title}
+              </p>
+              <p
+                style={{
+                  fontSize: '13px',
+                  fontFamily: 'Satoshi, Inter, sans-serif',
+                  color: MUTED,
+                  lineHeight: 1.6,
+                  maxWidth: '320px',
+                }}
+              >
+                {featured.description}
+              </p>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* ── ROW 2: Five smaller cards ── */}
+        {/* Desktop: 5-col | Tablet: 2-col (last solo) | Mobile: 1-col */}
+        <div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5"
+          style={{ gap: '24px' }}
+        >
+          {rest.map((feature, i) => (
+            <motion.div
+              key={feature.id}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, delay: i * 0.06 }}
+              viewport={{ once: true }}
+              style={cardBase}
+            >
+              {/* Fragment */}
+              <div>{feature.fragment}</div>
+              {/* Title */}
+              <p
+                style={{
+                  fontSize: '11px',
+                  fontFamily: 'Satoshi, Inter, sans-serif',
+                  fontWeight: 700,
+                  letterSpacing: '0.16em',
+                  textTransform: 'uppercase',
+                  color: CREAM,
+                }}
+              >
+                {feature.title}
+              </p>
+              {/* Description */}
+              <p
+                style={{
+                  fontSize: '12px',
+                  fontFamily: 'Satoshi, Inter, sans-serif',
+                  color: MUTED,
+                  lineHeight: 1.55,
+                }}
+              >
+                {feature.description}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
 
 // ─── Proof ────────────────────────────────────────────────────────────────────
 const ProofSection = () => (
