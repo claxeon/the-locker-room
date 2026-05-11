@@ -155,10 +155,12 @@ const LABEL_FADE = 200     // ms for label fade each direction
 
 const HeroRadarCard = () => {
   const n = RADAR_AXES.length
-  const cx = 180
-  const cy = 180
-  const r = 120     // polygon radius
-  const labelR = 148 // label placement radius (outside polygon)
+  // Expanded viewBox (420×420) so long axis labels like "GENDER EQUITY" and
+  // "LIFE BALANCE" never clip against the card edge.
+  const cx = 210
+  const cy = 210
+  const r = 120      // polygon radius — same visual scale as before
+  const labelR = 158 // label placement radius (enough margin for longest labels)
   const gridLevels = [20, 40, 60, 80, 100]
 
   const [profileIdx, setProfileIdx] = useState(0)
@@ -232,7 +234,7 @@ const HeroRadarCard = () => {
     <div
       className="relative flex-shrink-0 rounded-2xl"
       style={{
-        width: 'clamp(320px, 45vw, 480px)',
+        width: 'clamp(280px, 38vw, 400px)',
         aspectRatio: '1 / 1',
         backgroundColor: '#1a1a2e',
         border: '1px solid rgba(255,255,255,0.08)',
@@ -267,7 +269,7 @@ const HeroRadarCard = () => {
 
       {/* SVG Radar */}
       <svg
-        viewBox="0 0 360 360"
+        viewBox="0 0 420 420"
         className="w-full"
         style={{ display: 'block', flex: '1 1 auto' }}
         aria-hidden="true"
@@ -368,7 +370,7 @@ const HeroRadarCard = () => {
           textTransform: 'uppercase' as const,
         }}
       >
-        Cycling through real score profiles
+        Cycling through sample profiles
       </p>
     </div>
   )
@@ -464,9 +466,9 @@ const HeroSection = ({ onGetStarted }: { onGetStarted?: () => void }) => {
               marginTop: '24px',
             }}
           >
-            Giving athletes
+            Giving
             <br />
-            a voice.
+            athletes a voice.
           </motion.h1>
 
           {/* Tagline */}
