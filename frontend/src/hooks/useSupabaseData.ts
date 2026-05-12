@@ -156,6 +156,7 @@ export const useAllSports = () => {
           .not('sport', 'ilike', '%participation%')
           .not('sport', 'ilike', 'Other sports%')
           .order('sport')
+          .limit(25000)
 
         if (error) throw error
         
