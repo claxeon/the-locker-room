@@ -1319,8 +1319,8 @@ const FooterSection = () => (
 // ─── Export ───────────────────────────────────────────────────────────────────
 export const LandingPage = ({ onGetStarted }: LandingPageProps) => (
   <div className="w-full" style={{ backgroundColor: BG, color: TEXT }}>
-    <HeroSection onGetStarted={onGetStarted} />
     <SanctioningBodiesSection />
+    <HeroSection onGetStarted={onGetStarted} />
     <FeaturesSection />
     <ProofSection />
     <FounderManifestoSection />
