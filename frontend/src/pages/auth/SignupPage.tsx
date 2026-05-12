@@ -176,6 +176,7 @@ export function SignupPage() {
           email: form.email.trim(),
           password: form.password,
           options: {
+            emailRedirectTo: window.location.origin,
             data: {
               full_name: form.fullName.trim(),
               school_name: schoolQuery.trim(),
