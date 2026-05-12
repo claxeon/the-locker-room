@@ -9,8 +9,6 @@ import {
   YAxis,
 } from "recharts"
 import {
-  ArrowLeft,
-  ArrowRight,
   ChevronRight,
   Trophy,
 } from "lucide-react"
@@ -37,23 +35,7 @@ const proofStats = [
   { label: "Sports Tracked", value: "90+" },
 ]
 
-const testimonials = [
-  {
-    quote: "Recruits deserve to know what they're getting into. Coaches get feedback through official channels — we never did. This changes that.",
-    name: "Verified D1 Athlete",
-    designation: "Baseball · Abilene Christian University",
-  },
-  {
-    quote: "The gender equity dimension is something no recruiting service has ever tracked. Women's programs need this data.",
-    name: "Beta Tester",
-    designation: "Softball · Early Access",
-  },
-  {
-    quote: "Anonymous reviews mean athletes can actually be honest. That's the whole game.",
-    name: "Beta Tester",
-    designation: "Track & Field · Early Access",
-  },
-]
+
 
 type LandingPageProps = {
   onGetStarted?: () => void
@@ -1125,124 +1107,133 @@ const ProofSection = () => (
   </section>
 )
 
-// ─── Testimonials ─────────────────────────────────────────────────────────────
-const TestimonialsSection = () => {
-  const [activeIndex, setActiveIndex] = useState(0)
-  const active = testimonials[activeIndex]
-
-  useEffect(() => {
-    const t = setInterval(() => setActiveIndex((i) => (i + 1) % testimonials.length), 6000)
-    return () => clearInterval(t)
-  }, [])
+// ─── Founder Manifesto ────────────────────────────────────────────────────────
+const FounderManifestoSection = () => {
+  const bodyStyle: React.CSSProperties = {
+    fontFamily: "'Instrument Serif', Georgia, serif",
+    color: CREAM,
+    lineHeight: 1.5,
+    maxWidth: '720px',
+  }
 
   return (
     <section
-      id="athlete-voices"
-      className="w-full px-6 py-28"
+      id="founder-manifesto"
       style={{ scrollMarginTop: '80px', backgroundColor: BG }}
     >
-      <div className="mx-auto max-w-4xl">
-        <div className="mb-14 text-center">
-          {/* Eyebrow — teal */}
-          <p className="mb-3 text-xs font-semibold uppercase tracking-widest" style={{ color: ACCENT }}>
-            Athlete Voices
-          </p>
-          <h2
-            className="leading-tight"
-            style={{ ...serifStyle, fontSize: "clamp(2rem, 5vw, 3.5rem)", color: CREAM }}
-          >
-            What athletes are{' '}
-            {/* Italic word — teal */}
-            <span style={{ color: ACCENT }}>saying</span>
-          </h2>
-        </div>
+      <style>{`
+        @media (min-width: 1024px) {
+          .manifesto-section-inner { padding: 96px 24px; }
+          .manifesto-body { font-size: 25px; }
+          .manifesto-question-wrap { padding-left: 44px; }
+          .manifesto-question-bar { left: 0; }
+        }
+        @media (min-width: 768px) and (max-width: 1023px) {
+          .manifesto-section-inner { padding: 80px 24px; max-width: 90%; }
+          .manifesto-body { font-size: 21px; }
+          .manifesto-question-wrap { padding-left: 36px; }
+          .manifesto-question-bar { left: 0; }
+        }
+        @media (max-width: 767px) {
+          .manifesto-section-inner { padding: 64px 20px; max-width: 92%; }
+          .manifesto-body { font-size: 18px; }
+          .manifesto-question-wrap { padding-left: 28px; }
+          .manifesto-question-bar { left: 0; }
+        }
+      `}</style>
 
-        <div
-          className="relative rounded-2xl px-8 py-12 text-center md:px-16"
-          style={{ border: `1px solid ${BORDER}`, backgroundColor: SURFACE }}
+      <div
+        className="manifesto-section-inner mx-auto"
+        style={{ maxWidth: '720px' }}
+      >
+        {/* Eyebrow */}
+        <p
+          style={{
+            color: ACCENT,
+            fontSize: '11px',
+            fontWeight: 600,
+            letterSpacing: '0.18em',
+            textTransform: 'uppercase',
+            fontFamily: 'Satoshi, Inter, sans-serif',
+            marginBottom: '24px',
+          }}
         >
+          From the Founder
+        </p>
+
+        {/* Headline */}
+        <h2
+          style={{
+            ...serifStyle,
+            fontSize: 'clamp(2rem, 5vw, 3.5rem)',
+            color: CREAM,
+            lineHeight: 1.02,
+            letterSpacing: '-0.02em',
+            marginBottom: '48px',
+          }}
+        >
+          Why this exists.
+        </h2>
+
+        {/* Opening paragraph */}
+        <p className="manifesto-body" style={bodyStyle}>
+          Every recruit asks different questions on their visits, yet most of them get recycled uninformative answers. When they show up ready to take on the world, the reality wasn't all it was chalked up to be. The information that athletes need is usually nothing like what they are told.
+        </p>
+
+        {/* Question block */}
+        <div
+          className="manifesto-question-wrap"
+          style={{ marginTop: '24px', position: 'relative' }}
+        >
+          {/* Teal vertical accent bar */}
           <div
-            className="mb-6 text-6xl leading-none"
-            style={{ ...serifStyle, color: 'rgba(20,184,166,0.25)' }}
-            aria-hidden="true"
+            className="manifesto-question-bar"
+            style={{
+              position: 'absolute',
+              top: 0,
+              bottom: 0,
+              width: '3px',
+              backgroundColor: ACCENT,
+              borderRadius: '2px',
+            }}
+          />
+
+          <p
+            className="manifesto-body"
+            style={{ ...bodyStyle, fontStyle: 'italic' }}
           >
-            "
-          </div>
-
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={active.name + active.designation}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.35 }}
-            >
-              <p
-                className="mx-auto max-w-2xl text-xl leading-relaxed md:text-2xl"
-                style={{ ...serifStyle, color: CREAM }}
-              >
-                {active.quote}
-              </p>
-              <div className="mt-8">
-                <p className="text-sm font-bold uppercase tracking-wide" style={{ color: '#a8a8c0' }}>
-                  {active.name}
-                </p>
-                <p className="mt-1 text-xs uppercase tracking-widest" style={{ color: DIM }}>
-                  {active.designation}
-                </p>
-              </div>
-            </motion.div>
-          </AnimatePresence>
-
-          <div className="mt-10 flex items-center justify-center gap-6">
-            <button
-              onClick={() => setActiveIndex((i) => (i - 1 + testimonials.length) % testimonials.length)}
-              className="rounded-full p-2.5 transition-colors"
-              style={{ border: `1px solid ${BORDER}`, backgroundColor: SURFACE2, color: MUTED }}
-              onMouseEnter={e => {
-                (e.currentTarget as HTMLButtonElement).style.borderColor = `rgba(20,184,166,0.40)`
-                ;(e.currentTarget as HTMLButtonElement).style.color = ACCENT
-              }}
-              onMouseLeave={e => {
-                (e.currentTarget as HTMLButtonElement).style.borderColor = BORDER
-                ;(e.currentTarget as HTMLButtonElement).style.color = MUTED
-              }}
-              aria-label="Previous"
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </button>
-            <div className="flex gap-2">
-              {testimonials.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setActiveIndex(i)}
-                  className="h-1.5 rounded-full transition-all"
-                  style={{
-                    width: i === activeIndex ? '1.5rem' : '0.375rem',
-                    backgroundColor: i === activeIndex ? ACCENT : BORDER,
-                  }}
-                  aria-label={`Testimonial ${i + 1}`}
-                />
-              ))}
-            </div>
-            <button
-              onClick={() => setActiveIndex((i) => (i + 1) % testimonials.length)}
-              className="rounded-full p-2.5 transition-colors"
-              style={{ border: `1px solid ${BORDER}`, backgroundColor: SURFACE2, color: MUTED }}
-              onMouseEnter={e => {
-                (e.currentTarget as HTMLButtonElement).style.borderColor = `rgba(20,184,166,0.40)`
-                ;(e.currentTarget as HTMLButtonElement).style.color = ACCENT
-              }}
-              onMouseLeave={e => {
-                (e.currentTarget as HTMLButtonElement).style.borderColor = BORDER
-                ;(e.currentTarget as HTMLButtonElement).style.color = MUTED
-              }}
-              aria-label="Next"
-            >
-              <ArrowRight className="h-4 w-4" />
-            </button>
-          </div>
+            What happens when you get injured?
+          </p>
+          <p
+            className="manifesto-body"
+            style={{ ...bodyStyle, fontStyle: 'italic', marginTop: '16px' }}
+          >
+            Are men and women treated the same?
+          </p>
         </div>
+
+        {/* Closing line */}
+        <p
+          className="manifesto-body"
+          style={{ ...bodyStyle, marginTop: '24px' }}
+        >
+          The Locker Room is where those answers live.
+        </p>
+
+        {/* Signature */}
+        <p
+          style={{
+            marginTop: '32px',
+            fontFamily: 'Satoshi, Inter, sans-serif',
+            fontSize: '12px',
+            fontWeight: 500,
+            letterSpacing: '0.16em',
+            textTransform: 'uppercase',
+            color: DIM,
+          }}
+        >
+          — The Founder · The Locker Room
+        </p>
       </div>
     </section>
   )
@@ -1334,7 +1325,7 @@ export const LandingPage = ({ onGetStarted }: LandingPageProps) => (
     <SanctioningBodiesSection />
     <FeaturesSection />
     <ProofSection />
-    <TestimonialsSection />
+    <FounderManifestoSection />
     <FooterSection />
   </div>
 )
