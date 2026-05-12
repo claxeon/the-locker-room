@@ -465,6 +465,11 @@ const HeroSection = ({ onGetStarted }: { onGetStarted?: () => void }) => {
           <HeroRadarCard />
         </motion.div>
       </div>
+
+      {/* Sanctioning bodies ticker — full width, below CTA + radar */}
+      <div className="absolute bottom-0 left-0 right-0 z-10">
+        <SanctioningBodiesSection />
+      </div>
     </section>
   )
 }
@@ -1319,7 +1324,6 @@ const FooterSection = () => (
 // ─── Export ───────────────────────────────────────────────────────────────────
 export const LandingPage = ({ onGetStarted }: LandingPageProps) => (
   <div className="w-full" style={{ backgroundColor: BG, color: TEXT }}>
-    <SanctioningBodiesSection />
     <HeroSection onGetStarted={onGetStarted} />
     <FeaturesSection />
     <ProofSection />
