@@ -1,13 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
-import {
-  Area,
-  AreaChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts"
+
 import {
   ChevronRight,
   Trophy,
@@ -21,12 +14,12 @@ const socialLinks = [
 ]
 
 const proofData = [
-  { name: "NJCAA", programs: 2800 },
-  { name: "NAIA", programs: 4200 },
   { name: "NCAA D3", programs: 5100 },
-  { name: "NCAA D2", programs: 3400 },
   { name: "NCAA D1", programs: 3500 },
-]
+  { name: "NCAA D2", programs: 3400 },
+  { name: "NAIA",    programs: 4200 },
+  { name: "NJCAA",   programs: 2800 },
+].sort((a, b) => b.programs - a.programs)
 
 const proofStats = [
   { label: "Schools Indexed", value: "1,086" },
@@ -1003,7 +996,7 @@ const FeaturesSection = () => {
 
 // ─── Proof ────────────────────────────────────────────────────────────────────
 const ProofSection = () => (
-  <section id="proof" className="w-full px-6 py-28" style={{ backgroundColor: SURFACE }}>
+  <section id="proof" className="w-full px-6 py-28" style={{ backgroundColor: BG }}>
     <div className="mx-auto max-w-6xl">
       <div className="mb-12">
         {/* Eyebrow — teal */}
@@ -1047,60 +1040,65 @@ const ProofSection = () => (
         ))}
       </div>
 
-      {/* Area chart */}
+      {/* Horizontal bar chart */}
       <div
         className="rounded-2xl p-6 md:p-8"
-        style={{ border: `1px solid ${BORDER}`, backgroundColor: SURFACE2 }}
+        style={{ border: `1px solid ${BORDER}`, backgroundColor: SURFACE }}
       >
         <p className="mb-6 text-xs font-semibold uppercase tracking-widest" style={{ color: DIM }}>
           Programs indexed · by sanctioning body
         </p>
-        <div className="h-48 w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={proofData} margin={{ top: 4, right: 8, bottom: 0, left: 0 }}>
-              <defs>
-                {/* Area chart fill — lavender-quiet (chart data ONLY) */}
-                <linearGradient id="colorAccent" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={LAV} stopOpacity={0.35} />
-                  <stop offset="95%" stopColor={LAV} stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <XAxis
-                dataKey="name"
-                stroke="transparent"
-                tick={{ fill: DIM, fontSize: 10, fontFamily: "Satoshi, sans-serif" }}
-                tickLine={false}
-                axisLine={false}
-              />
-              <YAxis
-                stroke="transparent"
-                tick={{ fill: DIM, fontSize: 10, fontFamily: "Satoshi, sans-serif" }}
-                tickLine={false}
-                axisLine={false}
-                width={40}
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: SURFACE,
-                  borderColor: BORDER,
-                  borderRadius: '0.75rem',
-                  color: ACCENT,
-                  fontSize: 12,
-                  fontFamily: "Satoshi, sans-serif",
-                }}
-                cursor={{ stroke: BORDER, strokeWidth: 1 }}
-              />
-              {/* Area chart stroke + fill — lavender-quiet */}
-              <Area
-                type="monotone"
-                dataKey="programs"
-                stroke={LAV}
-                strokeWidth={1.5}
-                fillOpacity={1}
-                fill="url(#colorAccent)"
-              />
-            </AreaChart>
-          </ResponsiveContainer>
+        <div className="flex flex-col gap-3">
+          {proofData.map((row) => {
+            const pct = (row.programs / proofData[0].programs) * 100
+            return (
+              <div key={row.name} className="flex items-center gap-3">
+                {/* Label */}
+                <span
+                  style={{
+                    fontFamily: 'Satoshi, Inter, sans-serif',
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    color: DIM,
+                    width: '72px',
+                    flexShrink: 0,
+                    textAlign: 'right',
+                  }}
+                >
+                  {row.name}
+                </span>
+                {/* Bar track */}
+                <div
+                  className="flex-1 rounded-full overflow-hidden"
+                  style={{ height: '8px', backgroundColor: SURFACE2 }}
+                >
+                  <div
+                    style={{
+                      width: `${pct}%`,
+                      height: '100%',
+                      backgroundColor: LAV,
+                      borderRadius: '9999px',
+                    }}
+                  />
+                </div>
+                {/* Count */}
+                <span
+                  style={{
+                    fontFamily: 'Satoshi, Inter, sans-serif',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    color: CREAM,
+                    width: '48px',
+                    flexShrink: 0,
+                  }}
+                >
+                  {row.programs.toLocaleString()}
+                </span>
+              </div>
+            )
+          })}
         </div>
       </div>
     </div>
