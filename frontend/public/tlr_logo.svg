@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 232 48" fill="none" aria-label="The Locker Room">
+  <defs>
+    <!--
+      Clip the body rect so its top stroke only draws between the shackle's two legs.
+      The shackle exits at x≈9 (left) and x≈27 (right), body starts at x=4.
+      We clip away the top 2px of the body's left and right flanges so the shackle
+      appears to enter cleanly without a crossing horizontal line.
+    -->
+    <clipPath id="bodyClip">
+      <!-- Full body area minus two notches at top where shackle legs sit -->
+      <path d="
+        M 4 26.5
+        L 9.5 26.5 L 9.5 24 L 4 24 Z
+        M 26.5 26.5 L 32 26.5 L 32 24 L 26.5 24 Z
+        M 4 26.5 L 32 26.5 L 32 43 Q 32 44.5 30.5 44.5 L 5.5 44.5 Q 4 44.5 4 43 Z
+      "/>
+    </clipPath>
+  </defs>
+
+  <!-- Shackle: teal arc, legs enter body at ~x=9 and x=27 -->
+  <path
+    d="M 9 25.5 L 9 17 A 9 9 0 0 1 27 17 L 27 25.5"
+    stroke="#14B8A6"
+    stroke-width="2.4"
+    stroke-linecap="round"
+    fill="none"
+  />
+
+  <!-- Lock body — drawn with proper rx, stroke clipped to not cross shackle legs -->
+  <rect x="4" y="24" width="28" height="20" rx="3"
+    stroke="#F5EFE0"
+    stroke-width="1.5"
+    fill="none"
+  />
+  <!-- White-out the top stroke between shackle legs so junction is seamless -->
+  <line x1="9.5" y1="24" x2="26.5" y2="24" stroke="#0A0E1A" stroke-width="2"/>
+
+  <!-- Keyhole: filled circle + narrow drop, teal -->
+  <circle cx="18" cy="31" r="2.2" fill="#14B8A6"/>
+  <rect x="16.9" y="32.8" width="2.2" height="4.4" rx="1.1" fill="#14B8A6"/>
+
+  <!-- ── Wordmark ──────────────────────────────────────────────────────── -->
+
+  <!-- "THE" — small, lavender, spaced -->
+  <text
+    x="44" y="19"
+    font-family="'Instrument Serif', Georgia, serif"
+    font-size="9"
+    font-weight="400"
+    letter-spacing="0.28em"
+    fill="#9B97B5"
+    dominant-baseline="middle"
+  >THE</text>
+
+  <!-- "LOCKER ROOM" — cream, bold display -->
+  <text
+    x="44" y="35.5"
+    font-family="'Instrument Serif', Georgia, serif"
+    font-size="17.5"
+    font-weight="700"
+    letter-spacing="0.045em"
+    fill="#F5EFE0"
+    dominant-baseline="middle"
+  >LOCKER ROOM</text>
+</svg>

@@ -217,26 +217,59 @@ export const GlobalNav: React.FC<GlobalNavProps> = () => {
       {/* Three-column grid: wordmark | nav | auth */}
       <div className="flex items-center justify-between gap-4">
 
-        {/* LEFT — Wordmark */}
+        {/* LEFT — Logomark */}
         <Link
           to="/"
-          className="flex-shrink-0 font-serif-display select-none transition-colors duration-150"
-          style={{
-            fontSize: '19px',
-            fontWeight: 700,
-            letterSpacing: '-0.01em',
-            textTransform: 'uppercase' as const,
-            color: '#F5EFE0',
-            textDecoration: 'none',
-          }}
-          onMouseEnter={(e) =>
-            ((e.currentTarget as HTMLAnchorElement).style.color = 'rgba(245,239,224,0.70)')
-          }
-          onMouseLeave={(e) =>
-            ((e.currentTarget as HTMLAnchorElement).style.color = '#F5EFE0')
-          }
+          className="flex-shrink-0 select-none transition-opacity duration-150 hover:opacity-75"
+          style={{ textDecoration: 'none', lineHeight: 0 }}
+          aria-label="The Locker Room — home"
         >
-          The Locker Room
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 232 48"
+            fill="none"
+            aria-hidden="true"
+            style={{ height: '36px', width: 'auto', display: 'block' }}
+          >
+            {/* Shackle */}
+            <path
+              d="M 9 25.5 L 9 17 A 9 9 0 0 1 27 17 L 27 25.5"
+              stroke="#14B8A6"
+              strokeWidth="2.4"
+              strokeLinecap="round"
+              fill="none"
+            />
+            {/* Lock body */}
+            <rect x="4" y="24" width="28" height="20" rx="3"
+              stroke="#F5EFE0" strokeWidth="1.5" fill="none"
+            />
+            {/* Seamless shackle–body junction — erases top-edge stroke between shackle legs */}
+            <line x1="9.5" y1="24" x2="26.5" y2="24" stroke="#0A0E1A" strokeWidth="2.2" />
+            {/* Keyhole circle */}
+            <circle cx="18" cy="31" r="2.2" fill="#14B8A6" />
+            {/* Keyhole drop */}
+            <rect x="16.9" y="32.8" width="2.2" height="4.4" rx="1.1" fill="#14B8A6" />
+            {/* THE */}
+            <text
+              x="44" y="19"
+              fontFamily="'Instrument Serif', Georgia, serif"
+              fontSize="9"
+              fontWeight="400"
+              letterSpacing="0.28em"
+              fill="#9B97B5"
+              dominantBaseline="middle"
+            >THE</text>
+            {/* LOCKER ROOM */}
+            <text
+              x="44" y="35.5"
+              fontFamily="'Instrument Serif', Georgia, serif"
+              fontSize="17.5"
+              fontWeight="700"
+              letterSpacing="0.045em"
+              fill="#F5EFE0"
+              dominantBaseline="middle"
+            >LOCKER ROOM</text>
+          </svg>
         </Link>
 
         {/* CENTER — Nav pill (hidden below md) */}
