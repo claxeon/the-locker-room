@@ -6,9 +6,9 @@
  * and trending by sport.
  */
 
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   Flame,
   Trophy,
@@ -17,10 +17,12 @@ import {
   Star,
   ChevronRight,
   Search,
-  Filter,
+  X,
+  Loader2,
 } from 'lucide-react'
 
 import { supabase } from '../lib/supabase'
+import { useSchoolSearch, type SchoolSearchResult } from '../hooks/useSchoolSearch'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -424,6 +426,46 @@ export function ExploreReviews() {
   const navigate = useNavigate()
 
   const [searchQuery, setSearchQuery] = useState('')
+  const [searchInput, setSearchInput] = useState('')
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const searchRef = useRef<HTMLDivElement>(null)
+
+  // Live school search via hook (query fires when ≥2 chars)
+  const { data: searchResults = [], isFetching: searchLoading } = useSchoolSearch(searchQuery)
+
+  // Debounce: update searchQuery 300ms after user stops typing
+  useEffect(() => {
+    const t = setTimeout(() => setSearchQuery(searchInput), 300)
+    return () => clearTimeout(t)
+  }, [searchInput])
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  async function navigateToSchool(result: SchoolSearchResult) {
+    setDropdownOpen(false)
+    setSearchInput('')
+    setSearchQuery('')
+    // Fetch slug for this school_id — not in SchoolSearchResult
+    const { data } = await supabase
+      .from('schools')
+      .select('slug')
+      .eq('school_id', result.schoolId)
+      .single()
+    if (data?.slug) {
+      navigate(`/school/${data.slug}`)
+    } else {
+      navigate('/directory')
+    }
+  }
 
   // Data state
   const [topRated, setTopRated] = useState<TopRatedSchool[]>([])
@@ -696,14 +738,6 @@ export function ExploreReviews() {
   }, [fetchTopRated, fetchRecentReviews, fetchSportTrends])
 
   // ---------------------------------------------------------------------------
-  // Search submit
-  // ---------------------------------------------------------------------------
-  function handleSearchSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    navigate('/directory#filters')
-  }
-
-  // ---------------------------------------------------------------------------
   // Skeleton loader
   // ---------------------------------------------------------------------------
   function CardSkeleton({ count = 3 }: { count?: number }) {
@@ -793,32 +827,116 @@ export function ExploreReviews() {
             Discover what athletes are saying about programs across the nation.
           </motion.p>
 
-          {/* Search bar */}
-          <motion.form
+          {/* Live school search */}
+          <motion.div
+            ref={searchRef}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
-            onSubmit={handleSearchSubmit}
-            className="flex items-center gap-2 max-w-xl"
+            className="relative max-w-xl"
           >
-            <div className="flex-1 flex items-center gap-3 bg-[#14151F] border border-[#2a2a3c] rounded-xl px-4 py-3 focus-within:border-[rgba(20,184,166,0.50)] transition-colors">
-              <Search size={16} className="text-[#555570] flex-none" />
+            <div className="flex items-center gap-3 bg-[#14151F] border border-[#2a2a3c] rounded-xl px-4 py-3 focus-within:border-[rgba(20,184,166,0.50)] transition-colors">
+              {searchLoading ? (
+                <Loader2 size={16} className="text-[#14B8A6] flex-none animate-spin" />
+              ) : (
+                <Search size={16} className="text-[#555570] flex-none" />
+              )}
               <input
                 type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search programs, schools, sports..."
+                value={searchInput}
+                onChange={(e) => {
+                  setSearchInput(e.target.value)
+                  setDropdownOpen(true)
+                }}
+                onFocus={() => searchInput.length >= 2 && setDropdownOpen(true)}
+                placeholder="Search a school to see its profile..."
                 className="flex-1 bg-transparent text-white text-sm placeholder-zinc-600 outline-none"
+                autoComplete="off"
               />
+              {searchInput && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchInput('')
+                    setSearchQuery('')
+                    setDropdownOpen(false)
+                  }}
+                  className="text-[#555570] hover:text-white transition-colors"
+                >
+                  <X size={14} />
+                </button>
+              )}
             </div>
-            <button
-              type="submit"
-              className="flex items-center gap-2 bg-[#14B8A6] hover:bg-[#14B8A6] text-black text-sm font-bold px-5 py-3 rounded-xl transition-colors"
-            >
-              <Filter size={14} />
-              Filter
-            </button>
-          </motion.form>
+
+            {/* Dropdown */}
+            <AnimatePresence>
+              {dropdownOpen && searchQuery.length >= 2 && (
+                <motion.div
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute top-full left-0 right-0 mt-2 bg-[#14151F] border border-[#2a2a3c] rounded-xl overflow-hidden z-50 shadow-xl shadow-black/40"
+                >
+                  {searchLoading ? (
+                    <div className="flex items-center justify-center gap-2 py-6 text-[#555570] text-sm">
+                      <Loader2 size={14} className="animate-spin" />
+                      Searching…
+                    </div>
+                  ) : searchResults.length === 0 ? (
+                    <div className="py-6 text-center text-[#555570] text-sm">
+                      No schools found for &ldquo;{searchQuery}&rdquo;
+                    </div>
+                  ) : (
+                    <ul>
+                      {searchResults.map((result, i) => (
+                        <li key={result.schoolId}>
+                          <button
+                            type="button"
+                            onClick={() => navigateToSchool(result)}
+                            className={`w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-[#1E1F2E] transition-colors group ${
+                              i !== searchResults.length - 1 ? 'border-b border-[#1E1F2E]' : ''
+                            }`}
+                          >
+                            {/* Logo or fallback */}
+                            {result.logoUrl ? (
+                              <img
+                                src={result.logoUrl}
+                                alt={result.name}
+                                className="w-8 h-8 rounded-lg object-contain bg-[#0A0E1A] flex-shrink-0"
+                              />
+                            ) : (
+                              <div className="w-8 h-8 rounded-lg bg-[#1E1F2E] border border-[#2a2a3c] flex items-center justify-center flex-shrink-0">
+                                <Trophy size={14} className="text-[#555570]" />
+                              </div>
+                            )}
+
+                            <div className="flex-1 min-w-0">
+                              <p className="text-white text-sm font-semibold truncate group-hover:text-[#14B8A6] transition-colors">
+                                {result.name}
+                              </p>
+                              <p className="text-[#555570] text-xs truncate">
+                                {result.state}
+                                {result.division ? ` · ${result.division}` : ''}
+                              </p>
+                            </div>
+
+                            {result.hasReviews && (
+                              <span className="flex-none bg-[rgba(20,184,166,0.10)] border border-[rgba(20,184,166,0.20)] text-[#14B8A6] text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                {result.reviewCount} {result.reviewCount === 1 ? 'review' : 'reviews'}
+                              </span>
+                            )}
+
+                            <ChevronRight size={12} className="flex-none text-[#3a3a52] group-hover:text-[#14B8A6] transition-colors" />
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
         </div>
       </div>
 
