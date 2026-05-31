@@ -1,16 +1,15 @@
 /**
- * SubmitReviewPage
+ * SubmitReviewPage — The Locker Room
  *
- * Wrapper page for ReviewForm. Accepts ?school_id=123&school_name=... as URL
- * search params (passed by SchoolProfile's "Write a Review" button) so the
- * form arrives pre-populated with the school context.
+ * Wrapper for ReviewForm. School and sport are locked to the athlete's
+ * verified profile affiliation — no URL params needed or honored.
  *
- * If neither param is provided, the form falls back to its built-in school
- * search picker — so navigating to /submit-review directly still works.
+ * Multiple verified affiliations (e.g. transferred athletes) show a picker
+ * inside the form itself.
  */
 
 import React from 'react'
-import { useSearchParams, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { ReviewForm } from '../components/reviews/ReviewForm'
 import GlobalNav from '../components/layout/GlobalNav'
 import { motion } from 'framer-motion'
@@ -21,14 +20,7 @@ const serifItalic: React.CSSProperties = {
 }
 
 export const SubmitReviewPage: React.FC = () => {
-  const [searchParams] = useSearchParams()
   const navigate = useNavigate()
-
-  const schoolIdParam = searchParams.get('school_id')
-  const schoolNameParam = searchParams.get('school_name')
-
-  const schoolId = schoolIdParam ? parseInt(schoolIdParam, 10) : 0
-  const schoolName = schoolNameParam ? decodeURIComponent(schoolNameParam) : ''
 
   return (
     <div className="relative min-h-screen w-full bg-[#0A0E1A] text-white">
@@ -37,7 +29,7 @@ export const SubmitReviewPage: React.FC = () => {
         className="pointer-events-none absolute inset-0 -z-10"
         style={{
           background:
-            'radial-gradient(ellipse 60% 35% at 50% -5%, rgba(124,126,184,) 0%, transparent 70%)',
+            'radial-gradient(ellipse 60% 35% at 50% -5%, rgba(124,126,184,0.12) 0%, transparent 70%)',
         }}
       />
 
@@ -58,23 +50,14 @@ export const SubmitReviewPage: React.FC = () => {
             className="leading-tight text-white"
             style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', ...serifItalic }}
           >
-            {schoolName ? (
-              <>
-                Rate{' '}
-                <span className="not-italic font-black uppercase tracking-tight">
-                  {schoolName}
-                </span>
-              </>
-            ) : (
-              <>
-                Write a{' '}
-                <span className="not-italic font-black uppercase tracking-tight">Review</span>
-              </>
-            )}
+            Write a{' '}
+            <span className="not-italic font-black uppercase tracking-tight">
+              Review
+            </span>
           </h1>
           <p className="text-sm text-[#555570] leading-relaxed max-w-lg">
-            Your review is anonymous and helps future athletes make better decisions.
-            It will be visible after a brief moderation review (usually under 24 hours).
+            Your review is scoped to your verified program and posted anonymously by default.
+            It goes live after a brief moderation review — usually under 24 hours.
           </p>
         </motion.div>
 
@@ -85,8 +68,6 @@ export const SubmitReviewPage: React.FC = () => {
           transition={{ duration: 0.5, delay: 0.1 }}
         >
           <ReviewForm
-            schoolId={schoolId}
-            schoolName={schoolName}
             onSuccess={() => navigate('/dashboard')}
             onCancel={() => navigate(-1)}
           />

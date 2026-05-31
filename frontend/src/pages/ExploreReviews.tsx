@@ -19,9 +19,11 @@ import {
   Search,
   X,
   Loader2,
+  SlidersHorizontal,
 } from 'lucide-react'
 
 import { supabase } from '../lib/supabase'
+import { useAuth } from '../hooks/useAuth'
 import { useSchoolSearch, type SchoolSearchResult } from '../hooks/useSchoolSearch'
 
 // ---------------------------------------------------------------------------
@@ -424,6 +426,29 @@ const FALLBACK_SPORTS: SportTrend[] = [
 
 export function ExploreReviews() {
   const navigate = useNavigate()
+  const { profile } = useAuth()
+
+  // ── Personalization filter ────────────────────────────────────────────────
+  // When logged in, default to the athlete's own sport + gender.
+  // They can clear it to see everything.
+  const profileSport = profile?.sport ?? null
+  const profileGender = profile?.gender ?? null
+  const isVerified = profile?.verification_status === 'approved'
+
+  const [filterSport, setFilterSport] = useState<string | null>(null)
+  const [filterGender, setFilterGender] = useState<string | null>(null)
+  const [filterActive, setFilterActive] = useState(false)
+
+  // Seed filters from profile once loaded (only once)
+  const [filterSeeded, setFilterSeeded] = useState(false)
+  useEffect(() => {
+    if (!filterSeeded && isVerified && profileSport) {
+      setFilterSport(profileSport)
+      setFilterGender(profileGender)
+      setFilterActive(true)
+      setFilterSeeded(true)
+    }
+  }, [isVerified, profileSport, profileGender, filterSeeded])
 
   const [searchQuery, setSearchQuery] = useState('')
   const [searchInput, setSearchInput] = useState('')
@@ -483,7 +508,7 @@ export function ExploreReviews() {
   const fetchTopRated = useCallback(async () => {
     setLoadingTop(true)
     try {
-      const { data: aggData, error: aggError } = await supabase
+      let query = supabase
         .from('program_aggregates')
         .select(
           'school_id, sport, review_count, facilities_rating, coaching_rating, balance_rating, support_rating, culture_rating, equity_rating'
@@ -491,6 +516,14 @@ export function ExploreReviews() {
         .gt('review_count', 0)
         .order('facilities_rating', { ascending: false })
         .limit(50)
+
+      if (filterActive && filterSport) {
+        // Strip gender suffix for a broader sport match
+        const baseSport = filterSport.replace(/\s+(Men's|Women's|Coed|Mixed)$/i, '').trim()
+        query = query.ilike('sport', `%${baseSport}%`)
+      }
+
+      const { data: aggData, error: aggError } = await query
 
       if (aggError || !aggData || aggData.length === 0) {
         setTopRated([])
@@ -612,7 +645,7 @@ export function ExploreReviews() {
     } finally {
       setLoadingTop(false)
     }
-  }, [])
+  }, [filterActive, filterSport])
 
   // ---------------------------------------------------------------------------
   // Fetch Section 2 — Recently Reviewed
@@ -620,7 +653,7 @@ export function ExploreReviews() {
   const fetchRecentReviews = useCallback(async () => {
     setLoadingRecent(true)
     try {
-      const { data: reviewData, error: reviewError } = await supabase
+      let recentQuery = supabase
         .from('reviews')
         .select(
           'id, school_id, sport, gender, review_text, pros, cons, facilities_rating, coaching_rating, balance_rating, support_rating, culture_rating, equity_rating, helpful_count, is_anonymous, created_at'
@@ -628,6 +661,16 @@ export function ExploreReviews() {
         .eq('moderation_status', 'approved')
         .order('created_at', { ascending: false })
         .limit(6)
+
+      if (filterActive && filterSport) {
+        const baseSport = filterSport.replace(/\s+(Men's|Women's|Coed|Mixed)$/i, '').trim()
+        recentQuery = recentQuery.ilike('sport', `%${baseSport}%`)
+      }
+      if (filterActive && filterGender) {
+        recentQuery = recentQuery.eq('gender', filterGender)
+      }
+
+      const { data: reviewData, error: reviewError } = await recentQuery
 
       if (reviewError || !reviewData || reviewData.length === 0) {
         setRecentReviews([])
@@ -671,7 +714,7 @@ export function ExploreReviews() {
     } finally {
       setLoadingRecent(false)
     }
-  }, [])
+  }, [filterActive, filterSport, filterGender])
 
   // ---------------------------------------------------------------------------
   // Fetch Section 3 — Trending by Sport
@@ -731,7 +774,7 @@ export function ExploreReviews() {
   }, [])
 
   // ---------------------------------------------------------------------------
-  // Kick off all fetches in parallel
+  // Kick off all fetches in parallel — re-run when filter changes
   // ---------------------------------------------------------------------------
   useEffect(() => {
     Promise.all([fetchTopRated(), fetchRecentReviews(), fetchSportTrends()])
@@ -942,6 +985,43 @@ export function ExploreReviews() {
 
       {/* ── Main Content ─────────────────────────────────────────────────── */}
       <div className="max-w-6xl mx-auto px-6 pb-32 space-y-20">
+
+        {/* ── Personalization filter pill ─────────────────────────────── */}
+        <AnimatePresence>
+          {isVerified && profileSport && (
+            <motion.div
+              key="filter-pill"
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              className="flex items-center gap-3 flex-wrap -mb-10 pt-2"
+            >
+              <SlidersHorizontal size={13} className="text-[#555570]" />
+              <span className="text-[#555570] text-xs uppercase tracking-widest font-semibold">Showing</span>
+              {filterActive ? (
+                <button
+                  type="button"
+                  onClick={() => { setFilterActive(false); setFilterSport(null); setFilterGender(null) }}
+                  className="flex items-center gap-1.5 bg-[rgba(20,184,166,0.12)] border border-[rgba(20,184,166,0.30)] text-[#14B8A6] text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-[rgba(20,184,166,0.20)] transition-colors"
+                >
+                  {cleanSport(filterSport ?? '')}{filterGender ? ` · ${filterGender}` : ''}
+                  <X size={11} className="ml-0.5" />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => { setFilterSport(profileSport); setFilterGender(profileGender); setFilterActive(true) }}
+                  className="flex items-center gap-1.5 bg-[#14151F] border border-[#2a2a3c] text-[#8888a8] text-xs font-semibold px-3 py-1.5 rounded-full hover:border-[rgba(20,184,166,0.30)] hover:text-[#14B8A6] transition-colors"
+                >
+                  {cleanSport(profileSport ?? '')}{profileGender ? ` · ${profileGender}` : ''}
+                </button>
+              )}
+              <span className="text-[#3a3a52] text-xs">
+                {filterActive ? '— tap to see all sports' : '— tap to filter to your sport'}
+              </span>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* ── Section 1: Top Rated Programs ─────────────────────────────── */}
         <section>

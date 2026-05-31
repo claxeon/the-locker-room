@@ -18,12 +18,13 @@ interface RosterSubmission {
   user_id: string
   school_id: number | null
   status: 'pending' | 'approved' | 'rejected'
-  roster_url: string | null      // was: evidence_text
-  notes: string | null           // was: admin_notes
-  created_at: string             // was: submitted_at
+  roster_url: string | null
+  notes: string | null
+  created_at: string
+  is_secondary: boolean          // true = multi-affiliation, needs extra scrutiny
   // joined from profiles:
   athlete_name: string | null
-  school_name: string | null     // fetched separately from schools
+  school_name: string | null
   sport: string | null
   gender: string | null
   graduation_year: number | null
@@ -160,6 +161,7 @@ const PendingVerificationsTab: React.FC<{ adminUserId: string }> = ({
           roster_url,
           notes,
           created_at,
+          is_secondary,
           profiles (
             full_name,
             school_id,
@@ -216,6 +218,7 @@ const PendingVerificationsTab: React.FC<{ adminUserId: string }> = ({
           roster_url: (row['roster_url'] as string | null) ?? null,
           notes: (row['notes'] as string | null) ?? null,
           created_at: row['created_at'] as string,
+          is_secondary: (row['is_secondary'] as boolean) ?? false,
           athlete_name: (profile['full_name'] as string | null) ?? null,
           school_name: schoolId !== null ? (schoolMap[schoolId] ?? null) : null,
           sport:
@@ -254,10 +257,31 @@ const PendingVerificationsTab: React.FC<{ adminUserId: string }> = ({
       .update({ status: 'approved' })
       .eq('id', sub.id)
 
-    await supabase
-      .from('profiles')
-      .update({ verification_status: 'approved' })
-      .eq('id', sub.user_id)
+    if (sub.is_secondary) {
+      // Secondary: flip the verified flag in the JSONB array entry for this submission
+      // Fetch current secondary_affiliations first, then update the matching entry
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('secondary_affiliations')
+        .eq('id', sub.user_id)
+        .single()
+
+      if (profileData?.secondary_affiliations) {
+        const updated = (profileData.secondary_affiliations as any[]).map((aff: any) =>
+          aff.submission_id === sub.id ? { ...aff, verified: true } : aff
+        )
+        await supabase
+          .from('profiles')
+          .update({ secondary_affiliations: updated })
+          .eq('id', sub.user_id)
+      }
+    } else {
+      // Primary: set overall verification_status to approved
+      await supabase
+        .from('profiles')
+        .update({ verification_status: 'approved' })
+        .eq('id', sub.user_id)
+    }
   }
 
   const handleRejectOpen = (id: string): void => {
@@ -319,10 +343,15 @@ const PendingVerificationsTab: React.FC<{ adminUserId: string }> = ({
           >
             {/* Header row */}
             <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
-              <div>
+              <div className="flex items-center gap-3">
                 <p className="text-lg font-bold uppercase tracking-wide text-white">
                   {sub.athlete_name ?? 'Unknown Athlete'}
                 </p>
+                {sub.is_secondary && (
+                  <span className="rounded border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-400">
+                    Multi-Affiliation
+                  </span>
+                )}
               </div>
               <div className="text-right text-xs text-[#555570]">
                 Submitted{' '}
@@ -357,6 +386,16 @@ const PendingVerificationsTab: React.FC<{ adminUserId: string }> = ({
                 </span>
               )}
             </div>
+
+            {/* Secondary affiliation context note */}
+            {sub.is_secondary && (
+              <div className="mb-4 rounded-lg border border-amber-500/20 bg-amber-500/5 px-4 py-3">
+                <p className="text-xs font-semibold text-amber-400 uppercase tracking-widest mb-1">Multi-Affiliation Request</p>
+                <p className="text-xs text-amber-200/70 leading-relaxed">
+                  This athlete is requesting access to review a second school or sport. Verify the roster evidence carefully before approving — approving unlocks the ability to post reviews under this additional program.
+                </p>
+              </div>
+            )}
 
             {/* Roster URL */}
             <div className="mb-5">
