@@ -4,45 +4,61 @@
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Web site created using create-react-app"
-    />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
+    <meta name="theme-color" content="#0A0E1A" />
 
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
-    <title>The Locker Room — Rate. Review. Reform.</title>
-    <meta name="description" content="Glassdoor for college sports. Verified athlete reviews of collegiate athletic programs." />
+    <!-- Primary SEO -->
+    <title>The Locker Room — Verified Athlete Reviews of College Sports Programs</title>
+    <meta name="description" content="Anonymous, .edu-verified reviews of collegiate athletic programs. Read what real student-athletes say about coaching, facilities, culture, and equity across 1,000+ programs." />
+    <meta name="keywords" content="college sports reviews, athletic program reviews, student athlete reviews, college recruiting, NCAA program ratings, college coaching reviews, athletic facilities, college sports transparency" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://the-locker-room.app" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="The Locker Room" />
+    <meta property="og:title" content="The Locker Room — Verified Athlete Reviews of College Sports Programs" />
+    <meta property="og:description" content="Anonymous, .edu-verified reviews of collegiate athletic programs. Read what real student-athletes say about coaching, facilities, culture, and equity." />
+    <meta property="og:url" content="https://the-locker-room.app" />
+    <meta property="og:image" content="https://the-locker-room.app/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Twitter / X Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@lockerroomapp" />
+    <meta name="twitter:title" content="The Locker Room — Verified Athlete Reviews of College Sports Programs" />
+    <meta name="twitter:description" content="Anonymous, .edu-verified reviews of collegiate athletic programs. What your future coaches won't tell you on a visit." />
+    <meta name="twitter:image" content="https://the-locker-room.app/og-image.png" />
+
+    <!-- JSON-LD: Organization -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "The Locker Room",
+      "url": "https://the-locker-room.app",
+      "description": "Verified athlete reviews of collegiate athletic programs.",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://the-locker-room.app/directory?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
     <link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet" />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
-
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
   </body>
 </html>

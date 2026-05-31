@@ -1,3 +1,8 @@
-# https://www.robotstxt.org/robotstxt.html
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /submit-review
+Disallow: /reset-password
+
+Sitemap: https://the-locker-room.app/sitemap.xml

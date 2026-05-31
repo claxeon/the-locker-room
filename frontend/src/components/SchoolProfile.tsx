@@ -25,22 +25,69 @@ export const SchoolProfile: React.FC<SchoolProfileProps> = ({ slug, onBack }) =>
   // Dynamic meta tags for SEO + social sharing
   useEffect(() => {
     if (!school) return
-    const title = `${school.institution_name} Athletics — The Locker Room`
+
+    const title = `${school.institution_name} Athletics Reviews — The Locker Room`
+    const description = `Anonymous, verified reviews of ${school.institution_name} athletic programs. Read what student-athletes say about coaching, facilities, culture, and equity at ${school.institution_name}.`
+    const url = `https://the-locker-room.app/school/${slug}`
+
     document.title = title
-    const setMeta = (property: string, content: string) => {
-      let el = document.querySelector(`meta[property='${property}']`)
+
+    const setMeta = (selector: string, attr: string, content: string) => {
+      let el = document.querySelector(selector) as HTMLMetaElement | null
       if (!el) {
         el = document.createElement('meta')
-        el.setAttribute('property', property)
+        const [attrName, attrVal] = selector.match(/\[([^=]+)=['"]([^'"]+)['"]\]/)?.slice(1) ?? [attr, '']
+        el.setAttribute(attrName, attrVal)
         document.head.appendChild(el)
       }
       el.setAttribute('content', content)
     }
-    setMeta('og:title', title)
-    setMeta('og:description', `Read anonymous verified reviews of ${school.institution_name} athletic programs. Facilities, coaching, culture, gender equity ratings from real student-athletes.`)
-    setMeta('og:url', `https://the-locker-room-zeta.vercel.app/school/${slug}`)
-    if (school.logo_url) setMeta('og:image', school.logo_url)
-    return () => { document.title = 'The Locker Room — Glassdoor for College Sports' }
+
+    // Standard
+    setMeta("meta[name='description']", 'name', description)
+    setMeta("meta[name='robots']", 'name', 'index, follow')
+
+    // Canonical
+    let canonical = document.querySelector("link[rel='canonical']") as HTMLLinkElement | null
+    if (!canonical) { canonical = document.createElement('link'); canonical.rel = 'canonical'; document.head.appendChild(canonical) }
+    canonical.href = url
+
+    // Open Graph
+    setMeta("meta[property='og:title']", 'property', title)
+    setMeta("meta[property='og:description']", 'property', description)
+    setMeta("meta[property='og:url']", 'property', url)
+    setMeta("meta[property='og:type']", 'property', 'website')
+    if (school.logo_url) setMeta("meta[property='og:image']", 'property', school.logo_url)
+
+    // Twitter
+    setMeta("meta[name='twitter:card']", 'name', 'summary_large_image')
+    setMeta("meta[name='twitter:title']", 'name', title)
+    setMeta("meta[name='twitter:description']", 'name', description)
+    if (school.logo_url) setMeta("meta[name='twitter:image']", 'name', school.logo_url)
+
+    // JSON-LD structured data
+    const jsonLd = {
+      '@context': 'https://schema.org',
+      '@type': 'CollegeOrUniversity',
+      name: school.institution_name,
+      url: url,
+      address: { '@type': 'PostalAddress', addressRegion: school.state_cd, addressCountry: 'US' },
+      description: description,
+    }
+    let ldScript = document.querySelector('#school-jsonld') as HTMLScriptElement | null
+    if (!ldScript) {
+      ldScript = document.createElement('script')
+      ldScript.id = 'school-jsonld'
+      ldScript.type = 'application/ld+json'
+      document.head.appendChild(ldScript)
+    }
+    ldScript.textContent = JSON.stringify(jsonLd)
+
+    return () => {
+      document.title = 'The Locker Room — Verified Athlete Reviews of College Sports Programs'
+      document.querySelector('#school-jsonld')?.remove()
+      canonical?.remove()
+    }
   }, [school, slug])
 
   if (loading) {
