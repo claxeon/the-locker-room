@@ -63,19 +63,30 @@ export const useSportsDirectory = (filters?: {
         setError(null)
 
         const sport = filters?.sport || ''
-        // gender filter is applied at sport level, not school level
-        // const gender = filters?.gender || ''
         const state_cd = filters?.state_cd || ''
 
-        // When a sport filter is active, pre-fetch matching school_ids from sports_offered
+        // When a sport filter is active, pre-fetch matching school_ids from sports_offered.
+        // sports_offered stores full gender-suffixed names like "Basketball Men's" / "Basketball Women's".
+        // distinct_sports strips the suffix so the UI shows just "Basketball".
+        // We use ilike with a trailing % to match all gender variants of the chosen sport.
         let sportSchoolIds: number[] | null = null
         if (sport) {
-          const { data: soData, error: soErr } = await supabase
+          let soQuery = supabase
             .from('sports_offered')
             .select('school_id')
-            .eq('sport', sport)
+            .ilike('sport', `${sport}%`)
+
+          // If a gender filter is also active, narrow to that gender variant
+          const gender = filters?.gender || ''
+          if (gender) {
+            soQuery = soQuery.ilike('sport', `%${gender}%`)
+          }
+
+          const { data: soData, error: soErr } = await soQuery
           if (soErr) throw soErr
-          sportSchoolIds = (soData || []).map((r: { school_id: number }) => r.school_id)
+          sportSchoolIds = Array.from(
+            new Set((soData || []).map((r: { school_id: number }) => r.school_id))
+          )
           // If no schools offer this sport, return empty immediately
           if (sportSchoolIds.length === 0) {
             setTotalCount(0)
