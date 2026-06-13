@@ -1,262 +1,184 @@
-// @ts-nocheck
 /**
  * HeroCanvas.tsx
- * Three.js particle network — represents athletes + programs connected across the country.
- * ~150 glowing nodes, teal connection lines, slow drift, mouse parallax.
+ * Canvas 2D particle network — athlete-program connection graph.
+ * Pure 2D canvas avoids WebGL alpha/transparency issues on all browsers.
  */
 import { useEffect, useRef } from 'react'
-import * as THREE from 'three'
+
+const ACCENT     = '#14B8A6'
+const TEAL_RGB   = '20,184,166'
+const CREAM_RGB  = '245,239,224'
+const LAV_RGB    = '155,151,181'
 
 interface Particle {
   x: number
   y: number
-  z: number
   vx: number
   vy: number
-  vz: number
-  size: number
-  isHub: boolean // larger "school" nodes
+  radius: number
+  isHub: boolean
+  colorRGB: string
+  phase: number   // for pulse animation
 }
 
 export function HeroCanvas() {
-  const mountRef = useRef<HTMLDivElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
-    const mount = mountRef.current
-    if (!mount) return
+    const canvas = canvasRef.current
+    if (!canvas) return
 
-    // ─── Renderer ──────────────────────────────────────────────────────────
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-    renderer.setSize(mount.clientWidth, mount.clientHeight)
-    renderer.setClearColor(0x000000, 0)
-    mount.appendChild(renderer.domElement)
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
 
-    // ─── Scene + Camera ────────────────────────────────────────────────────
-    const scene = new THREE.Scene()
-    const camera = new THREE.PerspectiveCamera(60, mount.clientWidth / mount.clientHeight, 0.1, 1000)
-    camera.position.set(0, 0, 28)
+    // ─── Size canvas to its CSS size (device-pixel-ratio aware) ────────────
+    function resize() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2)
+      canvas!.width  = canvas!.offsetWidth  * dpr
+      canvas!.height = canvas!.offsetHeight * dpr
+      ctx!.scale(dpr, dpr)
+    }
+    resize()
 
-    // ─── Particles ─────────────────────────────────────────────────────────
-    const PARTICLE_COUNT = 140
-    const HUB_COUNT = 12
-    const SPREAD = 18
+    const W = () => canvas!.offsetWidth
+    const H = () => canvas!.offsetHeight
+
+    // ─── Build particles ───────────────────────────────────────────────────
+    const TOTAL  = 130
+    const HUBS   = 14
     const particles: Particle[] = []
 
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
-      const isHub = i < HUB_COUNT
+    for (let i = 0; i < TOTAL; i++) {
+      const isHub = i < HUBS
+      const colors = [TEAL_RGB, TEAL_RGB, TEAL_RGB, CREAM_RGB, LAV_RGB]
       particles.push({
-        x: (Math.random() - 0.5) * SPREAD * 2,
-        y: (Math.random() - 0.5) * SPREAD,
-        z: (Math.random() - 0.5) * 10,
-        vx: (Math.random() - 0.5) * 0.004,
-        vy: (Math.random() - 0.5) * 0.003,
-        vz: (Math.random() - 0.5) * 0.002,
-        size: isHub ? 0.22 + Math.random() * 0.12 : 0.06 + Math.random() * 0.08,
+        x: Math.random() * W(),
+        y: Math.random() * H(),
+        vx: (Math.random() - 0.5) * 0.25,
+        vy: (Math.random() - 0.5) * 0.18,
+        radius: isHub ? 3.5 + Math.random() * 2 : 1.2 + Math.random() * 1.4,
         isHub,
+        colorRGB: colors[Math.floor(Math.random() * colors.length)],
+        phase: Math.random() * Math.PI * 2,
       })
     }
 
-    // ─── Point geometry (dots) ─────────────────────────────────────────────
-    const positions = new Float32Array(PARTICLE_COUNT * 3)
-    const colors = new Float32Array(PARTICLE_COUNT * 3)
-    const sizes = new Float32Array(PARTICLE_COUNT)
-
-    const tealColor = new THREE.Color('#14B8A6')
-    const creamColor = new THREE.Color('#F5EFE0')
-    const lavColor = new THREE.Color('#9B97B5')
-
-    particles.forEach((p, i) => {
-      positions[i * 3]     = p.x
-      positions[i * 3 + 1] = p.y
-      positions[i * 3 + 2] = p.z
-      sizes[i] = p.size
-
-      const c = p.isHub ? creamColor : (Math.random() > 0.3 ? tealColor : lavColor)
-      colors[i * 3]     = c.r
-      colors[i * 3 + 1] = c.g
-      colors[i * 3 + 2] = c.b
-    })
-
-    const pointGeo = new THREE.BufferGeometry()
-    pointGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
-    pointGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3))
-    pointGeo.setAttribute('size', new THREE.BufferAttribute(sizes, 1))
-
-    // Custom shader material for soft glowing dots
-    const pointMat = new THREE.ShaderMaterial({
-      uniforms: { uTime: { value: 0 } },
-      vertexShader: `
-        attribute float size;
-        attribute vec3 color;
-        varying vec3 vColor;
-        varying float vSize;
-        uniform float uTime;
-        void main() {
-          vColor = color;
-          vSize = size;
-          vec4 mv = modelViewMatrix * vec4(position, 1.0);
-          float pulse = 1.0 + 0.15 * sin(uTime * 1.2 + position.x * 0.5 + position.y * 0.7);
-          gl_PointSize = size * 220.0 * pulse * (1.0 / -mv.z);
-          gl_Position = projectionMatrix * mv;
-        }
-      `,
-      fragmentShader: `
-        varying vec3 vColor;
-        varying float vSize;
-        void main() {
-          vec2 uv = gl_PointCoord - 0.5;
-          float dist = length(uv);
-          if (dist > 0.5) discard;
-          float alpha = smoothstep(0.5, 0.0, dist);
-          float glow = smoothstep(0.5, 0.05, dist) * 0.6;
-          gl_FragColor = vec4(vColor, (alpha + glow) * 0.85);
-        }
-      `,
-      transparent: true,
-      vertexColors: true,
-      depthWrite: false,
-    })
-
-    const points = new THREE.Points(pointGeo, pointMat)
-    scene.add(points)
-
-    // ─── Line geometry (connections) ───────────────────────────────────────
-    const MAX_LINES = 300
-    const linePositions = new Float32Array(MAX_LINES * 6)
-    const lineColors    = new Float32Array(MAX_LINES * 6)
-
-    const lineGeo = new THREE.BufferGeometry()
-    lineGeo.setAttribute('position', new THREE.BufferAttribute(linePositions, 3))
-    lineGeo.setAttribute('color',    new THREE.BufferAttribute(lineColors, 3))
-    // Start with zero lines drawn — prevents all-zeros blob on first frame
-    lineGeo.setDrawRange(0, 0)
-
-    const lineMesh = new THREE.LineSegments(
-      lineGeo,
-      new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.30, depthWrite: false }),
-    )
-    scene.add(lineMesh)
-
     // ─── Mouse parallax ────────────────────────────────────────────────────
-    let mouseX = 0, mouseY = 0
-    let targetX = 0, targetY = 0
+    let mouseX = 0.5, mouseY = 0.5   // normalized 0-1
+    let offsetX = 0, offsetY = 0     // smooth offset applied to camera view
 
     function onMouseMove(e: MouseEvent) {
-      mouseX = (e.clientX / window.innerWidth  - 0.5) * 2
-      mouseY = (e.clientY / window.innerHeight - 0.5) * 2
+      mouseX = e.clientX / window.innerWidth
+      mouseY = e.clientY / window.innerHeight
     }
     window.addEventListener('mousemove', onMouseMove)
 
-    // ─── Resize ────────────────────────────────────────────────────────────
-    function onResize() {
-      if (!mount) return
-      camera.aspect = mount.clientWidth / mount.clientHeight
-      camera.updateProjectionMatrix()
-      renderer.setSize(mount.clientWidth, mount.clientHeight)
-    }
-    window.addEventListener('resize', onResize)
-
-    // ─── Animation loop ────────────────────────────────────────────────────
-    let animId = 0
-    const CONNECT_DIST  = 5.0
-    const HUB_CONNECT_DIST = 8.0
-
-    function animate(time: number) {
-      animId = requestAnimationFrame(animate)
-      const t = time * 0.001
-
-      // Update shader time
-      pointMat.uniforms.uTime.value = t
-
-      // Smooth camera parallax
-      targetX += (mouseX * 1.5 - targetX) * 0.04
-      targetY += (-mouseY * 1.0 - targetY) * 0.04
-      camera.position.x = targetX
-      camera.position.y = targetY
-      camera.lookAt(scene.position)
-
-      // Drift particles
-      const pos = pointGeo.attributes.position.array as Float32Array
-      particles.forEach((p, i) => {
-        p.x += p.vx + Math.sin(t * 0.3 + i * 0.5) * 0.001
-        p.y += p.vy + Math.cos(t * 0.2 + i * 0.7) * 0.001
-        p.z += p.vz
-
-        // Wrap
-        if (p.x >  SPREAD) p.x = -SPREAD
-        if (p.x < -SPREAD) p.x =  SPREAD
-        if (p.y >  SPREAD * 0.5) p.y = -SPREAD * 0.5
-        if (p.y < -SPREAD * 0.5) p.y =  SPREAD * 0.5
-        if (p.z >  5) p.z = -5
-        if (p.z < -5) p.z =  5
-
-        pos[i * 3]     = p.x
-        pos[i * 3 + 1] = p.y
-        pos[i * 3 + 2] = p.z
+    // ─── Resize observer ───────────────────────────────────────────────────
+    const ro = new ResizeObserver(() => {
+      resize()
+      // Re-scatter any particles outside new bounds
+      const w = W(), h = H()
+      particles.forEach(p => {
+        if (p.x > w) p.x = Math.random() * w
+        if (p.y > h) p.y = Math.random() * h
       })
-      pointGeo.attributes.position.needsUpdate = true
+    })
+    ro.observe(canvas)
 
-      // Build connection lines
-      let lineIdx = 0
-      const lp = lineGeo.attributes.position.array as Float32Array
-      const lc = lineGeo.attributes.color.array as Float32Array
+    // ─── Animation ─────────────────────────────────────────────────────────
+    const CONNECT_DIST     = 140  // px
+    const HUB_CONNECT_DIST = 210  // px
+    let animId = 0
 
-      for (let i = 0; i < PARTICLE_COUNT && lineIdx < MAX_LINES; i++) {
-        for (let j = i + 1; j < PARTICLE_COUNT && lineIdx < MAX_LINES; j++) {
-          const dx = particles[i].x - particles[j].x
-          const dy = particles[i].y - particles[j].y
-          const dz = particles[i].z - particles[j].z
-          const dist = Math.sqrt(dx*dx + dy*dy + dz*dz)
-          const threshold = (particles[i].isHub || particles[j].isHub) ? HUB_CONNECT_DIST : CONNECT_DIST
+    function draw(timestamp: number) {
+      animId = requestAnimationFrame(draw)
+      const t  = timestamp * 0.001
+      const w  = W()
+      const h  = H()
 
-          if (dist < threshold) {
-            const alpha = (1 - dist / threshold)
-            const ri = lineIdx * 6
+      // Smooth parallax offset (±18px)
+      offsetX += ((mouseX - 0.5) * 36 - offsetX) * 0.04
+      offsetY += ((mouseY - 0.5) * 24 - offsetY) * 0.04
 
-            lp[ri]     = particles[i].x; lp[ri + 1] = particles[i].y; lp[ri + 2] = particles[i].z
-            lp[ri + 3] = particles[j].x; lp[ri + 4] = particles[j].y; lp[ri + 5] = particles[j].z
+      ctx!.clearRect(0, 0, w, h)
 
-            // Teal lines, fade by distance
-            lc[ri]     = tealColor.r * alpha; lc[ri + 1] = tealColor.g * alpha; lc[ri + 2] = tealColor.b * alpha
-            lc[ri + 3] = tealColor.r * alpha; lc[ri + 4] = tealColor.g * alpha; lc[ri + 5] = tealColor.b * alpha
+      // Update positions
+      particles.forEach(p => {
+        p.x += p.vx + Math.sin(t * 0.4 + p.phase) * 0.08
+        p.y += p.vy + Math.cos(t * 0.3 + p.phase) * 0.06
+        if (p.x < -20)  p.x = w + 20
+        if (p.x > w + 20) p.x = -20
+        if (p.y < -20)  p.y = h + 20
+        if (p.y > h + 20) p.y = -20
+      })
 
-            lineIdx++
+      // Draw connections first (below dots)
+      for (let i = 0; i < TOTAL; i++) {
+        for (let j = i + 1; j < TOTAL; j++) {
+          const a = particles[i]
+          const b = particles[j]
+          const dx = (a.x + offsetX) - (b.x + offsetX)
+          const dy = (a.y + offsetY) - (b.y + offsetY)
+          const dist = Math.sqrt(dx * dx + dy * dy)
+          const maxD = (a.isHub || b.isHub) ? HUB_CONNECT_DIST : CONNECT_DIST
+
+          if (dist < maxD) {
+            const alpha = (1 - dist / maxD) * 0.35
+            ctx!.beginPath()
+            ctx!.moveTo(a.x + offsetX, a.y + offsetY)
+            ctx!.lineTo(b.x + offsetX, b.y + offsetY)
+            ctx!.strokeStyle = `rgba(${TEAL_RGB},${alpha})`
+            ctx!.lineWidth = a.isHub || b.isHub ? 0.8 : 0.5
+            ctx!.stroke()
           }
         }
       }
 
-      // Zero out remaining line slots
-      for (let i = lineIdx; i < MAX_LINES; i++) {
-        const ri = i * 6
-        lp[ri] = lp[ri+1] = lp[ri+2] = lp[ri+3] = lp[ri+4] = lp[ri+5] = 0
-      }
+      // Draw particles (dots with glow)
+      particles.forEach(p => {
+        const px = p.x + offsetX
+        const py = p.y + offsetY
+        const pulse = 1 + 0.2 * Math.sin(t * 1.8 + p.phase)
+        const r = p.radius * pulse
 
-      lineGeo.attributes.position.needsUpdate = true
-      lineGeo.attributes.color.needsUpdate    = true
-      lineGeo.setDrawRange(0, lineIdx * 2)
+        // Outer glow
+        const glow = ctx!.createRadialGradient(px, py, 0, px, py, r * (p.isHub ? 5 : 3))
+        glow.addColorStop(0, `rgba(${p.colorRGB},${p.isHub ? 0.5 : 0.3})`)
+        glow.addColorStop(1, `rgba(${p.colorRGB},0)`)
+        ctx!.beginPath()
+        ctx!.arc(px, py, r * (p.isHub ? 5 : 3), 0, Math.PI * 2)
+        ctx!.fillStyle = glow
+        ctx!.fill()
 
-      renderer.render(scene, camera)
+        // Core dot
+        ctx!.beginPath()
+        ctx!.arc(px, py, r, 0, Math.PI * 2)
+        ctx!.fillStyle = `rgba(${p.colorRGB},${p.isHub ? 0.9 : 0.7})`
+        ctx!.fill()
+      })
     }
 
-    animate(0)
+    requestAnimationFrame(draw)
 
     return () => {
       cancelAnimationFrame(animId)
       window.removeEventListener('mousemove', onMouseMove)
-      window.removeEventListener('resize', onResize)
-      renderer.dispose()
-      pointGeo.dispose()
-      lineGeo.dispose()
-      if (mount.contains(renderer.domElement)) mount.removeChild(renderer.domElement)
+      ro.disconnect()
     }
   }, [])
 
   return (
-    <div
-      ref={mountRef}
-      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}
+    <canvas
+      ref={canvasRef}
       aria-hidden="true"
+      style={{
+        position: 'absolute',
+        inset: 0,
+        width: '100%',
+        height: '100%',
+        pointerEvents: 'none',
+        display: 'block',
+      }}
     />
   )
 }

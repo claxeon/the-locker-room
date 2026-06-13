@@ -10,7 +10,7 @@
  *  - Framer Motion micro-interactions
  */
 
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence, useSpring, useMotionValue } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { gsap } from 'gsap'
@@ -535,7 +535,6 @@ function HeroSection({ onGetStarted }: { onGetStarted?: () => void }) {
   const line3Ref     = useRef<HTMLSpanElement>(null)
   const subRef       = useRef<HTMLParagraphElement>(null)
   const ctaRef       = useRef<HTMLDivElement>(null)
-  const badgesRef    = useRef<HTMLDivElement>(null)
   const mag1 = useMagnetic(0.3)
   const mag2 = useMagnetic(0.3)
 
@@ -547,7 +546,6 @@ function HeroSection({ onGetStarted }: { onGetStarted?: () => void }) {
         .fromTo(line3Ref.current, { opacity: 0, y: 60, skewY: 3 }, { opacity: 1, y: 0, skewY: 0, duration: 0.9 }, '-=0.65')
         .fromTo(subRef.current,   { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.7 }, '-=0.5')
         .fromTo(ctaRef.current,   { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6 }, '-=0.4')
-        .fromTo(badgesRef.current,{ opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.6 }, '-=0.3')
     }, containerRef)
     return () => ctx.revert()
   }, [])
@@ -624,16 +622,6 @@ function HeroSection({ onGetStarted }: { onGetStarted?: () => void }) {
           </motion.a>
         </div>
 
-        {/* Trust badges */}
-        <div ref={badgesRef} style={{ opacity: 0, display: 'flex', flexWrap: 'wrap', gap: '12px', marginTop: '32px' }}>
-          {['NCAA D1 · D2 · D3', 'NAIA', 'NJCAA', 'NCCAA', 'CCCAA', 'Anonymous by default'].map(badge => (
-            <span key={badge} style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '0.08em',
-              textTransform: 'uppercase', color: DIM, padding: '4px 10px', borderRadius: '9999px',
-              border: `1px solid ${BORDER}` }}>
-              {badge}
-            </span>
-          ))}
-        </div>
       </div>
 
       {/* Scroll indicator */}
