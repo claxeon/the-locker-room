@@ -129,12 +129,14 @@ export function HeroCanvas() {
     const lineGeo = new THREE.BufferGeometry()
     lineGeo.setAttribute('position', new THREE.BufferAttribute(linePositions, 3))
     lineGeo.setAttribute('color',    new THREE.BufferAttribute(lineColors, 3))
+    // Start with zero lines drawn — prevents all-zeros blob on first frame
+    lineGeo.setDrawRange(0, 0)
 
-    const lineMat = new THREE.LineSegments(
+    const lineMesh = new THREE.LineSegments(
       lineGeo,
-      new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.25, depthWrite: false }),
+      new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.30, depthWrite: false }),
     )
-    scene.add(lineMat)
+    scene.add(lineMesh)
 
     // ─── Mouse parallax ────────────────────────────────────────────────────
     let mouseX = 0, mouseY = 0

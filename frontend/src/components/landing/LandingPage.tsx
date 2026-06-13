@@ -1006,6 +1006,33 @@ function CTASection({ onGetStarted }: { onGetStarted?: () => void }) {
             </Link>
           </motion.div>
 
+          <motion.div className="cta-card"
+            style={{ opacity: 0, padding: '48px', borderRadius: '24px',
+              background: `linear-gradient(135deg, rgba(155,151,181,0.08) 0%, rgba(155,151,181,0.02) 100%)`,
+              border: `1px solid rgba(155,151,181,0.15)` }}
+            whileHover={{ borderColor: 'rgba(155,151,181,0.35)' }}>
+            <div style={{ width: '48px', height: '48px', borderRadius: '14px', marginBottom: '24px',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              backgroundColor: 'rgba(155,151,181,0.10)', border: `1px solid rgba(155,151,181,0.20)` }}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={LAV} strokeWidth="1.7">
+                <rect x="3" y="3" width="7" height="18" rx="1"/><rect x="14" y="3" width="7" height="18" rx="1"/>
+              </svg>
+            </div>
+            <h3 style={{ ...serif({ fontSize: '1.8rem', color: CREAM }), margin: '0 0 12px' }}>Compare programs.</h3>
+            <p style={{ fontSize: '14px', lineHeight: 1.7, color: MUTED, margin: '0 0 32px' }}>
+              Stack up to 4 programs side-by-side. Compare scorecards, equity ratings, and review sentiment before you commit.
+            </p>
+            <Link to="/college-comparison" style={{ display: 'inline-flex', alignItems: 'center', gap: '10px',
+              padding: '12px 28px', borderRadius: '9999px', backgroundColor: 'transparent', color: LAV,
+              fontSize: '12px', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase',
+              textDecoration: 'none', border: `1px solid rgba(155,151,181,0.30)` }}>
+              Open Comparison Tool
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </Link>
+          </motion.div>
+
         </div>
       </div>
     </section>
@@ -1080,6 +1107,71 @@ function FooterSection() {
   )
 }
 
+// ─── Sanctioning Bodies Ticker ────────────────────────────────────────────────
+const BODIES = [
+  'NCAA Division I', 'NCAA Division II', 'NCAA Division III',
+  'NAIA', 'NJCAA', 'NCCAA', 'CCCAA', 'USCAA', 'ACCC', 'NWAACC',
+]
+
+function SanctioningBodiesSection() {
+  // Duplicate for seamless loop
+  const items = [...BODIES, ...BODIES]
+
+  return (
+    <div
+      style={{
+        overflow: 'hidden',
+        borderTop: `1px solid ${BORDER}`,
+        borderBottom: `1px solid ${BORDER}`,
+        backgroundColor: SURFACE,
+        padding: '18px 0',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          gap: '0',
+          width: 'max-content',
+          animation: 'ticker 28s linear infinite',
+        }}
+      >
+        {items.map((body, i) => (
+          <div
+            key={i}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '20px',
+              paddingRight: '40px',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            <span
+              style={{
+                fontSize: '11px',
+                fontWeight: 700,
+                letterSpacing: '0.15em',
+                textTransform: 'uppercase',
+                color: i % 2 === 0 ? MUTED : DIM,
+              }}
+            >
+              {body}
+            </span>
+            <span style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: BORDER, display: 'inline-block', flexShrink: 0 }} />
+          </div>
+        ))}
+      </div>
+
+      <style>{`
+        @keyframes ticker {
+          from { transform: translateX(0); }
+          to   { transform: translateX(-50%); }
+        }
+      `}</style>
+    </div>
+  )
+}
+
 // ═════════════════════════════════════════════════════════════════════════════
 // ROOT
 // ═════════════════════════════════════════════════════════════════════════════
@@ -1094,6 +1186,7 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
   return (
     <main style={{ backgroundColor: BG, color: TEXT, overflowX: 'hidden' }}>
       <HeroSection onGetStarted={onGetStarted} />
+      <SanctioningBodiesSection />
       <HowItWorksSection />
       <FeaturesSection />
       <ProofSection />
