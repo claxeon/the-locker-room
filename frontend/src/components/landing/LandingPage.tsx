@@ -45,8 +45,6 @@ const SURFACE     = '#14151F'
 const SURFACE2    = '#1E1F2E'
 const BORDER      = '#2a2a3c'
 const ACCENT      = '#14B8A6'
-const ACCENT_DIM  = 'rgba(20,184,166,0.10)'
-const ACCENT_RING = 'rgba(20,184,166,0.20)'
 const ACCENT_GLOW = 'rgba(20,184,166,0.28)'
 const ACCENT_HOVER= '#0d9488'
 const CREAM       = '#F5EFE0'
@@ -503,7 +501,6 @@ const SanctioningBodiesSection = () => {
   )
 }
 
-// ─── Features ─────────────────────────────────────────────────────────────────
 // ─── Feature card UI fragments ───────────────────────────────────────────────
 
 /** Fragment 1 — ATHLETE SCORECARD: mini radar + score + breakdown */
@@ -533,7 +530,6 @@ const ScorecardFragment = () => {
       style={{ backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
     >
       <div className="flex items-start gap-4">
-        {/* Mini radar — viewBox 240×200, labels have 34px margin each side */}
         <svg
           viewBox="0 0 240 200"
           width="150"
@@ -542,7 +538,6 @@ const ScorecardFragment = () => {
           aria-hidden="true"
           style={{ flexShrink: 0 }}
         >
-          {/* Grid rings */}
           {gridLevels.map((level) => {
             const pts = Array.from({ length: n }, (_, i) => {
               const p = polar(axisAngle(i), level, r)
@@ -550,19 +545,15 @@ const ScorecardFragment = () => {
             }).join(' ')
             return <polygon key={level} points={pts} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
           })}
-          {/* Axis spokes */}
           {Array.from({ length: n }, (_, i) => {
             const p = polar(axisAngle(i), 100, r)
             return <line key={i} x1={cx} y1={cy} x2={p.x} y2={p.y} stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
           })}
-          {/* Polygon — lavender-quiet, full-opacity stroke, 0.15 fill */}
           <polygon points={points} fill="rgba(155,151,181,0.15)" stroke="#9B97B5" strokeWidth="1.5" strokeLinejoin="round" strokeOpacity="1" />
-          {/* Dots */}
           {scores.map((s, i) => {
             const p = polar(axisAngle(i), s, r)
             return <circle key={i} cx={p.x} cy={p.y} r="2.5" fill="#9B97B5" />
           })}
-          {/* Axis labels — sit at labelR=86, well outside r=58 plot radius */}
           {categories.map((label, i) => {
             const p = polar(axisAngle(i), 100, labelR)
             const isLeft = p.x < cx - 10, isRight = p.x > cx + 10
@@ -585,7 +576,6 @@ const ScorecardFragment = () => {
             )
           })}
         </svg>
-        {/* Score callout */}
         <div className="flex flex-col justify-center gap-1 pt-1">
           <p style={{ fontSize: '32px', fontFamily: "'Instrument Serif', Georgia, serif", color: '#F5EFE0', lineHeight: 1, letterSpacing: '-0.02em' }}>
             82<span style={{ fontSize: '14px', color: '#555570', fontFamily: 'Satoshi, Inter, sans-serif', fontWeight: 600 }}>/100</span>
@@ -593,7 +583,6 @@ const ScorecardFragment = () => {
           <p style={{ fontSize: '9px', color: '#555570', fontFamily: 'Satoshi, Inter, sans-serif', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase' }}>
             Overall
           </p>
-          {/* Breakdown bars */}
           <div className="mt-2 flex flex-col gap-1.5">
             {breakdown.map(({ label, val }) => (
               <div key={label} className="flex items-center gap-2">
@@ -615,13 +604,12 @@ const ScorecardFragment = () => {
   )
 }
 
-/** Fragment 2 — VERIFIED REVIEWS: badge + skeleton review + stars */
+/** Fragment 2 — VERIFIED REVIEWS */
 const VerifiedReviewFragment = () => (
   <div
     className="flex flex-col gap-3 rounded-xl p-3"
     style={{ backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
   >
-    {/* Badge */}
     <div className="flex items-center gap-1.5">
       <svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true">
         <path d="M6 0L7.5 4.5H12L8.25 7.5 9.75 12 6 9 2.25 12 3.75 7.5 0 4.5H4.5Z" fill="#14B8A6" />
@@ -630,13 +618,11 @@ const VerifiedReviewFragment = () => (
         Verified Athlete
       </span>
     </div>
-    {/* Skeleton text lines */}
     <div className="flex flex-col gap-1.5">
       {[100, 88, 72].map((w, i) => (
         <div key={i} style={{ height: '7px', width: `${w}%`, borderRadius: '3px', backgroundColor: 'rgba(255,255,255,0.08)' }} />
       ))}
     </div>
-    {/* Star row */}
     <div className="flex items-center gap-1 mt-1">
       {[1,2,3,4,5].map((s) => (
         <svg key={s} viewBox="0 0 10 10" width="11" height="11" aria-hidden="true">
@@ -648,7 +634,7 @@ const VerifiedReviewFragment = () => (
   </div>
 )
 
-/** Fragment 3 — COLLEGE COMPARISON: one radar, two overlaid polygons */
+/** Fragment 3 — COLLEGE COMPARISON */
 const ComparisonFragment = () => {
   const cx = 80, cy = 72, r = 44, n = 6
   const axisAngle = (i: number) => -90 + (360 / n) * i
@@ -659,10 +645,7 @@ const ComparisonFragment = () => {
   }
   const makePoints = (scores: number[]) =>
     scores.map((s, i) => { const p = polar(axisAngle(i), s, r); return `${p.x},${p.y}` }).join(' ')
-
-  // Polygon A — lavender-quiet — "BALANCED" profile
   const scoresA = [78, 82, 75, 80, 85, 77]
-  // Polygon B — cream — "ELITE FACILITIES" profile
   const scoresB = [95, 88, 45, 60, 55, 30]
   const gridLevels = [33, 66, 100]
 
@@ -671,14 +654,7 @@ const ComparisonFragment = () => {
       className="flex flex-col items-center gap-2 rounded-xl p-3"
       style={{ backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
     >
-      <svg
-        viewBox="0 0 160 144"
-        width="130"
-        height="117"
-        overflow="visible"
-        aria-hidden="true"
-      >
-        {/* Grid rings */}
+      <svg viewBox="0 0 160 144" width="130" height="117" overflow="visible" aria-hidden="true">
         {gridLevels.map((lvl) => {
           const pts = Array.from({ length: n }, (_, i) => {
             const p = polar(axisAngle(i), lvl, r)
@@ -686,31 +662,13 @@ const ComparisonFragment = () => {
           }).join(' ')
           return <polygon key={lvl} points={pts} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="0.8" />
         })}
-        {/* Spokes */}
         {Array.from({ length: n }, (_, i) => {
           const p = polar(axisAngle(i), 100, r)
           return <line key={i} x1={cx} y1={cy} x2={p.x} y2={p.y} stroke="rgba(255,255,255,0.06)" strokeWidth="0.8" />
         })}
-        {/* Polygon A — lavender-quiet, 0.35 fill */}
-        <polygon
-          points={makePoints(scoresA)}
-          fill="rgba(155,151,181,0.35)"
-          stroke="#9B97B5"
-          strokeWidth="1.5"
-          strokeLinejoin="round"
-          strokeOpacity="1"
-        />
-        {/* Polygon B — cream, 0.25 fill */}
-        <polygon
-          points={makePoints(scoresB)}
-          fill="rgba(245,239,224,0.25)"
-          stroke="#F5EFE0"
-          strokeWidth="1.5"
-          strokeLinejoin="round"
-          strokeOpacity="0.70"
-        />
+        <polygon points={makePoints(scoresA)} fill="rgba(155,151,181,0.35)" stroke="#9B97B5" strokeWidth="1.5" strokeLinejoin="round" strokeOpacity="1" />
+        <polygon points={makePoints(scoresB)} fill="rgba(245,239,224,0.25)" stroke="#F5EFE0" strokeWidth="1.5" strokeLinejoin="round" strokeOpacity="0.70" />
       </svg>
-      {/* Legend pills */}
       <div className="flex items-center gap-3">
         <span className="flex items-center gap-1">
           <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#9B97B5', flexShrink: 0, display: 'inline-block' }} />
@@ -725,7 +683,7 @@ const ComparisonFragment = () => {
   )
 }
 
-/** Fragment 4 — GENDER EQUITY: two horizontal bars M/W */
+/** Fragment 4 — GENDER EQUITY */
 const GenderEquityFragment = () => {
   const bars = [
     { label: 'M', pct: 58, color: '#14B8A6' },
@@ -742,7 +700,7 @@ const GenderEquityFragment = () => {
             {label}
           </span>
           <div style={{ flex: 1, height: '8px', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.07)' }}>
-            <div style={{ width: `${pct}%`, height: '100%', borderRadius: '4px', backgroundColor: color, transition: 'none' }} />
+            <div style={{ width: `${pct}%`, height: '100%', borderRadius: '4px', backgroundColor: color }} />
           </div>
           <span style={{ fontSize: '10px', fontFamily: 'Satoshi, Inter, sans-serif', fontWeight: 700, color, minWidth: '28px', textAlign: 'right' }}>
             {pct}%
@@ -756,7 +714,7 @@ const GenderEquityFragment = () => {
   )
 }
 
-/** Fragment 5 — TEAM CULTURE: editorial three-line typography */
+/** Fragment 5 — TEAM CULTURE */
 const CultureFragment = () => {
   const lines = [
     { text: 'INCLUSIVE · INTENSE',       color: '#F5EFE0', size: '14px', weight: 600 },
@@ -789,33 +747,26 @@ const CultureFragment = () => {
   )
 }
 
-/** Fragment 6 — ANONYMOUS BY DEFAULT: silhouette + redacted lines */
+/** Fragment 6 — ANONYMOUS BY DEFAULT */
 const AnonymousFragment = () => (
   <div
     className="flex flex-col items-center gap-2.5 rounded-xl py-3 px-4"
     style={{ backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
   >
-    {/* Abstract silhouette — head circle + body arc, face replaced with teal block */}
     <svg viewBox="0 0 60 52" width="60" height="52" aria-hidden="true">
-      {/* Head outline */}
       <circle cx="30" cy="14" r="12" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.10)" strokeWidth="1" />
-      {/* Face replaced with teal mosaic block */}
       <rect x="22" y="7" width="16" height="14" rx="2" fill="#14B8A6" opacity="0.85" />
-      {/* Pixelation grid lines over the face */}
       {[0,1,2,3].map(i => (
         <line key={`v${i}`} x1={22 + i * 4} y1="7" x2={22 + i * 4} y2="21" stroke="rgba(10,14,26,0.6)" strokeWidth="0.8" />
       ))}
       {[0,1,2,3].map(i => (
         <line key={`h${i}`} x1="22" y1={7 + i * 3.5} x2="38" y2={7 + i * 3.5} stroke="rgba(10,14,26,0.6)" strokeWidth="0.8" />
       ))}
-      {/* Body arc */}
       <path d="M10 52 Q10 32 30 30 Q50 32 50 52" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
     </svg>
-    {/* Redacted text lines */}
     <div className="flex flex-col gap-1.5 w-full">
       {[100, 80, 62].map((w, i) => (
         <div key={i} className="relative" style={{ height: '7px', width: `${w}%`, borderRadius: '3px', backgroundColor: 'rgba(255,255,255,0.08)' }}>
-          {/* Redaction overlay on first two lines */}
           {i < 2 && (
             <div style={{ position: 'absolute', inset: 0, borderRadius: '3px', backgroundColor: 'rgba(10,14,26,0.7)' }} />
           )}
@@ -866,7 +817,6 @@ const FEATURE_DATA = [
   },
 ]
 
-// ─── Shared card style ────────────────────────────────────────────────────────
 const cardBase: React.CSSProperties = {
   border: '1px solid rgba(255,255,255,0.07)',
   backgroundColor: 'rgba(255,255,255,0.03)',
@@ -884,13 +834,8 @@ const FeaturesSection = () => {
   return (
     <section id="features" className="w-full px-6 py-28" style={{ backgroundColor: BG }}>
       <div className="mx-auto max-w-6xl">
-
-        {/* Section header */}
         <div className="mb-14">
-          <p
-            className="mb-3 text-xs font-semibold uppercase tracking-widest"
-            style={{ color: ACCENT }}
-          >
+          <p className="mb-3 text-xs font-semibold uppercase tracking-widest" style={{ color: ACCENT }}>
             Platform
           </p>
           <h2
@@ -906,7 +851,6 @@ const FeaturesSection = () => {
           </h2>
         </div>
 
-        {/* ── ROW 1: Featured card — full width ── */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -914,13 +858,10 @@ const FeaturesSection = () => {
           viewport={{ once: true }}
           style={{ ...cardBase, marginBottom: '24px' }}
         >
-          {/* Featured: two-column — fragment left (wider), text right on large screens */}
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-10">
-            {/* Fragment — takes ~55% on desktop */}
             <div className="lg:w-[55%] flex-shrink-0">
               {featured.fragment}
             </div>
-            {/* Text — right column */}
             <div className="flex flex-col justify-center gap-3 lg:pt-2">
               <p
                 style={{
@@ -930,7 +871,6 @@ const FeaturesSection = () => {
                   letterSpacing: '0.16em',
                   textTransform: 'uppercase',
                   color: CREAM,
-                  fontVariantNumeric: 'tabular-nums',
                 }}
               >
                 {featured.title}
@@ -950,12 +890,7 @@ const FeaturesSection = () => {
           </div>
         </motion.div>
 
-        {/* ── ROW 2: Five smaller cards ── */}
-        {/* Desktop: 5-col | Tablet: 2-col (last solo) | Mobile: 1-col */}
-        <div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5"
-          style={{ gap: '24px' }}
-        >
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5" style={{ gap: '24px' }}>
           {rest.map((feature, i) => (
             <motion.div
               key={feature.id}
@@ -965,9 +900,7 @@ const FeaturesSection = () => {
               viewport={{ once: true }}
               style={cardBase}
             >
-              {/* Fragment */}
               <div>{feature.fragment}</div>
-              {/* Title */}
               <p
                 style={{
                   fontSize: '11px',
@@ -980,7 +913,6 @@ const FeaturesSection = () => {
               >
                 {feature.title}
               </p>
-              {/* Description */}
               <p
                 style={{
                   fontSize: '12px',
@@ -1004,7 +936,6 @@ const ProofSection = () => (
   <section id="proof" className="w-full px-6 py-28" style={{ backgroundColor: BG }}>
     <div className="mx-auto max-w-6xl">
       <div className="mb-12">
-        {/* Eyebrow — teal */}
         <p className="mb-3 text-xs font-semibold uppercase tracking-widest" style={{ color: ACCENT }}>
           By the numbers
         </p>
@@ -1031,7 +962,6 @@ const ProofSection = () => (
             className="rounded-xl p-6"
             style={{ border: `1px solid ${BORDER}`, backgroundColor: SURFACE2 }}
           >
-            {/* Big numerals — cream */}
             <p
               className="leading-none"
               style={{ ...serifStyle, fontSize: "clamp(2rem, 4vw, 2.75rem)", color: CREAM }}
@@ -1045,7 +975,6 @@ const ProofSection = () => (
         ))}
       </div>
 
-      {/* Horizontal bar chart */}
       <div
         className="rounded-2xl p-6 md:p-8"
         style={{ border: `1px solid ${BORDER}`, backgroundColor: SURFACE }}
@@ -1058,7 +987,6 @@ const ProofSection = () => (
             const pct = (row.programs / proofData[0].programs) * 100
             return (
               <div key={row.name} className="flex items-center gap-3">
-                {/* Label */}
                 <span
                   style={{
                     fontFamily: 'Satoshi, Inter, sans-serif',
@@ -1074,11 +1002,7 @@ const ProofSection = () => (
                 >
                   {row.name}
                 </span>
-                {/* Bar track */}
-                <div
-                  className="flex-1 rounded-full overflow-hidden"
-                  style={{ height: '8px', backgroundColor: SURFACE2 }}
-                >
+                <div className="flex-1 rounded-full overflow-hidden" style={{ height: '8px', backgroundColor: SURFACE2 }}>
                   <div
                     style={{
                       width: `${pct}%`,
@@ -1088,7 +1012,6 @@ const ProofSection = () => (
                     }}
                   />
                 </div>
-                {/* Count */}
                 <span
                   style={{
                     fontFamily: 'Satoshi, Inter, sans-serif',
@@ -1120,10 +1043,7 @@ const FounderManifestoSection = () => {
   }
 
   return (
-    <section
-      id="founder-manifesto"
-      style={{ scrollMarginTop: '80px', backgroundColor: BG }}
-    >
+    <section id="founder-manifesto" style={{ scrollMarginTop: '80px', backgroundColor: BG }}>
       <style>{`
         @media (min-width: 1024px) {
           .manifesto-section-inner { padding: 96px 24px; }
@@ -1145,11 +1065,7 @@ const FounderManifestoSection = () => {
         }
       `}</style>
 
-      <div
-        className="manifesto-section-inner mx-auto"
-        style={{ maxWidth: '720px' }}
-      >
-        {/* Eyebrow */}
+      <div className="manifesto-section-inner mx-auto" style={{ maxWidth: '720px' }}>
         <p
           style={{
             color: ACCENT,
@@ -1164,7 +1080,6 @@ const FounderManifestoSection = () => {
           From the Founder
         </p>
 
-        {/* Headline */}
         <h2
           style={{
             ...serifStyle,
@@ -1178,17 +1093,11 @@ const FounderManifestoSection = () => {
           Why this exists.
         </h2>
 
-        {/* Opening paragraph */}
         <p className="manifesto-body" style={bodyStyle}>
           Every recruit asks different questions on their visits, yet most of them get recycled uninformative answers. When they show up ready to take on the world, the reality wasn't all it was chalked up to be. The information that athletes need is usually nothing like what they are told.
         </p>
 
-        {/* Question block */}
-        <div
-          className="manifesto-question-wrap"
-          style={{ marginTop: '24px', position: 'relative' }}
-        >
-          {/* Teal vertical accent bar */}
+        <div className="manifesto-question-wrap" style={{ marginTop: '24px', position: 'relative' }}>
           <div
             className="manifesto-question-bar"
             style={{
@@ -1200,30 +1109,18 @@ const FounderManifestoSection = () => {
               borderRadius: '2px',
             }}
           />
-
-          <p
-            className="manifesto-body"
-            style={{ ...bodyStyle, fontStyle: 'italic' }}
-          >
+          <p className="manifesto-body" style={{ ...bodyStyle, fontStyle: 'italic' }}>
             What happens when you get injured?
           </p>
-          <p
-            className="manifesto-body"
-            style={{ ...bodyStyle, fontStyle: 'italic', marginTop: '16px' }}
-          >
+          <p className="manifesto-body" style={{ ...bodyStyle, fontStyle: 'italic', marginTop: '16px' }}>
             Are men and women treated the same?
           </p>
         </div>
 
-        {/* Closing line */}
-        <p
-          className="manifesto-body"
-          style={{ ...bodyStyle, marginTop: '24px' }}
-        >
+        <p className="manifesto-body" style={{ ...bodyStyle, marginTop: '24px' }}>
           The Locker Room is where those answers live.
         </p>
 
-        {/* Signature */}
         <p
           style={{
             marginTop: '32px',
@@ -1235,7 +1132,7 @@ const FounderManifestoSection = () => {
             color: DIM,
           }}
         >
-          — The Founder · The Locker Room
+          — The Founder · The Locker Room
         </p>
       </div>
     </section>
@@ -1244,19 +1141,12 @@ const FounderManifestoSection = () => {
 
 // ─── Footer ───────────────────────────────────────────────────────────────────
 const FooterSection = () => (
-  <footer
-    className="w-full"
-    style={{ borderTop: `1px solid ${BORDER}`, backgroundColor: BG }}
-  >
+  <footer className="w-full" style={{ borderTop: `1px solid ${BORDER}`, backgroundColor: BG }}>
     <div className="mx-auto max-w-6xl px-6 py-16">
       <div className="flex flex-col items-center gap-6">
-        {/* Wordmark — cream */}
         <div className="flex items-center gap-2">
           <Trophy className="h-5 w-5" style={{ color: ACCENT }} />
-          <span
-            className="text-2xl"
-            style={{ ...serifStyle, color: CREAM }}
-          >
+          <span className="text-2xl" style={{ ...serifStyle, color: CREAM }}>
             The Locker Room
           </span>
         </div>
@@ -1292,10 +1182,7 @@ const FooterSection = () => (
           ))}
         </div>
 
-        <div
-          className="w-full pt-8 flex flex-col items-center gap-3"
-          style={{ borderTop: `1px solid ${SURFACE}` }}
-        >
+        <div className="w-full pt-8 flex flex-col items-center gap-3" style={{ borderTop: `1px solid ${SURFACE}` }}>
           <div className="flex items-center gap-6">
             <a href="/privacy" className="text-2xs font-semibold uppercase tracking-widest transition-colors" style={{ color: DIM }}
               onMouseEnter={e => (e.currentTarget as HTMLAnchorElement).style.color = MUTED}

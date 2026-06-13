@@ -45,6 +45,16 @@ export const SchoolCard: React.FC<SchoolCardProps> = ({ school, onClick }) => {
       initial="initial"
       animate="animate"
       onClick={onClick}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      aria-label={onClick ? `View ${school.institution_name}` : undefined}
+      onKeyDown={(e) => {
+        if (!onClick) return
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          onClick()
+        }
+      }}
       onMouseEnter={e => {
         const el = e.currentTarget as HTMLDivElement
         el.style.borderColor = '#3a3a52'
@@ -56,7 +66,7 @@ export const SchoolCard: React.FC<SchoolCardProps> = ({ school, onClick }) => {
         el.style.backgroundColor = 'rgba(20,21,31,0.60)'
       }}
     >
-      {/* Periwinkle left-rail accent */}
+      {/* Teal left-rail accent */}
       <div
         className="h-10 w-0.5 flex-shrink-0 rounded-full transition-colors"
         style={{ backgroundColor: 'rgba(20,184,166,0.40)' }}

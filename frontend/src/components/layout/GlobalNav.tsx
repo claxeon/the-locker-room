@@ -1,9 +1,8 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react'
 import {
-  Briefcase,
-  FileText,
   Home,
   Flame,
+  LayoutGrid,
   LayoutDashboard,
   ChevronDown,
   LogOut,
@@ -34,17 +33,10 @@ const baseNavItems: TubelightNavItem[] = [
     icon: Home,
   },
   {
-    name: 'Comparison',
-    to: '/college-comparison',
-    icon: FileText,
-    isActiveMatch: (path) => path === '/college-comparison',
-  },
-  {
     name: 'Programs',
     to: '/directory',
-    icon: Briefcase,
-    isActiveMatch: (path, hash) =>
-      (path === '/directory' && hash !== '#filters') || path.startsWith('/school/'),
+    icon: LayoutGrid,
+    isActiveMatch: (path) => path === '/directory' || path.startsWith('/school/'),
   },
   {
     name: 'Explore',

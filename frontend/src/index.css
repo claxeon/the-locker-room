@@ -126,6 +126,21 @@
     @apply bg-background text-foreground;
   }
 
+  /* Respect reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* Scroll bar: minimal on dark bg */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #000; }
+  ::-webkit-scrollbar-thumb { background: rgba(234,179,8,0.3); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(234,179,8,0.6); }
+
   code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
   }

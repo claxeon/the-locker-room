@@ -251,7 +251,7 @@ export const CollegeComparison: React.FC = () => {
                 <div className="flex items-start gap-3 rounded-xl border border-[#2a2a3c] bg-[#14151F]/50 px-4 py-3">
                   <Info className="h-4 w-4 text-[#14B8A6]/70 flex-shrink-0 mt-0.5" />
                   <p className="text-xs text-zinc-500 leading-relaxed">
-                    These programs haven't been reviewed yet. You can still add them to your comparison — 
+                    These programs haven't been reviewed yet. You can still add them to your comparison —
                     their cards will show a placeholder and you can be the first to rate them.
                   </p>
                 </div>
@@ -310,7 +310,10 @@ export const CollegeComparison: React.FC = () => {
                   .getElementById('comparison-table')
                   ?.scrollIntoView({ behavior: 'smooth' })
               }
-              className="rounded-full px-8 py-3 text-sm font-black uppercase tracking-widest shadow-2xl transition-colors" style={{ backgroundColor: '#14B8A6', color: '#0A0E1A', boxShadow: '0 20px 40px -12px rgba(20,184,166,0.35)' }} onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#0d9488' }} onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#14B8A6' }}
+              className="rounded-full px-8 py-3 text-sm font-black uppercase tracking-widest shadow-2xl transition-colors"
+              style={{ backgroundColor: '#14B8A6', color: '#0A0E1A', boxShadow: '0 20px 40px -12px rgba(20,184,166,0.35)' }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#0d9488' }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#14B8A6' }}
             >
               Compare {selectedSchools.length} Programs ↓
             </button>

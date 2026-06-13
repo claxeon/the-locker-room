@@ -160,7 +160,7 @@ export const SportsDirectory: React.FC<SportsDirectoryProps> = ({ onSchoolClick 
         {/* Filters */}
         <SportsFilters filters={filters} onFilterChange={setFilters} />
 
-        {/* Directory table */}
+        {/* Directory grid */}
         <section
           className="overflow-hidden rounded-2xl"
           style={{ border: '1px solid #2a2a3c', backgroundColor: 'rgba(26,26,46,0.40)' }}
@@ -195,16 +195,14 @@ export const SportsDirectory: React.FC<SportsDirectoryProps> = ({ onSchoolClick 
             </div>
           ) : (
             <>
-              <div className="px-4 pb-6 pt-4">
-                <div className="flex flex-col gap-2">
-                  {schools.map((school) => (
-                    <SchoolCard
-                      key={`${school.school_id}`}
-                      school={school}
-                      onClick={() => onSchoolClick?.(school.slug)}
-                    />
-                  ))}
-                </div>
+              <div className="grid gap-2 px-4 pb-6 pt-4 md:grid-cols-2">
+                {schools.map((school) => (
+                  <SchoolCard
+                    key={`${school.school_id}-${school.sport}-${school.gender}`}
+                    school={school}
+                    onClick={() => onSchoolClick?.(school.slug)}
+                  />
+                ))}
               </div>
 
               <Pagination
