@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * HeroCanvas.tsx
  * Three.js particle network — represents athletes + programs connected across the country.

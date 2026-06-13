@@ -139,17 +139,17 @@ function useMagnetic(strength = 0.35) {
   useEffect(() => {
     const el = ref.current
     if (!el) return
-    function onMove(e: MouseEvent) {
+    const onMove = (e: MouseEvent) => {
       const rect = el!.getBoundingClientRect()
       const dx = e.clientX - (rect.left + rect.width / 2)
       const dy = e.clientY - (rect.top  + rect.height / 2)
       x.set(dx * strength)
       y.set(dy * strength)
     }
-    function onLeave() { x.set(0); y.set(0) }
-    el.addEventListener('mousemove', onMove)
+    const onLeave = () => { x.set(0); y.set(0) }
+    el.addEventListener('mousemove', onMove as EventListener)
     el.addEventListener('mouseleave', onLeave)
-    return () => { el.removeEventListener('mousemove', onMove); el.removeEventListener('mouseleave', onLeave) }
+    return () => { el.removeEventListener('mousemove', onMove as EventListener); el.removeEventListener('mouseleave', onLeave) }
   }, [x, y, strength])
 
   return { ref, style: { x: springX, y: springY } }
@@ -170,7 +170,7 @@ function AnimatedCounter({ target, suffix }: { target: number; suffix: string })
           started.current = true
           const duration = 1800
           const start = performance.now()
-          function step(now: number) {
+          const step = (now: number) => {
             const progress = Math.min((now - start) / duration, 1)
             const ease = 1 - Math.pow(1 - progress, 3)
             setDisplay(Math.round(ease * target))
