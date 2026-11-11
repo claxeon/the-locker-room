@@ -5,7 +5,6 @@
  */
 import { useEffect, useRef } from 'react'
 
-const ACCENT     = '#14B8A6'
 const TEAL_RGB   = '20,184,166'
 const CREAM_RGB  = '245,239,224'
 const LAV_RGB    = '155,151,181'

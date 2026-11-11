@@ -386,21 +386,6 @@ function SportTrendChip({ trend, index, maxReviews, onClick }: SportTrendChipPro
 }
 
 // ---------------------------------------------------------------------------
-// Empty states
-// ---------------------------------------------------------------------------
-
-function EmptyState({ message }: { message: string }) {
-  return (
-    <div className="flex flex-col items-center justify-center py-16 text-center">
-      <div className="w-12 h-12 rounded-full bg-[#14151F] border border-[#2a2a3c] flex items-center justify-center mb-4">
-        <Star size={20} className="text-[#555570]" />
-      </div>
-      <p className="text-[#555570] text-sm">{message}</p>
-    </div>
-  )
-}
-
-// ---------------------------------------------------------------------------
 // Fallback sport chips for empty state
 // ---------------------------------------------------------------------------
 

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { User, Shield, ThumbsUp, Flag, CheckCircle, XCircle } from 'lucide-react'
-import { StarRating } from './StarRating'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../hooks/useAuth'
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Star, TrendingUp, Users, Award, Shield, BarChart3, AlertCircle } from 'lucide-react'
+import { Star, BarChart3, AlertCircle } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
