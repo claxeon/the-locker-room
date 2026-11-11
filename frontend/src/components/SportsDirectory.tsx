@@ -200,7 +200,7 @@ export const SportsDirectory: React.FC<SportsDirectoryProps> = ({ onSchoolClick 
                   <SchoolCard
                     key={`${school.school_id}-${school.sport}-${school.gender}`}
                     school={school}
-                    onClick={() => onSchoolClick?.(school.slug)}
+                    href={`/school/${school.slug}`}
                   />
                 ))}
               </div>

@@ -1,6 +1,7 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { ChevronRight } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 import { SportsDirectoryEntry, SchoolProfile } from '../lib/supabase'
 
@@ -9,6 +10,8 @@ type SchoolCardData = SportsDirectoryEntry | SchoolProfile
 interface SchoolCardProps {
   school: SchoolCardData
   onClick?: () => void
+  /** When set, the card renders as a crawlable <a href> link (preferred for SEO). */
+  href?: string
 }
 
 const cardVariants = {
@@ -16,7 +19,7 @@ const cardVariants = {
   animate: { opacity: 1, y: 0 },
 }
 
-export const SchoolCard: React.FC<SchoolCardProps> = ({ school, onClick }) => {
+export const SchoolCard: React.FC<SchoolCardProps> = ({ school, onClick, href }) => {
   const handleLogoError = (event: React.SyntheticEvent<HTMLImageElement>) => {
     const img = event.currentTarget
     img.style.display = 'none'
@@ -33,23 +36,23 @@ export const SchoolCard: React.FC<SchoolCardProps> = ({ school, onClick }) => {
     ? school.gender
     : null
 
-  return (
+  const card = (
     <motion.div
       className="group flex items-center gap-4 rounded-2xl px-5 py-4 transition-all duration-200"
       style={{
         border: '1px solid rgba(58,58,92,0.80)',
         backgroundColor: 'rgba(20,21,31,0.60)',
-        cursor: onClick ? 'pointer' : 'default',
+        cursor: onClick || href ? 'pointer' : 'default',
       }}
       variants={cardVariants}
       initial="initial"
       animate="animate"
-      onClick={onClick}
-      role={onClick ? 'button' : undefined}
-      tabIndex={onClick ? 0 : undefined}
-      aria-label={onClick ? `View ${school.institution_name}` : undefined}
+      onClick={href ? undefined : onClick}
+      role={!href && onClick ? 'button' : undefined}
+      tabIndex={!href && onClick ? 0 : undefined}
+      aria-label={!href && onClick ? `View ${school.institution_name}` : undefined}
       onKeyDown={(e) => {
-        if (!onClick) return
+        if (href || !onClick) return
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault()
           onClick()
@@ -162,4 +165,14 @@ export const SchoolCard: React.FC<SchoolCardProps> = ({ school, onClick }) => {
       )}
     </motion.div>
   )
+
+  if (href) {
+    return (
+      <Link to={href} className="block" aria-label={`View ${school.institution_name}`}>
+        {card}
+      </Link>
+    )
+  }
+
+  return card
 }
